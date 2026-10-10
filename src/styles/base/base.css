@@ -1,0 +1,45 @@
+/* ============================================
+   Base — Base
+   ============================================ */
+
+body {
+    min-height: 100dvh;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-primary);
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    letter-spacing: var(--font-base-tracking);
+    font-weight: var(--font-weight-regular);
+}
+
+/* Celular: los toques responden al instante (sin esperar un doble toque
+   para hacer zoom) y la página no "rebota" más allá de los bordes */
+html {
+    overscroll-behavior-y: none;
+}
+
+a,
+button,
+input,
+label {
+    touch-action: manipulation;
+}
+
+/* Mantener apretado un botón o un link no abre el menú del sistema */
+a,
+button {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+::selection {
+    background: var(--color-text);
+    color: var(--color-bg);
+}

@@ -1,0 +1,70 @@
+/* ============================================
+   Tokens — Typography
+   ============================================ */
+
+/* Inter en 400 y 500. Títulos en regular con tracking apenas cerrado,
+   eyebrows chicos en mayúsculas y bien espaciados (TERRARIO Nº 04).
+   --font-[talle]-size / -line / -tracking */
+
+:root {
+
+    --font-primary: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+
+    --font-2xs-size: 10px;       /* eyebrows: TERRARIO Nº 04, labels de campos */
+    --font-2xs-line: 12px;
+    --font-2xs-tracking: 1.2px;
+
+    --font-xs-size: 11px;        /* nav, Nº 04 en la colección */
+    --font-xs-line: 14px;
+    --font-xs-tracking: 0.6px;
+
+    --font-sm-size: 13px;        /* textos de apoyo, links chicos */
+    --font-sm-line: 18px;
+    --font-sm-tracking: 0;
+
+    --font-base-size: 15px;      /* texto corrido, filas de ajustes */
+    --font-base-line: 22px;
+    --font-base-tracking: -0.1px;
+
+    --font-lg-size: 17px;        /* subtítulo de escaneo */
+    --font-lg-line: 22px;
+    --font-lg-tracking: -0.2px;
+
+    --font-xl-size: 28px;        /* títulos de pantalla: Mi Colección, Las Flechas */
+    --font-xl-line: 32px;
+    --font-xl-tracking: -0.6px;
+
+    --font-2xl-size: 32px;       /* nombre en el reproductor */
+    --font-2xl-line: 36px;
+    --font-2xl-tracking: -0.8px;
+
+    --font-brand-size: 32px;     /* FILOTAXIA en el splash */
+    --font-brand-line: 36px;
+    --font-brand-tracking: 5px;
+
+    /* --- Números (Mi terrario): regulares, tracking cerrado, cifras tabulares --- */
+    --num-md-size: 40px;         /* valor de un bloque: 22°. · En 3 días. */
+    --num-md-line: 44px;
+    --num-md-tracking: -1.6px;
+
+    --num-xl-size: 136px;        /* el número protagonista: 84% */
+    --num-xl-line: 124px;
+    --num-xl-tracking: -8px;
+
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+
+@media (min-width: 768px) {
+    :root {
+        --font-xl-size: 32px;
+        --font-xl-line: 36px;
+        --font-2xl-size: 40px;
+        --font-2xl-line: 44px;
+    }
+}

@@ -1,0 +1,65 @@
+/* ============================================
+   Views — Ajustes
+   ============================================ */
+
+/* La lista usa components/list-row. Acá: las piezas de las hojas. */
+
+/* Fila de ajuste: texto a la izquierda, interruptor a la derecha */
+.setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-lg);
+    cursor: pointer;
+}
+
+.setting__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+}
+
+.setting__title {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+/* Ayuda: pasos numerados (01/ 02/ 03/, como en filotaxia.com) y preguntas */
+.help {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+}
+
+.help__steps,
+.help__faq {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xl);
+}
+
+.help__step {
+    display: flex;
+    gap: var(--gap-md);
+}
+
+.help__index {
+    flex-shrink: 0;
+    width: 28px;
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    font-weight: var(--font-weight-medium);
+    font-variant-numeric: tabular-nums;
+}
+
+.help__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+}
+
+.help dt {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    font-weight: var(--font-weight-medium);
+}

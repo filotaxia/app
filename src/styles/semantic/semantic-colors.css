@@ -1,0 +1,78 @@
+/* ============================================
+   Semantic — Colors
+   ============================================ */
+
+/* Alias por ROL. Es lo único que usan vistas y componentes.
+
+   Cómo funciona el tema:
+   - Cada alias usa light-dark(valor-claro, valor-oscuro).
+   - El navegador elige según color-scheme.
+   - Por defecto color-scheme sigue al teléfono ("light dark").
+   - data-theme="light" | "dark" en <html> lo fuerza (lo pone utils/theme.js
+     según lo elegido en Ajustes → Apariencia). */
+
+:root {
+    color-scheme: light dark;
+}
+
+[data-theme="light"] {
+    color-scheme: light;
+}
+
+[data-theme="dark"] {
+    color-scheme: dark;
+}
+
+:root {
+
+    /* --- Fondo --- */
+    --color-bg: light-dark(var(--color-white), var(--color-stone-950));
+    --color-block-bg: light-dark(var(--color-stone-100), var(--color-stone-900));   /* cuadro del QR */
+
+    /* --- Texto --- */
+    --color-text: light-dark(var(--color-black), var(--color-stone-paper));
+    --color-text-muted: light-dark(var(--color-stone-600), var(--color-stone-500));
+    --color-text-faint: light-dark(var(--color-stone-400), var(--color-stone-700)); /* placeholders */
+    --color-eyebrow: var(--color-text-muted);
+
+    /* --- Líneas --- */
+    --color-line: light-dark(var(--color-stone-200), var(--color-stone-850));       /* entre filas, bordes suaves */
+    --color-line-strong: var(--color-text);                                         /* esquinas del visor QR, foco */
+    --color-track: light-dark(var(--color-stone-300), var(--color-stone-800));      /* barra vacía, switch apagado */
+
+    /* --- Ilustración del terrario: luz arriba a la izquierda --- */
+    --color-art-light: light-dark(var(--color-stone-50), var(--color-stone-850));
+    --color-art-shade: light-dark(var(--color-stone-150), var(--color-stone-925));
+    --color-art-plant: light-dark(var(--color-stone-400), var(--color-stone-700));
+    --color-art-glow: light-dark(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.06)); /* respira mientras suena */
+
+    /* --- Inverso: botón principal, play, toast, botón de Ajustes activo --- */
+    --color-inverse-bg: var(--color-text);
+    --color-inverse-text: var(--color-bg);
+    --color-inverse-hover: light-dark(var(--color-stone-800), var(--color-stone-300));
+    --color-focus: var(--color-text);
+
+    /* --- Acento: un solo bloque por pantalla (el cuidado que viene, en Mi terrario).
+       Mismo color en los dos temas, siempre con texto negro encima --- */
+    --color-accent-fill: var(--color-moss-300);
+    --color-on-accent: var(--color-black);
+
+    /* --- Etiquetas chicas sobre un bloque (237.8 kWh. en la referencia) --- */
+    --color-badge-bg: var(--color-bg);
+
+    /* --- Relleno suave de un medidor que no es el acento --- */
+    --color-meter-soft: light-dark(var(--color-stone-200), var(--color-stone-850));
+
+    /* --- Navegación: cápsula de vidrio --- */
+    --color-nav-bg: var(--color-bg);
+    --color-nav-text: var(--color-text-muted);
+    --color-nav-text-active: var(--color-text);
+    --color-nav-glass: color-mix(in srgb, var(--color-bg) 72%, transparent);
+    --color-nav-glass-border: color-mix(in srgb, var(--color-text) 10%, transparent);
+    --color-nav-active-bg: color-mix(in srgb, var(--color-text) 8%, transparent);
+    --color-nav-hover-bg: color-mix(in srgb, var(--color-text) 4%, transparent);
+
+    /* --- Fondo detrás de las hojas modales --- */
+    --color-backdrop: light-dark(rgba(10, 10, 10, 0.35), rgba(0, 0, 0, 0.6));
+
+}

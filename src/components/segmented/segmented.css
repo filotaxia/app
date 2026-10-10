@@ -1,0 +1,55 @@
+/* ============================================
+   Components — Segmented
+   ============================================ */
+
+/* Pill con borde fino; la opción elegida, inversa (negra en claro,
+   blanca en oscuro). Hasta 3 opciones cortas. */
+
+.segmented {
+    display: inline-flex;
+    padding: var(--spacing-2xs);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-full);
+}
+
+.segmented__option {
+    position: relative;
+    cursor: pointer;
+}
+
+/* El radio queda invisible encima de su texto (sigue siendo tocable y enfocable) */
+.segmented__input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.segmented__option span {
+    display: block;
+    min-width: 56px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-full);
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    font-weight: var(--font-weight-medium);
+    text-align: center;
+    color: var(--color-text-muted);
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.segmented__input:checked + span {
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+}
+
+.segmented__input:focus-visible + span {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+@media (hover: hover) {
+    .segmented__input:not(:checked):hover + span {
+        color: var(--color-text);
+    }
+}

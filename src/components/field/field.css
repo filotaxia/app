@@ -1,0 +1,48 @@
+/* ============================================
+   Components — Field
+   ============================================ */
+
+/* Label en mayúsculas + input sin caja, sobre una línea fina.
+   Foco: la línea se pone negra. Error: texto chico debajo (con palabra, no solo color). */
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+}
+
+.field__input {
+    width: 100%;
+    height: var(--size-tap);
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid var(--color-line);
+    border-radius: 0;
+    background: transparent;
+    font-size: 16px; /* con menos, iOS hace zoom al enfocar */
+    letter-spacing: var(--font-base-tracking);
+    transition: border-color var(--transition-fast);
+}
+
+.field__input::placeholder {
+    color: var(--color-text-faint);
+}
+
+.field__input:focus {
+    outline: none;
+    border-bottom-color: var(--color-line-strong);
+}
+
+.field__input[aria-invalid] {
+    border-bottom-color: var(--color-line-strong);
+}
+
+.field__error {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: var(--color-text);
+}
+
+.field__error::before {
+    content: "— ";
+}

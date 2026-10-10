@@ -1,0 +1,105 @@
+/* ============================================
+   Views — Escanear
+   ============================================ */
+
+/* Título arriba al centro, visor en el medio, link al pie. */
+
+.scan {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.scan__title {
+    margin-top: var(--spacing-2xl);
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+    letter-spacing: var(--font-lg-tracking);
+    font-weight: var(--font-weight-medium);
+}
+
+.scan__title:focus {
+    outline: none;
+}
+
+.scan__middle {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-xl);
+    padding-block: var(--spacing-2xl);
+}
+
+/* Visor: cuadro gris claro con cuatro esquinas negras que lo exceden un poco */
+.scan__frame {
+    position: relative;
+    width: 200px;
+    aspect-ratio: 1;
+    background: var(--color-block-bg);
+}
+
+/* El video aparece recién cuando la cámara está andando */
+.scan__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.scan__frame[data-state="active"] .scan__video {
+    opacity: 1;
+}
+
+.scan__corner {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border: 0 solid var(--color-line-strong);
+}
+
+.scan__corner--tl { top: -1px; left: -1px; border-top-width: 1.5px; border-left-width: 1.5px; }
+.scan__corner--tr { top: -1px; right: -1px; border-top-width: 1.5px; border-right-width: 1.5px; }
+.scan__corner--bl { bottom: -1px; left: -1px; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+.scan__corner--br { bottom: -1px; right: -1px; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+/* Línea que barre el visor: "estoy buscando" */
+@keyframes scan-sweep {
+    0%, 100% { transform: translateY(0); opacity: 0; }
+    10%, 90% { opacity: 1; }
+    50% { transform: translateY(176px); }
+}
+
+.scan__frame[data-state="active"]::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.8);
+    animation: scan-sweep 3.2s ease-in-out infinite;
+}
+
+.scan__hint {
+    max-width: 280px;
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+
+@media (min-width: 768px) {
+    .scan__frame {
+        width: 240px;
+    }
+
+    @keyframes scan-sweep {
+        0%, 100% { transform: translateY(0); opacity: 0; }
+        10%, 90% { opacity: 1; }
+        50% { transform: translateY(216px); }
+    }
+}

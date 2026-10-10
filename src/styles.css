@@ -1,0 +1,55 @@
+/* ============================================
+   STYLES
+   ============================================ */
+/* tokens */
+@import url('./styles/tokens/tokens-colors.css');
+@import url('./styles/tokens/tokens-typography.css');
+@import url('./styles/tokens/tokens-spacing.css');
+@import url('./styles/tokens/tokens-radius.css');
+@import url('./styles/tokens/tokens-effects.css');
+@import url('./styles/tokens/tokens-sizes.css');
+
+/* semantic */
+@import url('./styles/semantic/semantic-colors.css');
+
+/* base */
+@import url('./styles/base/reset.css');
+@import url('./styles/base/base.css');
+@import url('./styles/base/layout.css');
+@import url('./styles/base/typography.css');
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+@import url('./layout/app-shell/app-shell.css');
+@import url('./layout/header/header.css');
+@import url('./layout/bottom-nav/bottom-nav.css');
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@import url('./animation/reveal.css');
+
+/* ============================================
+   COMPONENTS
+   ============================================ */
+@import url('./components/button/button.css');
+@import url('./components/field/field.css');
+@import url('./components/terrarium-art/terrarium-art.css');
+@import url('./components/list-row/list-row.css');
+@import url('./components/switch/switch.css');
+@import url('./components/segmented/segmented.css');
+@import url('./components/chip/chip.css');
+@import url('./components/sheet/sheet.css');
+@import url('./components/toast/toast.css');
+
+/* ============================================
+   VIEWS
+   ============================================ */
+@import url('./views/inicio/inicio.css');
+@import url('./views/mi-terrario/mi-terrario.css');
+@import url('./views/escanear/escanear.css');
+@import url('./views/terrario/terrario.css');
+@import url('./views/coleccion/coleccion.css');
+@import url('./views/escuchar/escuchar.css');
+@import url('./views/ajustes/ajustes.css');

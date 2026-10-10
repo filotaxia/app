@@ -1,0 +1,35 @@
+/* ============================================
+   Views — Inicio
+   ============================================ */
+
+.splash {
+    display: grid;
+    place-items: center;
+    text-align: center;
+}
+
+.splash__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+}
+
+.splash__title {
+    /* text-indent compensa el tracking del final, así queda centrado de verdad */
+    text-indent: var(--font-brand-tracking);
+    font-size: var(--font-brand-size);
+    line-height: var(--font-brand-line);
+    letter-spacing: var(--font-brand-tracking);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+}
+
+.splash__title:focus {
+    outline: none;
+}
+
+.splash__tagline {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: var(--color-text-muted);
+}

@@ -1,0 +1,101 @@
+/* ============================================
+   Components — Sheet
+   ============================================ */
+
+/* Hoja modal sobre <dialog> nativo.
+   Mobile: sube desde abajo, con la manija arriba. Desktop: centrada.
+   El <dialog> ya maneja foco, Escape y bloqueo del fondo. */
+
+.sheet {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92dvh;
+    margin: auto auto 0;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    overscroll-behavior: contain;
+    transition: transform 0.32s var(--ease-out);
+}
+
+/* Entrada: arranca abajo y sube (sin JS, con @starting-style) */
+@starting-style {
+    .sheet[open] {
+        transform: translateY(100%);
+    }
+}
+
+.sheet::backdrop {
+    background: var(--color-backdrop);
+}
+
+/* Mientras hay una hoja abierta, la página de atrás no scrollea */
+html:has(.sheet[open]) {
+    overflow: hidden;
+}
+
+/* Manija (solo decorativa) */
+.sheet::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin: var(--spacing-sm) auto 0;
+    border-radius: var(--radius-full);
+    background: var(--color-track);
+}
+
+.sheet__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+    padding: var(--spacing-sm) var(--gutter) calc(var(--spacing-xl) + env(safe-area-inset-bottom));
+}
+
+.sheet__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-md);
+    margin-right: calc(var(--spacing-md) * -1);
+}
+
+.sheet__title {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+.sheet__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xl);
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+
+@media (min-width: 768px) {
+    .sheet {
+        max-width: 520px;
+        margin: auto;
+        border-radius: var(--radius-lg);
+    }
+
+    .sheet::before {
+        display: none;
+    }
+
+    @starting-style {
+        .sheet[open] {
+            transform: translateY(24px);
+        }
+    }
+
+    .sheet__inner {
+        padding: var(--spacing-xl) var(--spacing-2xl) var(--spacing-2xl);
+    }
+}

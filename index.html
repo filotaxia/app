@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Filotaxia</title>
+    <!-- viewport-fit=cover: la app usa toda la pantalla y respeta las áreas seguras (notch, barra de inicio) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Escuchá el sonido de tu terrario." />
+    <!-- Color de la barra del navegador, uno por esquema (utils/theme.js los pisa si se fuerza un tema) -->
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" data-scheme="light" />
+    <meta name="theme-color" content="#0e0e0d" media="(prefers-color-scheme: dark)" data-scheme="dark" />
+    <!-- App instalable (PWA): ícono y nombre en la pantalla de inicio -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="./src/assets/icons/favicon-48.png" />
+    <link rel="apple-touch-icon" href="./src/assets/icons/apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Filotaxia" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./src/styles.css" />
+</head>
+
+<body>
+    <a class="skip-link" href="#view">Saltar al contenido</a>
+
+    <div class="app-shell" data-app-shell>
+        <!-- LAYOUT: Header (solo en las vistas que lo piden: Colección, Ajustes) -->
+        <header class="app-header" data-header hidden>
+            <div class="app-header__inner container">
+                <div class="app-header__lead">
+                    <a class="app-header__back" href="#/coleccion" data-header-back hidden aria-label="Volver">
+                        <!-- Lucide: chevron-left -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="m15 18-6-6 6-6" />
+                        </svg>
+                    </a>
+                    <div class="app-header__titles">
+                        <h1 class="app-header__title" data-header-title tabindex="-1">Filotaxia</h1>
+                        <p class="app-header__subtitle" data-header-subtitle></p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- LAYOUT: View (el router monta acá cada pantalla) -->
+        <main id="view" class="app-view" tabindex="-1"></main>
+
+        <!-- LAYOUT: Bottom-Nav (como Pulso: cinco secciones con Escanear al centro como círculo;
+             riel lateral en desktop). En todas las pantallas menos el splash. -->
+        <nav class="bottom-nav" aria-label="Secciones" data-nav hidden>
+            <a class="bottom-nav__brand" href="#/mi-terrario">Filotaxia</a>
+            <ul class="bottom-nav__list">
+                <li>
+                    <a class="bottom-nav__link" href="#/mi-terrario" data-route="mi-terrario">
+                        <!-- Lucide: sprout -->
+                        <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M7 20h10" />
+                            <path d="M10 20c5.5-2.5.8-6.4 3-10" />
+                            <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" />
+                            <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />
+                        </svg>
+                        <span class="bottom-nav__label">Mi terrario</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="bottom-nav__link" href="#/coleccion" data-route="coleccion">
+                        <!-- Lucide: layout-grid -->
+                        <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect width="7" height="7" x="3" y="3" rx="1" />
+                            <rect width="7" height="7" x="14" y="3" rx="1" />
+                            <rect width="7" height="7" x="14" y="14" rx="1" />
+                            <rect width="7" height="7" x="3" y="14" rx="1" />
+                        </svg>
+                        <span class="bottom-nav__label">Colección</span>
+                    </a>
+                </li>
+                <li>
+                    <!-- Escanear: al centro, con su círculo -->
+                    <a class="bottom-nav__link bottom-nav__link--main" href="#/escanear" data-route="escanear">
+                        <span class="bottom-nav__fab">
+                            <!-- Lucide: scan-line -->
+                            <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+                                <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+                                <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+                                <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+                                <path d="M7 12h10" />
+                            </svg>
+                        </span>
+                        <span class="bottom-nav__label">Escanear</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="bottom-nav__link" href="#/escuchar" data-route="escuchar">
+                        <!-- Lucide: audio-lines -->
+                        <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M2 10v3" />
+                            <path d="M6 6v11" />
+                            <path d="M10 3v18" />
+                            <path d="M14 8v7" />
+                            <path d="M18 5v13" />
+                            <path d="M22 10v3" />
+                        </svg>
+                        <span class="bottom-nav__label">Escuchar</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="bottom-nav__link" href="#/ajustes" data-route="ajustes">
+                        <!-- Lucide: sliders-horizontal -->
+                        <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <line x1="21" x2="14" y1="4" y2="4" />
+                            <line x1="10" x2="3" y1="4" y2="4" />
+                            <line x1="21" x2="12" y1="12" y2="12" />
+                            <line x1="8" x2="3" y1="12" y2="12" />
+                            <line x1="21" x2="16" y1="20" y2="20" />
+                            <line x1="12" x2="3" y1="20" y2="20" />
+                            <line x1="14" x2="14" y1="2" y2="6" />
+                            <line x1="8" x2="8" y1="10" y2="14" />
+                            <line x1="16" x2="16" y1="18" y2="22" />
+                        </svg>
+                        <span class="bottom-nav__label">Ajustes</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Avisos breves (components/toast) -->
+    <div class="toast-region" data-toast-region aria-live="polite"></div>
+
+    <script type="module" src="./src/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Material de referencia (otros proyectos, con sus propias licencias): no se sube
+inspo/
+
+# Ajustes locales de Claude Code (los compartidos, como launch.json, sí se suben)
+.claude/settings.local.json

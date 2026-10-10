@@ -1,0 +1,194 @@
+/* ============================================
+   Views — Escuchar
+   ============================================ */
+
+/* Reproductor centrado: ilustración, info, barra fina y controles. */
+
+.player {
+    display: flex;
+    flex-direction: column;
+}
+
+.player > .back-link {
+    align-self: flex-start;
+    margin-top: calc(var(--spacing-md) * -1);
+}
+
+.player__body {
+    flex: 1;
+    width: 100%;
+    max-width: 340px;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-xl);
+    padding-block: var(--spacing-xl);
+    text-align: center;
+}
+
+.player__art {
+    width: 76%;
+}
+
+.player__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-xs);
+}
+
+.player__name {
+    font-size: var(--font-2xl-size);
+    line-height: var(--font-2xl-line);
+    letter-spacing: var(--font-2xl-tracking);
+}
+
+.player__name:focus {
+    outline: none;
+}
+
+/* --- Barra de progreso: línea fina, la parte escuchada en negro --- */
+.player__progress {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+}
+
+.player__range {
+    --progress: 0%;
+    appearance: none;
+    width: 100%;
+    height: var(--size-tap);
+    background: transparent;
+    cursor: pointer;
+}
+
+.player__range::-webkit-slider-runnable-track {
+    height: 2px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(to right, var(--color-text) var(--progress), var(--color-track) var(--progress));
+}
+
+.player__range::-moz-range-track {
+    height: 2px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(to right, var(--color-text) var(--progress), var(--color-track) var(--progress));
+}
+
+/* Punto chico al final de lo escuchado; crece al tocarlo */
+.player__range::-webkit-slider-thumb {
+    appearance: none;
+    width: 10px;
+    height: 10px;
+    margin-top: -4px;
+    border-radius: var(--radius-full);
+    background: var(--color-text);
+    transition: transform var(--transition-fast);
+}
+
+.player__range::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    border: none;
+    border-radius: var(--radius-full);
+    background: var(--color-text);
+}
+
+.player__range:active::-webkit-slider-thumb {
+    transform: scale(1.4);
+}
+
+.player__range:focus-visible {
+    outline-offset: -8px;
+}
+
+.player__times {
+    display: flex;
+    justify-content: space-between;
+    margin-top: calc(var(--spacing-md) * -1);
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- Controles: −15 · play · +15 --- */
+.player__controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-2xl);
+}
+
+.player__skip {
+    position: relative;
+    color: var(--color-text-muted);
+}
+
+@media (hover: hover) {
+    .player__skip:hover {
+        color: var(--color-text);
+    }
+}
+
+/* El "15" chiquito adentro de la flecha circular */
+.player__skip span {
+    position: absolute;
+    font-size: 7px;
+    line-height: 1;
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0;
+}
+
+.player__play {
+    width: var(--size-play);
+    height: var(--size-play);
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-full);
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+    transition: transform var(--transition-fast);
+}
+
+.player__play:active {
+    transform: scale(0.94);
+}
+
+.player__play svg {
+    width: var(--icon-md);
+    height: var(--icon-md);
+}
+
+/* El triángulo de play se ve corrido a la izquierda: se compensa */
+.player__play [data-icon-play] svg {
+    transform: translateX(1px);
+}
+
+/* --- Sin terrarios --- */
+.player--empty {
+    justify-content: center;
+    gap: var(--gap-xl);
+}
+
+.player--empty .player__info {
+    align-items: flex-start;
+}
+
+.player--empty .btn svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+
+@media (min-width: 768px) {
+    .player__body {
+        max-width: 400px;
+    }
+}

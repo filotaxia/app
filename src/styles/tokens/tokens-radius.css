@@ -1,0 +1,15 @@
+/* ============================================
+   Tokens — Radius
+   ============================================ */
+
+/* Ilustraciones casi rectas (6px), hojas modales 20px, botones en pill. */
+
+:root {
+
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-block: 18px;        /* bloques de Mi terrario */
+    --radius-lg: 20px;
+    --radius-full: 999px;
+
+}

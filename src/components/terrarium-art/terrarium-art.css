@@ -1,0 +1,61 @@
+/* ============================================
+   Components — Terrarium Art
+   ============================================ */
+
+/* Cuadro con degradé radial suave (luz arriba a la izquierda) y el brote
+   en gris al centro. Siempre cuadrado: el ancho lo da el contenedor. */
+
+.terrarium-art {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-sm);
+    background: radial-gradient(120% 120% at 28% 18%, var(--color-art-light) 0%, var(--color-art-shade) 100%);
+    color: var(--color-art-plant);
+    overflow: hidden;
+}
+
+.terrarium-art__plant {
+    width: 34%;
+    height: auto;
+    transform-origin: 50% 90%;
+}
+
+.terrarium-art--sm .terrarium-art__plant {
+    width: 30%;
+    stroke-width: 3.2;
+}
+
+/* Foto del terrario: cubre el cuadro, encima del brote */
+.terrarium-art__photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Sonando: el brote se balancea apenas y la luz respira */
+@keyframes plant-sway {
+    0%, 100% { transform: rotate(-1.5deg) scale(1); }
+    50% { transform: rotate(1.5deg) scale(1.03); }
+}
+
+@keyframes art-breathe {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+.terrarium-art[data-live]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(60% 60% at 50% 55%, var(--color-art-glow), transparent 70%);
+    animation: art-breathe 5s ease-in-out infinite;
+}
+
+.terrarium-art[data-live] .terrarium-art__plant {
+    animation: plant-sway 6s ease-in-out infinite;
+}

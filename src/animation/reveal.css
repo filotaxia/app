@@ -1,0 +1,29 @@
+/* ============================================
+   Animation — Reveal
+   ============================================ */
+
+/* Entrada de cada pantalla, solo con CSS (sin librerías).
+   .reveal          aparece subiendo 12px con fade
+   .reveal-stagger  en el CONTENEDOR: sus hijos entran uno tras otro
+                    (el router no hace nada: la animación corre al montarse) */
+
+@keyframes reveal-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+}
+
+.reveal {
+    animation: reveal-in 0.6s var(--ease-out) both;
+}
+
+.reveal-stagger > * {
+    animation: reveal-in 0.6s var(--ease-out) both;
+}
+
+.reveal-stagger > :nth-child(2) { animation-delay: 0.06s; }
+.reveal-stagger > :nth-child(3) { animation-delay: 0.12s; }
+.reveal-stagger > :nth-child(4) { animation-delay: 0.18s; }
+.reveal-stagger > :nth-child(5) { animation-delay: 0.24s; }
+.reveal-stagger > :nth-child(n + 6) { animation-delay: 0.3s; }

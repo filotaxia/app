@@ -1,0 +1,36 @@
+/* ============================================
+   Tokens — Sizes
+   ============================================ */
+
+:root {
+
+    /* --- Layout --- */
+    --width-app: 720px;          /* columna de contenido */
+    --gutter: 24px;              /* margen lateral (mobile) */
+
+    /* --- Navegación --- */
+    --size-nav: 64px;            /* alto de la barra flotante */
+    --size-nav-max: 480px;       /* ancho máximo de la barra (5 secciones) */
+    --size-rail: 104px;          /* riel lateral (>= 1024) */
+
+    /* --- Controles --- */
+    --size-tap: 44px;            /* área tocable mínima */
+    --size-btn: 52px;            /* alto de los botones principales */
+    --size-play: 64px;           /* botón play del reproductor */
+
+    /* --- Íconos --- */
+    --icon-sm: 16px;
+    --icon-md: 20px;
+    --icon-lg: 24px;
+
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+
+@media (min-width: 768px) {
+    :root {
+        --gutter: 32px;
+    }
+}

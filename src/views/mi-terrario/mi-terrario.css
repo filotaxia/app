@@ -1,0 +1,421 @@
+/* ============================================
+   Views — Mi terrario
+   ============================================ */
+
+/* Layout de la referencia "Status.": nombre + estado arriba, aire, el número
+   gigante con su flecha, chips, y una grilla de bloques de 2 columnas pegados
+   (8px de aire) con el bloque de acento a todo el ancho. */
+
+.mine {
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Encabezado: dos líneas, la segunda en gris (como "Helt selvforsynet.") --- */
+.mine__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--gap-lg);
+}
+
+.mine__title,
+.mine__status {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+.mine__title:focus {
+    outline: none;
+}
+
+.mine__status {
+    color: var(--color-text-faint);
+}
+
+/* Miniatura del terrario (lleva a su ficha), en lugar del logo de la referencia */
+.mine__thumb {
+    flex-shrink: 0;
+    width: var(--size-tap);
+}
+
+.mine__thumb .terrarium-art {
+    border-radius: var(--radius-sm);
+}
+
+/* --- Número protagonista --- */
+.mine__hero {
+    position: relative;
+    margin-top: var(--spacing-6xl);
+}
+
+.mine__big {
+    font-size: var(--num-xl-size);
+    line-height: var(--num-xl-line);
+    letter-spacing: var(--num-xl-tracking);
+    font-variant-numeric: tabular-nums;
+    /* el tracking negativo come el borde izquierdo de la primera cifra */
+    margin-left: -6px;
+}
+
+.mine__big--long {
+    font-size: 104px;
+    letter-spacing: -6px;
+}
+
+/* Flecha de tendencia (sube / baja respecto de ayer): triángulo arriba a la derecha */
+.mine__trend {
+    position: absolute;
+    top: var(--spacing-lg);
+    right: 0;
+    width: 0;
+    height: 0;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+}
+
+.mine__trend--up {
+    border-bottom: 10px solid var(--color-text);
+}
+
+.mine__trend--down {
+    border-top: 10px solid var(--color-text);
+}
+
+/* --- Chips --- */
+.mine__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-sm);
+    margin-top: var(--spacing-lg);
+}
+
+/* --- Bloques --- */
+.blocks {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+}
+
+.block {
+    position: relative;
+    min-height: 168px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas:
+        "title"
+        "badge"
+        "icon"
+        "value";
+    gap: var(--spacing-xs) var(--spacing-sm);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-block);
+    background: var(--color-block-bg);
+    overflow: hidden;
+}
+
+/* A todo el ancho: etiqueta arriba a la derecha y acción abajo a la derecha,
+   como el bloque de batería de la referencia. (En los de media columna no
+   entran título y etiqueta en la misma línea: la etiqueta va debajo.) */
+.block--full {
+    grid-column: 1 / -1;
+    min-height: 136px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "title badge"
+        "icon  icon"
+        "value action";
+}
+
+/* Todo lo de adentro va por encima del relleno del medidor */
+.block > :not(.block__fill) {
+    position: relative;
+}
+
+.block__title {
+    grid-area: title;
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+/* Etiqueta chica blanca arriba a la derecha */
+.block__badge {
+    grid-area: badge;
+    align-self: start;
+    justify-self: start;
+    padding: var(--spacing-2xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    background: var(--color-badge-bg);
+    font-size: var(--font-2xs-size);
+    line-height: var(--font-xs-line);
+    white-space: nowrap;
+}
+
+.block--full .block__badge {
+    justify-self: end;
+}
+
+.block__icon {
+    grid-area: icon;
+    align-self: end;
+}
+
+.block__icon svg {
+    width: 28px;
+    height: 28px;
+    stroke-width: 1.25;
+}
+
+.block__value {
+    grid-area: value;
+    align-self: end;
+    font-size: var(--num-md-size);
+    line-height: var(--num-md-line);
+    letter-spacing: var(--num-md-tracking);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Valores largos ("Hace 2 días") un talle menos, para que entren en una línea */
+.block__value--long {
+    font-size: var(--font-2xl-size);
+    line-height: var(--font-2xl-line);
+    letter-spacing: var(--font-2xl-tracking);
+}
+
+/* Medidor: el fondo se llena hasta --fill (el ancho que queda del ciclo) */
+.block__fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--fill, 0%);
+    transition: width 0.6s var(--ease-out);
+}
+
+.block--accent .block__fill {
+    background: var(--color-accent-fill);
+}
+
+/* El bloque de acento es siempre claro, también en el tema oscuro (como el
+   amarillo de la referencia): color-scheme: light hace que sus alias
+   light-dark() tomen el valor claro → fondo piedra, texto y pill negros. */
+.block--accent {
+    color-scheme: light;
+    color: var(--color-text);
+}
+
+.block--soft .block__fill {
+    background: var(--color-meter-soft);
+}
+
+/* Acción: pill chica abajo a la derecha ("Regué hoy") */
+.block__action {
+    grid-area: action;
+    align-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    min-height: 36px;
+    padding: 0 var(--spacing-md);
+    border-radius: var(--radius-full);
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    transition: transform var(--transition-fast);
+}
+
+.block__action:active {
+    transform: scale(0.96);
+}
+
+.block__action--done {
+    background: var(--color-badge-bg);
+    color: var(--color-text-muted);
+}
+
+.block__action svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* --- Plantas: lista en lugar de valor --- */
+.block--list {
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+        "title badge"
+        "list  list";
+    min-height: 0;
+}
+
+.block__list {
+    grid-area: list;
+    align-self: end;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-xl);
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+    letter-spacing: var(--font-lg-tracking);
+}
+
+.block__list li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--gap-md);
+}
+
+.block__list-index {
+    font-size: var(--font-2xs-size);
+    letter-spacing: var(--font-xs-tracking);
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+/* El bloque "Sonido" es un link entero */
+a.block {
+    transition: transform var(--transition-fast);
+}
+
+a.block:active {
+    transform: scale(0.98);
+}
+
+/* --- Cuidados: preguntas frecuentes que se abren (details nativo) --- */
+.faq {
+    margin-top: var(--spacing-3xl);
+}
+
+.faq__title {
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+.faq__item {
+    border-bottom: 1px solid var(--color-line);
+}
+
+.faq__item:first-of-type {
+    border-top: 1px solid var(--color-line);
+}
+
+.faq__question {
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-md);
+    padding-block: var(--spacing-md);
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    list-style: none;
+    cursor: pointer;
+}
+
+.faq__question::-webkit-details-marker {
+    display: none;
+}
+
+/* Un + que gira a × al abrir */
+.faq__question::after {
+    content: "+";
+    flex-shrink: 0;
+    font-size: var(--font-lg-size);
+    color: var(--color-text-muted);
+    transition: transform var(--transition-normal);
+}
+
+.faq__item[open] .faq__question::after {
+    transform: rotate(45deg);
+}
+
+.faq__answer {
+    padding-bottom: var(--spacing-lg);
+    max-width: 480px;
+}
+
+.mine__footer {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--spacing-xl);
+}
+
+.mine--empty .screen__actions {
+    align-items: flex-start;
+}
+
+.mine--empty .btn svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+/* --- Hoja "¿Cuál es tu terrario?" --- */
+.pick {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.pick__row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    text-align: left;
+    transition: background-color var(--transition-fast);
+}
+
+.pick__row[aria-current] {
+    background: var(--color-block-bg);
+}
+
+@media (hover: hover) {
+    .pick__row:hover {
+        background: var(--color-block-bg);
+    }
+}
+
+.pick__art {
+    flex-shrink: 0;
+    width: 52px;
+}
+
+.pick__text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xs);
+}
+
+.pick__name {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+.pick__row svg {
+    width: var(--icon-md);
+    height: var(--icon-md);
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+
+@media (min-width: 768px) {
+    .mine {
+        max-width: 560px;
+    }
+
+    .block {
+        min-height: 168px;
+    }
+}

@@ -1,0 +1,71 @@
+/* ============================================
+   Base — Typography
+   ============================================ */
+
+h1,
+h2,
+h3 {
+    font-weight: var(--font-weight-regular);
+}
+
+/* Título de pantalla: Mi Colección, Creá tu cuenta, Las Flechas */
+.title {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+/* Eyebrow: TERRARIO Nº 04, NOMBRE, EMAIL */
+.eyebrow {
+    font-size: var(--font-2xs-size);
+    line-height: var(--font-2xs-line);
+    letter-spacing: var(--font-2xs-tracking);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    color: var(--color-eyebrow);
+}
+
+/* Texto de apoyo chico, gris */
+.lead {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: var(--color-text-muted);
+}
+
+/* Link chico subrayado: "Simular escaneo →", "Iniciar sesión" */
+.text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    font-weight: var(--font-weight-medium);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+}
+
+.text-link svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+/* Link de volver arriba a la izquierda: "← Colección" */
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    min-height: var(--size-tap);
+    font-size: var(--font-sm-size);
+    color: var(--color-text-muted);
+    transition: color var(--transition-fast);
+}
+
+.back-link svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+.back-link:hover {
+    color: var(--color-text);
+}

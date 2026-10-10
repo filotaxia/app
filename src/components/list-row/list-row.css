@@ -1,0 +1,43 @@
+/* ============================================
+   Components — List Row
+   ============================================ */
+
+/* Lista de filas separadas por líneas finas (Perfil): texto a la izquierda,
+   flecha a la derecha. Línea arriba de la primera y entre todas. */
+
+.list {
+    border-top: 1px solid var(--color-line);
+}
+
+.list-row {
+    width: 100%;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-md);
+    border-bottom: 1px solid var(--color-line);
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    text-align: left;
+    transition: color var(--transition-fast);
+}
+
+.list-row svg {
+    flex-shrink: 0;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    color: var(--color-text-muted);
+    transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.list-row--muted {
+    color: var(--color-text-muted);
+}
+
+@media (hover: hover) {
+    .list-row:hover svg {
+        color: var(--color-text);
+        transform: translateX(3px);
+    }
+}

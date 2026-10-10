@@ -1,0 +1,70 @@
+/* ============================================
+   Layout — Header
+   ============================================ */
+
+/* Título de pantalla en regular con subtítulo chico gris debajo
+   ("Mi Colección" · "4 terrarios escaneados").
+   No es sticky: scrollea con la página. */
+
+.app-header {
+    padding-top: env(safe-area-inset-top);
+}
+
+.app-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-lg);
+    padding-block: var(--spacing-3xl) var(--spacing-xl);
+}
+
+.app-header__lead {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    min-width: 0;
+}
+
+/* Flecha de volver (solo en subrutas) */
+.app-header__back {
+    flex-shrink: 0;
+    width: var(--size-tap);
+    height: var(--size-tap);
+    margin-left: calc(var(--spacing-md) * -1);
+    display: grid;
+    place-items: center;
+}
+
+.app-header__back svg {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+}
+
+.app-header__titles {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.app-header__title {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.app-header__title:focus {
+    outline: none;
+}
+
+.app-header__subtitle {
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: var(--color-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

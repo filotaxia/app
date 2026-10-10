@@ -1,0 +1,181 @@
+/* ============================================
+   Layout — Bottom Nav
+   ============================================ */
+
+/* Mobile: barra flotante de vidrio (como la de Fitness de Apple), centrada
+   y separada de los bordes. Cinco secciones con ícono + label; Escanear al
+   centro, como círculo negro. La sección activa lleva una pill de fondo.
+   Desktop (>= 1024): riel vertical fijo a la izquierda. */
+
+.bottom-nav {
+    position: fixed;
+    left: var(--spacing-sm);
+    right: var(--spacing-sm);
+    bottom: max(var(--spacing-md), env(safe-area-inset-bottom));
+    z-index: var(--z-nav);
+    max-width: var(--size-nav-max);
+    margin-inline: auto;
+    padding: var(--spacing-xs);
+    border: 1px solid var(--color-nav-glass-border);
+    border-radius: var(--radius-full);
+    background: var(--color-nav-glass);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Sin desenfoque (navegadores viejos o "reducir transparencia"): fondo sólido */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .bottom-nav {
+        background: var(--color-nav-bg);
+    }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    .bottom-nav {
+        background: var(--color-nav-bg);
+    }
+}
+
+.bottom-nav__brand {
+    display: none;
+}
+
+.bottom-nav__list {
+    height: calc(var(--size-nav) - 2 * var(--spacing-xs));
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    align-items: stretch; /* cada ítem (y su pill) ocupa todo el alto de la barra */
+}
+
+.bottom-nav__link {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2xs);
+    border-radius: var(--radius-full);
+    color: var(--color-nav-text);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.bottom-nav__icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+    stroke-width: 1.5;
+}
+
+/* Los íconos sueltos (20px) ocupan lo mismo que el círculo de Escanear (28px):
+   el espacio que falta va arriba, así todos los labels quedan a la misma altura */
+.bottom-nav__link > .bottom-nav__icon {
+    margin-block: var(--spacing-xs);
+}
+
+.bottom-nav__label {
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Sección activa: pill de fondo y texto negro */
+.bottom-nav__link[aria-current="page"] {
+    background: var(--color-nav-active-bg);
+    color: var(--color-nav-text-active);
+}
+
+/* Hover solo con mouse (en el celular quedaría pegado después de tocar) */
+@media (hover: hover) {
+    .bottom-nav__link:not([aria-current="page"]):hover {
+        background: var(--color-nav-hover-bg);
+        color: var(--color-text);
+    }
+}
+
+.bottom-nav__link[aria-current="page"] .bottom-nav__icon {
+    stroke-width: 2;
+}
+
+/* --- Escanear: círculo negro dentro de la barra --- */
+.bottom-nav__link--main {
+    color: var(--color-text);
+}
+
+.bottom-nav__fab {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-full);
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+    transition: transform var(--transition-fast);
+}
+
+.bottom-nav__fab .bottom-nav__icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    stroke-width: 2;
+}
+
+.bottom-nav__link--main:active .bottom-nav__fab {
+    transform: scale(0.92);
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+
+@media (min-width: 1024px) {
+    /* Riel: vuelve a ser una columna sólida pegada al borde */
+    .bottom-nav {
+        inset: 0 auto 0 0;
+        width: var(--size-rail);
+        max-width: none;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--gap-2xl);
+        padding: var(--spacing-xl) var(--spacing-sm);
+        border: none;
+        border-right: 1px solid var(--color-line);
+        border-radius: 0;
+        background: var(--color-nav-bg);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    .bottom-nav__brand {
+        display: flex;
+        align-items: center;
+        height: var(--size-tap);
+        font-size: var(--font-2xs-size);
+        letter-spacing: var(--font-2xs-tracking);
+        font-weight: var(--font-weight-medium);
+        text-transform: uppercase;
+        color: var(--color-text);
+    }
+
+    .bottom-nav__list {
+        height: auto;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-sm);
+    }
+
+    .bottom-nav__link {
+        height: 76px;
+        border-radius: var(--radius-lg);
+    }
+
+    .bottom-nav__fab {
+        width: 48px;
+        height: 48px;
+    }
+
+    .bottom-nav__fab .bottom-nav__icon {
+        width: var(--icon-lg);
+        height: var(--icon-lg);
+    }
+}

@@ -1,0 +1,23 @@
+/* ============================================
+   Tokens — Effects
+   ============================================ */
+
+/* Sin sombras: todo es plano, separado por aire y líneas finas */
+
+:root {
+
+    /* --- Transitions --- */
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --transition-fast: 0.15s var(--ease-standard);
+    --transition-normal: 0.25s var(--ease-standard);
+
+    /* --- Opacity --- */
+    --opacity-disabled: 0.35;
+
+    /* --- Z-Index --- */
+    --z-nav: 300;
+    --z-modal: 400;
+    --z-toast: 500;
+
+}

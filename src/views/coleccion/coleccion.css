@@ -1,0 +1,79 @@
+/* ============================================
+   Views — Colección
+   ============================================ */
+
+/* Grilla de 2 columnas (3 desde 640): ilustración cuadrada,
+   número chico y nombre debajo. */
+
+.collection {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xl) var(--spacing-lg);
+}
+
+.collection__tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+}
+
+.collection__tile .terrarium-art {
+    transition: transform var(--transition-normal);
+}
+
+@media (hover: hover) {
+    .collection__tile:hover .terrarium-art {
+        transform: scale(0.98);
+    }
+}
+
+.collection__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xs);
+}
+
+.collection__number {
+    font-size: var(--font-2xs-size);
+    line-height: var(--font-2xs-line);
+    letter-spacing: var(--font-xs-tracking);
+    color: var(--color-text-muted);
+}
+
+.collection__name {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    font-weight: var(--font-weight-medium);
+}
+
+/* --- Sin terrarios todavía --- */
+.collection-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--gap-lg);
+}
+
+.collection-empty__art {
+    width: 50%;
+    max-width: 200px;
+}
+
+.collection-empty .lead {
+    max-width: 320px;
+}
+
+.collection-empty .btn svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+
+@media (min-width: 640px) {
+    .collection {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

@@ -1,0 +1,19 @@
+/* ============================================
+   Components — Chip
+   ============================================ */
+
+/* Pill chica de contexto ("70% Solenergi" en la referencia):
+   fondo de bloque, texto chico, sin borde. */
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 var(--spacing-md);
+    border-radius: var(--radius-sm);
+    background: var(--color-block-bg);
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    color: var(--color-text);
+    white-space: nowrap;
+}

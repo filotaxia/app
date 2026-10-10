@@ -1,0 +1,38 @@
+/* ============================================
+   Components — Switch
+   ============================================ */
+
+/* Interruptor sobre un checkbox nativo (role="switch"): pill gris,
+   negra cuando está prendido. Siempre con su texto al lado. */
+
+.switch {
+    appearance: none;
+    flex-shrink: 0;
+    position: relative;
+    width: 44px;
+    height: 26px;
+    border-radius: var(--radius-full);
+    background: var(--color-track);
+    cursor: pointer;
+    transition: background-color var(--transition-normal);
+}
+
+.switch::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-full);
+    background: var(--color-bg);
+    transition: transform var(--transition-normal);
+}
+
+.switch:checked {
+    background: var(--color-inverse-bg);
+}
+
+.switch:checked::after {
+    transform: translateX(18px);
+}
