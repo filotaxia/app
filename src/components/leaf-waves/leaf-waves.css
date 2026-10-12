@@ -1,0 +1,139 @@
+/* ============================================
+   Components — Leaf Waves
+   ============================================ */
+
+/* Cuatro tarjetas en grilla de 2 columnas, fondo de bloque, sin borde ni
+   esquinas redondeadas (como en filotaxia.com):
+   el nombre arriba a la izquierda y el dibujo centrado debajo.
+   El ícono es un PNG de filotaxia.com usado como máscara: lo pinta
+   currentColor, así sigue al tema y al estado resaltado. */
+
+.leaf-waves {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap-sm);
+}
+
+/* La tarjeta: la simple y cada cara de la que gira usan la misma caja */
+.leaf-wave,
+.leaf-wave__face {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+    padding: var(--spacing-lg);
+    border-radius: 0;
+    background: var(--color-block-bg);
+    color: var(--color-text);
+    transition: opacity var(--transition-fast);
+}
+
+/* Como en filotaxia.com/musica: etiqueta chica en minúscula ("hoja",
+   "onda"), del mismo color, y el nombre más grande debajo */
+.leaf-wave__label {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xs);
+}
+
+.leaf-wave__caption {
+    font-size: var(--font-sm-size);
+    line-height: 1;
+}
+
+.leaf-wave__name {
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+    letter-spacing: var(--font-lg-tracking);
+}
+
+/* El dibujo: la onda o la foto de la hoja, centrado en el espacio que queda */
+.leaf-wave__art {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+}
+
+.leaf-wave__icon {
+    width: 56px;
+    aspect-ratio: 160 / 91;
+    background: currentColor;
+    mask: center / contain no-repeat;
+}
+
+.leaf-wave__icon--triangle { mask-image: url("../../assets/images/ondas/vco-triangle.png"); }
+.leaf-wave__icon--sine { mask-image: url("../../assets/images/ondas/vco-sine.png"); }
+.leaf-wave__icon--sawtooth { mask-image: url("../../assets/images/ondas/vco-saw.png"); }
+.leaf-wave__icon--square { mask-image: url("../../assets/images/ondas/vco-square.png"); }
+
+/* --- Flip: tarjetas de dos caras que giran solas ---
+   Frente: la hoja (foto) en la tarjeta clara. Dorso: su onda, en negro
+   (el color inverso: en tema oscuro, al revés). Ciclo de 6 s: el frente
+   se queda ~2 s, gira, el dorso se queda ~2 s y sigue girando hasta volver
+   al frente. Cada tarjeta arranca un poco después que la anterior (--i). */
+.leaf-wave--flip {
+    padding: 0;
+    background: none;
+    perspective: 800px;
+}
+
+.leaf-wave__inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    animation: leaf-wave-flip 6s var(--ease-standard) calc(1.2s + var(--i) * 0.3s) infinite both;
+}
+
+.leaf-wave--flip .leaf-wave__face {
+    position: absolute;
+    inset: 0;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.leaf-wave__face--back {
+    transform: rotateY(180deg);
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+}
+
+.leaf-wave__face--back .leaf-wave__icon {
+    width: 52%;
+}
+
+/* La hoja, centrada en el espacio del dibujo y sin deformarse:
+   ocupa el 90% de su alto (cambiá height y top para agrandarla o achicarla) */
+.leaf-wave__photo {
+    position: absolute;
+    top: 5%;
+    left: 0;
+    width: 100%;
+    height: 90%;
+    object-fit: contain;
+}
+
+@keyframes leaf-wave-flip {
+    0%, 35% { transform: rotateY(0deg); }
+    50%, 85% { transform: rotateY(180deg); }
+    100% { transform: rotateY(360deg); }
+}
+
+/* Con una hoja resaltada: esa en negro sólido, las demás atenuadas */
+.leaf-waves--highlight .leaf-wave {
+    opacity: 0.4;
+}
+
+.leaf-waves--highlight .leaf-wave.is-active {
+    opacity: 1;
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+}
+
+/* Menos movimiento: no giran, queda el frente */
+@media (prefers-reduced-motion: reduce) {
+    .leaf-wave__inner {
+        animation: none;
+    }
+}

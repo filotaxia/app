@@ -32,22 +32,34 @@ h3 {
     color: var(--color-text-muted);
 }
 
-/* Link chico subrayado: "Simular escaneo →", "Iniciar sesión" */
+/* Link de texto como el botón terciario de filotaxia.com ("Ver Manifiesto →"):
+   texto regular, flecha separada a la derecha y una línea fina debajo de
+   todo el ancho (no un subrayado del texto). "Simular escaneo →", "Saltar" */
 .text-link {
     display: inline-flex;
     align-items: center;
-    gap: var(--gap-xs);
-    font-size: var(--font-sm-size);
-    line-height: var(--font-sm-line);
-    font-weight: var(--font-weight-medium);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-thickness: 1px;
+    justify-content: space-between;
+    gap: var(--spacing-4xl);
+    /* el aire arriba agranda el área tocable (12 + 22 + 12 = 46px ≥ 44) */
+    padding-block: var(--spacing-md);
+    border-bottom: 1px solid currentColor;
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    font-weight: var(--font-weight-regular);
 }
 
-.text-link svg {
-    width: var(--icon-sm);
-    height: var(--icon-sm);
+/* La flecha de texto ("→", utils/icons.js → arrow()), la misma de la web */
+.arrow {
+    display: inline-block;
+    flex-shrink: 0;
+    line-height: 1;
+    transition: transform var(--transition-fast);
+}
+
+@media (hover: hover) {
+    .text-link:hover .arrow {
+        transform: translateX(3px);
+    }
 }
 
 /* Link de volver arriba a la izquierda: "← Colección" */
@@ -61,10 +73,6 @@ h3 {
     transition: color var(--transition-fast);
 }
 
-.back-link svg {
-    width: var(--icon-sm);
-    height: var(--icon-sm);
-}
 
 .back-link:hover {
     color: var(--color-text);

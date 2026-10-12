@@ -4,8 +4,12 @@
 
 /* Mobile: barra flotante de vidrio (como la de Fitness de Apple), centrada
    y separada de los bordes. Cinco secciones con ícono + label; Escanear al
-   centro, como círculo negro. La sección activa lleva una pill de fondo.
-   Desktop (>= 1024): riel vertical fijo a la izquierda. */
+   centro, como cuadrado negro. La sección activa lleva un fondo suave.
+   Desktop (>= 1024): riel vertical fijo a la izquierda.
+
+   Es de lo poco redondeado de la app (el resto es cuadrado, como la web):
+   la barra 16px y el fondo de la sección activa 12px, que es 16 menos el
+   padding de 4, así las dos curvas quedan paralelas. */
 
 .bottom-nav {
     position: fixed;
@@ -17,7 +21,7 @@
     margin-inline: auto;
     padding: var(--spacing-xs);
     border: 1px solid var(--color-nav-glass-border);
-    border-radius: var(--radius-full);
+    border-radius: 16px;
     background: var(--color-nav-glass);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     backdrop-filter: blur(20px) saturate(180%);
@@ -54,7 +58,7 @@
     align-items: center;
     justify-content: center;
     gap: var(--spacing-2xs);
-    border-radius: var(--radius-full);
+    border-radius: 12px;
     color: var(--color-nav-text);
     transition: color var(--transition-fast), background-color var(--transition-fast);
 }
@@ -166,7 +170,6 @@ RESPONSIVE
 
     .bottom-nav__link {
         height: 76px;
-        border-radius: var(--radius-lg);
     }
 
     .bottom-nav__fab {

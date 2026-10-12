@@ -39,6 +39,24 @@
     gap: var(--gap-xs);
 }
 
+/* Ondas de la pieza: chips con el ícono de cada onda */
+.player__waves {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--gap-xs);
+    margin-top: var(--spacing-sm);
+}
+
+.player__waves .chip {
+    gap: var(--gap-xs);
+}
+
+.player__waves svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
 .player__name {
     font-size: var(--font-2xl-size);
     line-height: var(--font-2xl-line);
@@ -78,13 +96,14 @@
     background: linear-gradient(to right, var(--color-text) var(--progress), var(--color-track) var(--progress));
 }
 
-/* Punto chico al final de lo escuchado; crece al tocarlo */
+/* Punto chico al final de lo escuchado; crece al tocarlo.
+   Es redondo a propósito (como el play): la excepción al "todo cuadrado" */
 .player__range::-webkit-slider-thumb {
     appearance: none;
     width: 10px;
     height: 10px;
     margin-top: -4px;
-    border-radius: var(--radius-full);
+    border-radius: 50%;
     background: var(--color-text);
     transition: transform var(--transition-fast);
 }
@@ -93,7 +112,7 @@
     width: 10px;
     height: 10px;
     border: none;
-    border-radius: var(--radius-full);
+    border-radius: 50%;
     background: var(--color-text);
 }
 
@@ -148,7 +167,7 @@
     height: var(--size-play);
     display: grid;
     place-items: center;
-    border-radius: var(--radius-full);
+    border-radius: 50%;   /* círculo a propósito, como el punto de la barra */
     background: var(--color-inverse-bg);
     color: var(--color-inverse-text);
     transition: transform var(--transition-fast);

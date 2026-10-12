@@ -9,6 +9,8 @@
 //   #/terrario/04       ficha de un terrario (abrirla lo suma a la colección)
 //   #/coleccion         mi colección        #/ajustes    ajustes
 //   #/escuchar/04       reproductor (#/escuchar solo → el último escuchado)
+//   #/manifiesto/04     introducción, una sola vez tras el primer escaneo
+//                       (#/manifiesto solo → abierto de nuevo desde Ajustes)
 //
 // No hay cuentas: la colección vive en el teléfono.
 //
@@ -16,7 +18,7 @@
 //   title               texto o función (ctx) => texto (pestaña y header)
 //   subtitle            opcional, igual que title (debajo del título del header)
 //   header              true → se muestra el header grande (título + subtítulo)
-//   nav                 false → sin barra (solo el splash)
+//   nav                 false → sin barra (splash y manifiesto)
 //   back                opcional: hash de la flecha de volver del header
 //   render(root, ctx)   pinta la vista; puede devolver una función de limpieza
 //
@@ -32,6 +34,7 @@ import * as terrario from "./views/terrario/terrario.js";
 import * as coleccion from "./views/coleccion/coleccion.js";
 import * as escuchar from "./views/escuchar/escuchar.js";
 import * as ajustes from "./views/ajustes/ajustes.js";
+import * as manifiesto from "./views/manifiesto/manifiesto.js";
 import { setHeader, focusHeaderTitle } from "./layout/header/header.js";
 
 // ":id" es un parámetro; "?" lo hace opcional
@@ -43,6 +46,7 @@ const ROUTES = [
   ["coleccion", coleccion],
   ["escuchar/:id?", escuchar],
   ["ajustes", ajustes],
+  ["manifiesto/:id?", manifiesto],
 ];
 const DEFAULT_ROUTE = "inicio";
 

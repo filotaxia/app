@@ -2,13 +2,14 @@
    Tokens — Typography
    ============================================ */
 
-/* Inter en 400 y 500. Títulos en regular con tracking apenas cerrado,
+/* PP Neue Montreal (la de filotaxia.com, ver base/fonts.css): 400 y 500
+   usan el mismo corte, Medium, como en la web. Títulos en 400 con tracking apenas cerrado,
    eyebrows chicos en mayúsculas y bien espaciados (TERRARIO Nº 04).
    --font-[talle]-size / -line / -tracking */
 
 :root {
 
-    --font-primary: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-primary: "PP Neue Montreal", system-ui, -apple-system, "Segoe UI", sans-serif;
 
     --font-weight-regular: 400;
     --font-weight-medium: 500;
@@ -19,7 +20,7 @@
 
     --font-xs-size: 11px;        /* nav, Nº 04 en la colección */
     --font-xs-line: 14px;
-    --font-xs-tracking: 0.6px;
+    --font-xs-tracking: 0;       /* PP Neue Montreal ya es abierta en chico: sin aire extra */
 
     --font-sm-size: 13px;        /* textos de apoyo, links chicos */
     --font-sm-line: 18px;

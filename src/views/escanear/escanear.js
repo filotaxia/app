@@ -15,7 +15,7 @@ import { TERRARIO_IDS } from "../../content/terrarios.js";
 import { linkedIds } from "../../store/collection.js";
 import { startQrCamera } from "../../camera/qr-camera.js";
 import { parseTerrarioCode } from "../../utils/qr.js";
-import { icon } from "../../utils/icons.js";
+import { arrow } from "../../utils/icons.js";
 
 export const title = "Escanear";
 
@@ -44,7 +44,7 @@ export async function render(root) {
       </div>
 
       <div class="screen__actions">
-        <button class="text-link" type="button" data-simulate>Simular escaneo ${icon("arrow-right")}</button>
+        <button class="text-link" type="button" data-simulate>Simular escaneo ${arrow()}</button>
       </div>
     </section>
   `;
