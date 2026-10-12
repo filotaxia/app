@@ -13,6 +13,7 @@
 @import url('./styles/semantic/semantic-colors.css');
 
 /* base */
+@import url('./styles/base/fonts.css');
 @import url('./styles/base/reset.css');
 @import url('./styles/base/base.css');
 @import url('./styles/base/layout.css');
@@ -42,6 +43,8 @@
 @import url('./components/chip/chip.css');
 @import url('./components/sheet/sheet.css');
 @import url('./components/toast/toast.css');
+@import url('./components/leaf-waves/leaf-waves.css');
+@import url('./components/theme-dot/theme-dot.css');
 
 /* ============================================
    VIEWS
@@ -53,3 +56,4 @@
 @import url('./views/coleccion/coleccion.css');
 @import url('./views/escuchar/escuchar.css');
 @import url('./views/ajustes/ajustes.css');
+@import url('./views/manifiesto/manifiesto.css');

@@ -1,0 +1,25 @@
+/* ============================================
+   Components — Theme dot
+   ============================================ */
+
+/* El botón ocupa el área tocable; el punto adentro mide 15px como en la web */
+.theme-dot {
+    flex-shrink: 0;
+    width: var(--size-tap);
+    height: var(--size-tap);
+    display: grid;
+    place-items: center;
+    margin-right: calc(var(--spacing-md) * -1);
+}
+
+.theme-dot__circle {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;   /* el único círculo de la app, a propósito */
+    background: var(--color-text);
+    transition: transform var(--transition-fast), background-color var(--transition-normal);
+}
+
+.theme-dot:active .theme-dot__circle {
+    transform: scale(0.8);
+}

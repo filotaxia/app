@@ -3,15 +3,17 @@
    ============================================ */
 
 // Íconos de Lucide (https://lucide.dev, licencia ISC), copiados como SVG inline.
+// Las flechas NO son íconos: como en filotaxia.com, son el carácter "→" de la
+// tipografía (ver arrow() más abajo).
 // Sin dependencia: si hace falta uno nuevo, se agrega su contenido acá.
+// Las cuatro ondas ("wave-sine"…) son propias, dibujadas como los íconos de
+// los osciladores de filotaxia.com; el nombre sigue al tipo de onda de Web Audio.
 //
-//   icon("arrow-right")                → <svg> de 24px que hereda el color del texto
+//   icon("check")                      → <svg> de 24px que hereda el color del texto
 //   icon("play", "player__icon")       → con una clase para darle tamaño
 
 const PATHS = {
   "audio-lines": `<path d="M2 10v3"/><path d="M6 6v11"/><path d="M10 3v18"/><path d="M14 8v7"/><path d="M18 5v13"/><path d="M22 10v3"/>`,
-  "arrow-left": `<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>`,
-  "arrow-right": `<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>`,
   "check": `<path d="M20 6 9 17l-5-5"/>`,
   "pause": `<rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/>`,
   "play": `<path d="M6 4.8a1 1 0 0 1 1.5-.86l11.4 7.2a1 1 0 0 1 0 1.72L7.5 20.06A1 1 0 0 1 6 19.2z" fill="currentColor" stroke="none"/>`,
@@ -22,6 +24,10 @@ const PATHS = {
   "sun": `<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>`,
   "thermometer": `<path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>`,
   "wind": `<path d="M12.8 19.6A2 2 0 1 0 14 16H2"/><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"/><path d="M9.8 4.4A2 2 0 1 1 11 8H2"/>`,
+  "wave-sawtooth": `<path d="M2 18 12 6v12L22 6v12"/>`,
+  "wave-sine": `<path d="M2 12c1.7-4.7 3.3-7 5-7s3.3 2.3 5 7 3.3 7 5 7 3.3-2.3 5-7"/>`,
+  "wave-square": `<path d="M2 17V7h10v10h10V7"/>`,
+  "wave-triangle": `<path d="m2 12 5-7 10 14 5-7"/>`,
   "x": `<path d="M18 6 6 18"/><path d="m6 6 12 12"/>`,
 };
 
@@ -29,4 +35,11 @@ export function icon(name, className = "") {
   const paths = PATHS[name] ?? PATHS.check;
   const cls = className ? ` class="${className}"` : "";
   return `<svg${cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths}</svg>`;
+}
+
+// Flecha de texto, la misma de filotaxia.com ("Ver Manifiesto →"):
+//   arrow()        → "→"      arrow("left") → "←"
+// Decorativa: el texto del link ya dice adónde va.
+export function arrow(direction = "right") {
+  return `<span class="arrow" aria-hidden="true">${direction === "left" ? "←" : "→"}</span>`;
 }

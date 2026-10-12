@@ -2,9 +2,11 @@
    Utils — Theme
    ============================================ */
 
-// Aplica la apariencia elegida en Ajustes:
+// Aplica la apariencia elegida en Ajustes (claro por defecto, ver store/defaults.js):
 //   "system" → sigue al teléfono (sin data-theme)
 //   "light" / "dark" → data-theme en <html>, que fuerza color-scheme
+// index.html ya arranca con data-theme="light", así no hay un destello
+// oscuro antes de que cargue el JS en un teléfono en modo oscuro.
 // Los colores cambian solos: cada alias de semantic-colors.css usa light-dark().
 //
 // También actualiza el color de la barra del navegador (meta theme-color):
@@ -12,9 +14,9 @@
 
 export const THEMES = ["system", "light", "dark"];
 
-const BAR_COLORS = { light: "#ffffff", dark: "#0e0e0d" };
+const BAR_COLORS = { light: "#ffffff", dark: "#0a0a0a" };
 
-export function applyTheme(theme = "system") {
+export function applyTheme(theme = "light") {
   const root = document.documentElement;
   const forced = theme === "light" || theme === "dark";
 
@@ -24,4 +26,11 @@ export function applyTheme(theme = "system") {
   document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
     meta.content = BAR_COLORS[forced ? theme : meta.dataset.scheme];
   });
+}
+
+// El tema contrario al que se ve ahora (para el punto de Mi terrario).
+// Con "system" mira cómo está el teléfono en este momento.
+export function oppositeTheme(theme = "light") {
+  const dark = theme === "dark" || (theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+  return dark ? "light" : "dark";
 }

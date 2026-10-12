@@ -3,8 +3,9 @@
    ============================================ */
 
 /* Layout de la referencia "Status.": nombre + estado arriba, aire, el número
-   gigante con su flecha, chips, y una grilla de bloques de 2 columnas pegados
-   (8px de aire) con el bloque de acento a todo el ancho. */
+   gigante (días para el riego) con su barra de acento, chips y "Regué hoy",
+   y una grilla de bloques de 2 columnas pegados (8px de aire) que arranca
+   con la foto del terrario a todo el ancho. */
 
 .mine {
     display: flex;
@@ -35,52 +36,36 @@
 }
 
 /* Miniatura del terrario (lleva a su ficha), en lugar del logo de la referencia */
-.mine__thumb {
-    flex-shrink: 0;
-    width: var(--size-tap);
-}
-
-.mine__thumb .terrarium-art {
-    border-radius: var(--radius-sm);
-}
-
-/* --- Número protagonista --- */
+/* --- Número protagonista: días para el próximo riego --- */
 .mine__hero {
-    position: relative;
     margin-top: var(--spacing-6xl);
 }
 
 .mine__big {
+    display: flex;
+    align-items: baseline;
     font-size: var(--num-xl-size);
     line-height: var(--num-xl-line);
     letter-spacing: var(--num-xl-tracking);
-    font-variant-numeric: tabular-nums;
     /* el tracking negativo come el borde izquierdo de la primera cifra */
     margin-left: -6px;
 }
 
-.mine__big--long {
-    font-size: 104px;
-    letter-spacing: -6px;
+/* "días", chico al lado del número */
+.mine__unit {
+    margin-left: var(--spacing-md);
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
 }
 
-/* Flecha de tendencia (sube / baja respecto de ayer): triángulo arriba a la derecha */
-.mine__trend {
-    position: absolute;
-    top: var(--spacing-lg);
-    right: 0;
-    width: 0;
-    height: 0;
-    border-left: 9px solid transparent;
-    border-right: 9px solid transparent;
-}
-
-.mine__trend--up {
-    border-bottom: 10px solid var(--color-text);
-}
-
-.mine__trend--down {
-    border-top: 10px solid var(--color-text);
+/* Chips a la izquierda, "Regué hoy" a la derecha */
+.mine__riego {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-md);
+    margin-top: var(--spacing-lg);
 }
 
 /* --- Chips --- */
@@ -88,7 +73,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--gap-sm);
-    margin-top: var(--spacing-lg);
 }
 
 /* --- Bloques --- */
@@ -129,6 +113,17 @@
         "title badge"
         "icon  icon"
         "value action";
+}
+
+/* La foto del terrario a todo el ancho, sin relleno: lleva a su ficha */
+.block--photo {
+    display: block;
+    min-height: 0;
+    padding: 0;
+}
+
+.block--photo .terrarium-art {
+    aspect-ratio: 4 / 3;
 }
 
 /* Todo lo de adentro va por encima del relleno del medidor */
@@ -194,18 +189,6 @@
     transition: width 0.6s var(--ease-out);
 }
 
-.block--accent .block__fill {
-    background: var(--color-accent-fill);
-}
-
-/* El bloque de acento es siempre claro, también en el tema oscuro (como el
-   amarillo de la referencia): color-scheme: light hace que sus alias
-   light-dark() tomen el valor claro → fondo piedra, texto y pill negros. */
-.block--accent {
-    color-scheme: light;
-    color: var(--color-text);
-}
-
 .block--soft .block__fill {
     background: var(--color-meter-soft);
 }
@@ -219,7 +202,7 @@
     gap: var(--gap-xs);
     min-height: 36px;
     padding: 0 var(--spacing-md);
-    border-radius: var(--radius-full);
+    border-radius: 0;
     background: var(--color-inverse-bg);
     color: var(--color-inverse-text);
     font-size: var(--font-xs-size);
@@ -257,7 +240,7 @@
     align-self: end;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-md);
     margin-top: var(--spacing-xl);
     font-size: var(--font-lg-size);
     line-height: var(--font-lg-line);
@@ -275,6 +258,41 @@
     letter-spacing: var(--font-xs-tracking);
     color: var(--color-text-muted);
     font-variant-numeric: tabular-nums;
+}
+
+/* Una planta: número, foto redonda (vista de arriba), nombre y su onda */
+.block__list .plant {
+    align-items: center;
+}
+
+.plant__photo {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: var(--color-badge-bg);
+    object-fit: cover;
+}
+
+.plant__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.plant__wave {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    letter-spacing: var(--font-xs-tracking);
+    color: var(--color-text-muted);
+}
+
+.plant__wave svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
 }
 
 /* El bloque "Sonido" es un link entero */

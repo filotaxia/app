@@ -2,14 +2,20 @@
    Tokens — Radius
    ============================================ */
 
-/* Ilustraciones casi rectas (6px), hojas modales 20px, botones en pill. */
+/* Todo cuadrado, como filotaxia.com: ningún elemento de la app redondea
+   sus esquinas (botones, bloques, hojas modales, chips, barra, interruptor,
+   fotos). Los tokens quedan en 0 para que, si algún día se quiere volver a
+   redondear algo, alcance con cambiar un valor acá.
+   Excepciones: son círculos el punto que cambia el tema (components/theme-dot),
+   el play y el punto de la barra de progreso del reproductor (views/escuchar);
+   la barra de navegación tiene un redondeo suave (layout/bottom-nav). */
 
 :root {
 
-    --radius-sm: 6px;
-    --radius-md: 12px;
-    --radius-block: 18px;        /* bloques de Mi terrario */
-    --radius-lg: 20px;
-    --radius-full: 999px;
+    --radius-sm: 0;
+    --radius-md: 0;
+    --radius-block: 0;           /* bloques de Mi terrario */
+    --radius-lg: 0;
+    --radius-full: 0;
 
 }

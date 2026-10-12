@@ -1,0 +1,431 @@
+/* ============================================
+   Views — Manifiesto
+   ============================================ */
+
+/* Pantalla completa sin barra: arriba el progreso (5 líneas finas) con el
+   contador y "Saltar", en el medio el carrusel (scroll-snap horizontal,
+   una pantalla por vez) y abajo "Siguiente" o el botón final. */
+
+.manifiesto {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.manifiesto h1:focus {
+    outline: none;
+}
+
+/* --- Arriba: progreso, contador y Saltar --- */
+.manifiesto__top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+}
+
+.manifiesto__progress {
+    display: flex;
+    gap: var(--gap-xs);
+}
+
+.manifiesto__bar {
+    flex: 1;
+    height: 2px;
+    border-radius: var(--radius-full);
+    background: var(--color-track);
+    transition: background-color var(--transition-normal);
+}
+
+.manifiesto__bar.is-done {
+    background: var(--color-text);
+}
+
+.manifiesto__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+/* --- Carrusel: sale del margen del contenedor para deslizar de borde a borde --- */
+.manifiesto__track {
+    flex: 1;
+    display: flex;
+    margin-inline: calc(var(--gutter) * -1);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    cursor: pointer;
+}
+
+.manifiesto__track::-webkit-scrollbar {
+    display: none;
+}
+
+/* Cada pantalla centra su contenido en el alto disponible */
+.manifiesto__slide {
+    flex: 0 0 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--gap-xl);
+    padding-inline: var(--gutter);
+    padding-bottom: var(--spacing-lg);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+}
+
+/* Entrada: el contenido de cada pantalla sube con fade la primera vez que
+   se ve. La animación está en pausa (y quieta en su primer cuadro) hasta
+   que el JS pone data-seen en la pantalla actual. */
+/* La pantalla 1 apoya la cita abajo a la izquierda,
+   como las cards de citas de filotaxia.com */
+.manifiesto__slide--bottom {
+    justify-content: flex-end;
+}
+
+.manifiesto__slide > * {
+    animation: reveal-in 0.6s var(--ease-out) both paused;
+}
+
+.manifiesto__slide > :nth-child(2) {
+    animation-delay: 0.08s;
+}
+
+.manifiesto__slide[data-seen] > *,
+.manifiesto__slide[data-seen] .flow *,
+.manifiesto__slide[data-seen] .print * {
+    animation-play-state: running;
+}
+
+/* Frase grande + atribución chica (pantallas 1, 4 y 5) */
+.manifiesto__quote {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+}
+
+.manifiesto__big {
+    max-width: 340px;
+    font-size: var(--font-2xl-size);
+    line-height: var(--font-2xl-line);
+    letter-spacing: var(--font-2xl-tracking);
+    text-wrap: pretty;
+}
+
+/* Pantallas 4 y 5: frase centrada */
+.manifiesto__quote--center {
+    align-items: center;
+    text-align: center;
+}
+
+.manifiesto__quote--center .manifiesto__big {
+    text-wrap: balance;
+}
+
+/* Atribución: libro y autor, uno debajo del otro */
+.manifiesto__quote figcaption {
+    display: flex;
+    flex-direction: column;
+}
+
+.manifiesto__cite {
+    font-style: normal;
+    color: var(--color-text);
+}
+
+/* Pantalla 3: título grande arriba a la izquierda, tarjetas grandes abajo */
+.manifiesto__slide--split {
+    justify-content: space-between;
+    padding-top: var(--spacing-2xl);
+}
+
+.manifiesto__title {
+    font-size: var(--font-2xl-size);
+    line-height: var(--font-2xl-line);
+    letter-spacing: var(--font-2xl-tracking);
+}
+
+.manifiesto__slide--split .leaf-wave {
+    width: 100%;
+    aspect-ratio: 1;
+    /* en teléfonos bajos se achican para que entren con el título:
+       330px ≈ barra de arriba + título + "Siguiente" + márgenes */
+    max-height: calc((100dvh - 330px) / 2);
+    /* las tarjetas entran una tras otra (--i lo pone el componente) */
+    animation: reveal-in 0.7s var(--ease-out) calc(0.15s + var(--i) * 0.1s) both;
+}
+
+.manifiesto__slide--split > .leaf-waves {
+    animation: none;
+}
+
+/* Hasta que se ve la pantalla, todo quieto en su primer cuadro
+   (también el cambio onda ↔ hoja, que así arranca cuando la ves) */
+.manifiesto__slide:not([data-seen]) .leaf-wave,
+.manifiesto__slide:not([data-seen]) .leaf-wave * {
+    animation-play-state: paused;
+}
+
+/* ---------------------------------------- */
+/* Pantalla 2: el mecanismo paso a paso */
+/* ---------------------------------------- */
+
+/* Una línea de tiempo: número a la izquierda con una línea fina que baja
+   hasta el paso siguiente; a la derecha, el gráfico y el texto.
+   Cada paso entra --beat después del anterior (--step la pone el JS):
+   para hacerlo todo más rápido o más lento, cambiá --beat. */
+.flow {
+    --beat: 1.5s;
+    --flow-gap: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--flow-gap);
+}
+
+.flow__step {
+    --delay: calc(0.4s + var(--step) * var(--beat));
+    position: relative;
+    display: flex;
+    gap: var(--gap-lg);
+}
+
+.flow__index {
+    flex-shrink: 0;
+    width: 20px;
+    font-size: var(--font-2xs-size);
+    line-height: var(--font-2xs-line);
+    letter-spacing: var(--font-xs-tracking);
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+    animation: flow-fade 0.45s var(--ease-out) var(--delay) both paused;
+}
+
+/* La línea que une un paso con el siguiente: crece hacia abajo */
+.flow__step:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    top: var(--spacing-xl);
+    bottom: calc(var(--flow-gap) * -1 + var(--spacing-sm));
+    left: 4px;
+    width: 1px;
+    background: var(--color-line);
+    transform-origin: top;
+    animation: flow-line 1s var(--ease-out) calc(var(--delay) + 0.8s) both paused;
+}
+
+.manifiesto__slide[data-seen] .flow__step::before {
+    animation-play-state: running;
+}
+
+.flow__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+}
+
+.flow__text {
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+    letter-spacing: var(--font-lg-tracking);
+    animation: reveal-in 0.7s var(--ease-out) calc(var(--delay) + 0.4s) both paused;
+}
+
+/* --- Gráficos (SVG de 320 × 64, trazo de 1.5 en currentColor) --- */
+.flow__graphic {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    animation: flow-fade 0.4s linear var(--delay) both paused;
+}
+
+/* Las piezas chicas escalan desde su propio centro/base */
+.flow__graphic * {
+    transform-box: fill-box;
+}
+
+.flow__guide {
+    stroke: var(--color-line);
+    stroke-width: 1;
+}
+
+/* 01: el brote aparece y la señal se dibuja de izquierda a derecha */
+.flow__sprout {
+    stroke-width: 1.6;
+    transform-origin: center bottom;
+    animation: flow-pop 0.7s var(--ease-out) var(--delay) both paused;
+}
+
+.flow__signal {
+    stroke-dasharray: 1;
+    animation: flow-draw 1.4s var(--ease-standard) calc(var(--delay) + 0.3s) both paused;
+}
+
+/* 02: el sensor late y las lecturas salen una tras otra */
+.flow__sensor-dot {
+    fill: currentColor;
+    stroke: none;
+}
+
+.flow__pulse {
+    transform-origin: center;
+    opacity: 0;
+    animation: flow-pulse 2s var(--ease-out) calc(var(--delay) + 0.2s) infinite paused;
+}
+
+.flow__sample {
+    transform-origin: center bottom;
+    animation: flow-rise 0.5s var(--ease-out) calc(var(--delay) + 0.35s + var(--i) * 0.07s) both paused;
+}
+
+.flow__sample circle {
+    fill: currentColor;
+    stroke: none;
+}
+
+/* 03: las notas se estiran en orden y el cabezal pasa por encima */
+.flow__note {
+    fill: currentColor;
+    stroke: none;
+    transform-origin: left center;
+    animation: flow-grow 0.45s var(--ease-out) calc(var(--delay) + 0.35s + var(--i) * 0.08s) both paused;
+}
+
+.flow__playhead {
+    stroke-width: 1;
+    opacity: 0;
+    animation: flow-sweep 1.7s linear calc(var(--delay) + 0.35s) both paused;
+}
+
+@keyframes flow-fade {
+    from { opacity: 0; }
+}
+
+@keyframes flow-line {
+    from { transform: scaleY(0); }
+}
+
+@keyframes flow-pop {
+    from { opacity: 0; transform: scale(0.4); }
+}
+
+@keyframes flow-draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes flow-pulse {
+    0% { opacity: 0.5; transform: scale(1); }
+    100% { opacity: 0; transform: scale(2.2); }
+}
+
+@keyframes flow-rise {
+    from { opacity: 0; transform: scaleY(0); }
+}
+
+@keyframes flow-grow {
+    from { opacity: 0; transform: scaleX(0); }
+}
+
+@keyframes flow-sweep {
+    0% { opacity: 1; transform: translateX(0); }
+    90% { opacity: 1; }
+    100% { opacity: 0; transform: translateX(320px); }
+}
+
+/* ---------------------------------------- */
+/* Pantalla 4: la huella de tu pieza */
+/* ---------------------------------------- */
+
+/* Piano roll de las notas reales: un cabezal lo recorre en --sweep y cada
+   nota se estira cuando el cabezal pasa por ella (--t la pone el JS) */
+.print {
+    --sweep: 2.6s;
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.print__guide {
+    stroke: var(--color-line);
+    stroke-width: 1;
+}
+
+.print__note {
+    fill: currentColor;
+    transform-box: fill-box;
+    transform-origin: left center;
+    animation: flow-grow 0.35s var(--ease-out) calc(0.4s + var(--t) * var(--sweep)) both paused;
+}
+
+.print__playhead {
+    stroke: currentColor;
+    stroke-width: 1;
+    opacity: 0;
+    animation: flow-sweep var(--sweep) linear 0.4s both paused;
+}
+
+/* Menos movimiento: todo aparece de una, sin pulso */
+@media (prefers-reduced-motion: reduce) {
+    .manifiesto__slide *,
+    .manifiesto__slide *::before {
+        animation-delay: 0s !important;
+    }
+
+    .flow__pulse,
+    .flow__playhead,
+    .print__playhead {
+        animation: none;
+    }
+}
+
+/* --- Abajo a la izquierda: "Siguiente" o el botón final, igual en las 5 --- */
+.manifiesto__actions {
+    min-height: var(--size-btn);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: var(--spacing-xl);
+}
+
+.manifiesto__actions .btn {
+    width: 100%;
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+
+@media (min-width: 768px) {
+    .manifiesto__big {
+        max-width: 520px;
+    }
+
+    .manifiesto__slide > * {
+        width: 100%;
+        max-width: 480px;
+        margin-inline: auto;
+    }
+
+    /* Las acciones siguen la misma columna que el contenido */
+    .manifiesto__actions {
+        width: 100%;
+        max-width: 480px;
+        margin-inline: auto;
+    }
+
+    .manifiesto__actions .btn {
+        width: auto;
+        min-width: 320px;
+    }
+}

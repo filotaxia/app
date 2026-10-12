@@ -1,0 +1,27 @@
+/* ============================================
+   Base — Fonts
+   ============================================ */
+
+/* PP Neue Montreal (Pangram Pangram), la misma de filotaxia.com.
+   Como en la web, todo usa el corte Medium: el peso 400 y el 500 de la app
+   (botones, eyebrows, etiquetas) apuntan al mismo archivo, así nunca se
+   sintetiza una negrita. La jerarquía la dan el tamaño y las mayúsculas.
+   Los archivos viven en src/assets/fonts/, así funcionan sin conexión.
+   Licencia: gratis para uso personal; para publicar la app hace falta
+   comprar la licencia de app/web en pangrampangram.com. */
+
+@font-face {
+    font-family: "PP Neue Montreal";
+    src: url("../../assets/fonts/ppneuemontreal-medium.otf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "PP Neue Montreal";
+    src: url("../../assets/fonts/ppneuemontreal-medium.otf") format("opentype");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}

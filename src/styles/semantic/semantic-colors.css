@@ -26,44 +26,41 @@
 :root {
 
     /* --- Fondo --- */
-    --color-bg: light-dark(var(--color-white), var(--color-stone-950));
-    --color-block-bg: light-dark(var(--color-stone-100), var(--color-stone-900));   /* cuadro del QR */
+    --color-bg: light-dark(var(--color-white), var(--color-gray-900));
+    --color-block-bg: light-dark(var(--color-gray-100), var(--color-gray-800));   /* cuadro del QR */
 
     /* --- Texto --- */
-    --color-text: light-dark(var(--color-black), var(--color-stone-paper));
-    --color-text-muted: light-dark(var(--color-stone-600), var(--color-stone-500));
-    --color-text-faint: light-dark(var(--color-stone-400), var(--color-stone-700)); /* placeholders */
+    --color-text: light-dark(var(--color-gray-900), var(--color-gray-50));
+    --color-text-muted: light-dark(var(--color-gray-500), var(--color-gray-400));
+    --color-text-faint: light-dark(var(--color-gray-400), var(--color-gray-600)); /* placeholders */
     --color-eyebrow: var(--color-text-muted);
 
     /* --- Líneas --- */
-    --color-line: light-dark(var(--color-stone-200), var(--color-stone-850));       /* entre filas, bordes suaves */
+    --color-line: light-dark(var(--color-gray-200), var(--color-gray-700));         /* entre filas, bordes suaves */
     --color-line-strong: var(--color-text);                                         /* esquinas del visor QR, foco */
-    --color-track: light-dark(var(--color-stone-300), var(--color-stone-800));      /* barra vacía, switch apagado */
+    --color-track: light-dark(var(--color-gray-300), var(--color-gray-600));      /* barra vacía, switch apagado */
 
     /* --- Ilustración del terrario: luz arriba a la izquierda --- */
-    --color-art-light: light-dark(var(--color-stone-50), var(--color-stone-850));
-    --color-art-shade: light-dark(var(--color-stone-150), var(--color-stone-925));
-    --color-art-plant: light-dark(var(--color-stone-400), var(--color-stone-700));
+    --color-art-light: light-dark(var(--color-gray-50), var(--color-gray-700));
+    --color-art-shade: light-dark(var(--color-gray-200), var(--color-gray-800));
+    --color-art-plant: light-dark(var(--color-gray-400), var(--color-gray-600));
     --color-art-glow: light-dark(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.06)); /* respira mientras suena */
 
     /* --- Inverso: botón principal, play, toast, botón de Ajustes activo --- */
     --color-inverse-bg: var(--color-text);
     --color-inverse-text: var(--color-bg);
-    --color-inverse-hover: light-dark(var(--color-stone-800), var(--color-stone-300));
+    --color-inverse-hover: light-dark(var(--color-gray-800), var(--color-gray-300));
     --color-focus: var(--color-text);
 
-    /* --- Acento: un solo bloque por pantalla (el cuidado que viene, en Mi terrario).
-       Mismo color en los dos temas, siempre con texto negro encima --- */
-    --color-accent-fill: var(--color-moss-300);
-    --color-on-accent: var(--color-black);
+    /* Sin color de acento: como la web, todo es blanco, negro y grises */
 
     /* --- Etiquetas chicas sobre un bloque (237.8 kWh. en la referencia) --- */
     --color-badge-bg: var(--color-bg);
 
     /* --- Relleno suave de un medidor que no es el acento --- */
-    --color-meter-soft: light-dark(var(--color-stone-200), var(--color-stone-850));
+    --color-meter-soft: light-dark(var(--color-gray-200), var(--color-gray-700));
 
-    /* --- Navegación: cápsula de vidrio --- */
+    /* --- Navegación: barra de vidrio --- */
     --color-nav-bg: var(--color-bg);
     --color-nav-text: var(--color-text-muted);
     --color-nav-text-active: var(--color-text);

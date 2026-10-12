@@ -3,8 +3,8 @@
    ============================================ */
 
 // Reproductor de un terrario: ilustración (el brote "respira" mientras suena),
-// número, nombre, fecha de grabación y duración, barra de progreso y
-// controles: −15 s · play/pausa · +15 s.
+// número, nombre, fecha de grabación y duración, las ondas con las que suena,
+// barra de progreso y controles: −15 s · play/pausa · +15 s.
 //
 // #/escuchar sin id (el botón de la barra) abre el último escuchado
 // o, si no hay, el primero de la colección.
@@ -12,6 +12,7 @@
 // Teclado: espacio = play/pausa · ← / → = −15 / +15 s (fuera de la barra).
 
 import { getTerrario } from "../../content/terrarios.js";
+import { WAVE_NAMES } from "../../content/plantas.js";
 import { get, set } from "../../store/store.js";
 import { linkedIds } from "../../store/collection.js";
 import { createPlayer } from "../../audio/player.js";
@@ -19,7 +20,7 @@ import { seedFrom } from "../../audio/score.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { formatDate, formatTime } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
-import { icon } from "../../utils/icons.js";
+import { icon, arrow } from "../../utils/icons.js";
 
 export const title = ({ params }) => getTerrario(params.id)?.name ?? "Escuchar";
 
@@ -51,7 +52,7 @@ export async function render(root, { params }) {
 
   root.innerHTML = `
     <section class="screen player">
-      <a class="back-link" href="#/coleccion">${icon("arrow-left")} Colección</a>
+      <a class="back-link" href="#/coleccion">${arrow("left")} Colección</a>
 
       <div class="player__body">
         <div class="player__art reveal" data-art>${terrariumArt({ photo: terrario.photo })}</div>
@@ -60,6 +61,7 @@ export async function render(root, { params }) {
           <p class="eyebrow">Terrario Nº ${escapeHTML(terrario.id)}</p>
           <h1 class="player__name" tabindex="-1">${escapeHTML(terrario.name)}</h1>
           <p class="lead">Grabado el ${formatDate(terrario.recorded)} · ${formatTime(terrario.duration)}</p>
+          ${waves(terrario.waves ?? ["sine"])}
         </div>
 
         <div class="player__progress reveal">
@@ -88,6 +90,15 @@ export async function render(root, { params }) {
   `;
 
   return mountPlayer(root, terrario);
+}
+
+// Las ondas de la pieza (la forma de las hojas de sus plantas): ícono + nombre
+function waves(list) {
+  return `
+    <ul class="player__waves" aria-label="Ondas">
+      ${list.map((wave) => `<li class="chip">${icon(`wave-${wave}`)} ${WAVE_NAMES[wave] ?? wave}</li>`).join("")}
+    </ul>
+  `;
 }
 
 function mountPlayer(root, terrario) {

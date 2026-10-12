@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Filotaxia** is an installable web app (PWA, phone first — people scan the QR with their phone) for living terrariums that make sound: each terrarium has a QR in its base; scanning it opens the terrarium's page, which adds it to the collection on that phone, and the person can listen to its piece. The first one scanned becomes **Mi terrario** (their own; changeable), with its care status and reminders. **No accounts, no login**: the scan is enough.
 
-- Visual system: **read `DESIGN.md` before building any UI.** Light and dark themes (Ajustes → Apariencia: Auto / Claro / Oscuro). White, black and warm stone greys; regular-weight titles, small uppercase eyebrows, black pill buttons, thin lines.
-- Structure (router, store, header, floating bottom nav, sheets, toasts) comes from Pulso (`inspo/pulso`, the owner's own project). `inspo/` is reference material only — never import from it.
+- Visual system: **read `DESIGN.md` before building any UI.** Light and dark themes (Ajustes → Apariencia: Auto / Claro / Oscuro). White, black and the web's neutral greys only — **no accent colour** (no green or anything else); regular-weight titles, small uppercase eyebrows, black pill buttons, thin lines.
+- Structure (router, store, header, floating bottom nav, sheets, toasts) comes from Pulso (`inspo/pulso`, the owner's own project). `inspo/` is reference material only — never import from it. `inspo/proyecto-filotaxia` is the filotaxia.com website (Vite + GSAP): assets are copied **optimized** into `src/assets/` (its originals weigh ~325 MB), never linked.
 - The owner is a web designer who wants to understand all the code: keep it clear, comment in Spanish where it helps, no over-engineering. UI copy is Spanish (es-AR).
 
 ## Running the Project
@@ -26,7 +26,7 @@ node --test 'tests/**/*.test.js'
 
 ## Architecture
 
-Vanilla HTML, CSS and JS (ES modules). External: Inter (Google Fonts); jsQR (scanner fallback) and qrcode-generator (`imprimir-qr.html`) loaded on demand from jsDelivr.
+Vanilla HTML, CSS and JS (ES modules). Font: PP Neue Montreal (same as filotaxia.com), local in `src/assets/fonts/` via `styles/base/fonts.css` — 400 and 500 both use the Medium cut, like the web (personal use only; publishing needs the app/web license). External: jsQR (scanner fallback) and qrcode-generator (`imprimir-qr.html`) loaded on demand from jsDelivr.
 
 ### Phone
 
@@ -43,17 +43,19 @@ imprimir-qr.html        internal tool: one printable QR per terrarium (link to i
 DESIGN.md               design system
 src/
 ├── main.js             entry: header → router
-├── router.js           hash router with params (#/terrario/:id, #/escuchar/:id?), guards and chrome
+├── router.js           hash router with params (#/terrario/:id, #/escuchar/:id?, #/manifiesto/:id?), guards and chrome
 ├── store/
 │   ├── store.js        THE data API: get, set, subscribe, add, remove — all async
 │   ├── local.js        localStorage adapter (the only file that touches localStorage)
-│   ├── defaults.js     initial value per key (links, my_terrario, care_log, last_played, prefs)
+│   ├── defaults.js     initial value per key (links, my_terrario, care_log, last_played, prefs, manifiesto_seen)
 │   ├── collection.js   every scanned terrarium: linkedIds, isLinked, link
 │   └── my-terrario.js  the own terrarium + care log: claimIfFirst, setMyTerrario, lastCare, logCare, linkedOn
 ├── content/
 │   ├── terrarios.js    catalog (id, name, recorded date, duration, story, care plan; optional model, photo, specs, plants, waves).
 │   │                   Nº 01 is the complete example, with the real TR01 content from filotaxia.com
-│   └── ayuda.js        "¿Cómo funciona?" steps + care FAQ (from filotaxia.com)
+│   ├── plantas.js      plant catalog from filotaxia.com: leaf shape → wave (Puntiaguda→triangle, Redondeada→sine,
+│   │                   Dentada→sawtooth, Recta→square) + top-view photo; getPlanta(name)
+│   └── ayuda.js        filotaxia.com texts: "¿Cómo funciona?", care FAQ, process (3 stages), the 4 layers, sound FAQ, contact
 ├── camera/qr-camera.js rear camera + QR reading: BarcodeDetector (Android) or jsQR from CDN (iPhone)
 ├── audio/
 │   ├── score.js        pure + deterministic: seed → notes (tested)
@@ -64,20 +66,22 @@ src/
 ├── animation/          CSS-only reveals (.reveal, .reveal-stagger)
 ├── utils/              pure logic (format, qr, dates, care, random) + html escaping, icons, theme
 └── styles/             tokens → semantic → base
-tests/                  node:test files
+tests/                  node:test files (content.test.js checks the catalogs match and every photo exists)
 ```
 
 ### Flow
 
 Splash (`#/inicio`, goes to Mi terrario if there is one, else Escanear) → Escanear (`#/escanear`, in-app camera or "Simular escaneo") or the phone's own camera opening the QR link → Ficha (`#/terrario/04`): opening it links the terrarium; the first one ever also becomes Mi terrario → "Escuchar" (`#/escuchar/04`).
 
+**Manifiesto** (`#/manifiesto/04`): on the very first scan (a new link while `manifiesto_seen` is false) the ficha redirects to a 5-screen intro to biosonification (hook: one of the 6 quotes in `content/citas.js`, a different one each time it opens · 01/02/03 mechanism · leaf → wave grid · uniqueness · "Escuchar mi terrario"), then the player. Swipe (native scroll-snap), tap (left third = back), "Siguiente" or arrow keys; "Saltar" and the final button store `manifiesto_seen` and `location.replace` to the player. Ajustes → "Ver el Manifiesto" opens it again without id ("Cerrar" → Ajustes).
+
 Bottom nav (Pulso structure, 5 items): **Mi terrario · Colección · [Escanear] · Escuchar · Ajustes**.
 
 ### Mi terrario (`#/mi-terrario`)
 
-Care page modeled on an energy app's "Status." screen: name + status sentence, air humidity as the hero number with its trend vs yesterday, chips, and blocks (Riego with the accent meter, Luz, Temperatura, Ventilación with a soft meter, Sonido, Con vos). Riego / Ventilación are logged by the person ("Regué hoy") in `care_log`; humidity drops with the days since the last watering. **Readings are simulated** (seeded by terrarium + day, `utils/care.js`) until terrariums have sensors. Open ecosystems (`care.ventilacion_days: null`) hide Ventilación; terrariums with `plants` show a Plantas block. "Hecho hoy" only reflects a real log entry (`loggedToday`), never the scan-day fallback.
+Care page modeled on an energy app's "Status." screen: the terrarium's name as on the web ("Terrario01.", from its id) + "Armonía en plantas." in grey, **days until the next watering** as the hero number (with chips and "Regué hoy"), then blocks (the terrarium photo full width → its ficha, Sonido, Con vos, Ventilación with a soft meter, Plantas, Luz, Temperatura). Air humidity is no longer shown, and the status sentence (`careStatus` in `utils/care.js`) is not used on screen for now. Riego / Ventilación are logged by the person ("Regué hoy") in `care_log`; humidity drops with the days since the last watering. **Readings are simulated** (seeded by terrarium + day, `utils/care.js`) until terrariums have sensors. Open ecosystems (`care.ventilacion_days: null`) hide Ventilación; terrariums with `plants` show a Plantas block. "Hecho hoy" only reflects a real log entry (`loggedToday`), never the scan-day fallback.
 
-Photos: `terrario.photo` points to `src/assets/images/terrarios/` (TR01's photo was copied from filotaxia.com). The service worker caches them, so they also show offline. `terrariumArt()` draws the sprout underneath, so a missing photo falls back to the drawing.
+Photos: `terrario.photo` points to `src/assets/images/terrarios/` (TR01's from filotaxia.com; TR02–06 are the site's product shots, cropped square at 800px). Plant photos live in `src/assets/images/plantas/` (360px webp) and show in the Plantas block with the plant's wave. The service worker caches them, so they also show offline. `terrariumArt()` draws the sprout underneath, so a missing photo falls back to the drawing.
 
 ### Views
 
@@ -95,7 +99,7 @@ Plain functions that return HTML strings. **Every user-provided value goes throu
 
 `src/styles.css` is the single CSS entry; register every new CSS file there under its group. Views and components use **semantic aliases only** (`--color-text`, `--color-line`…), never raw tokens or hex values — otherwise they ignore the theme.
 
-Theme: every alias in `semantic-colors.css` is `light-dark(light, dark)`. No `data-theme` = follow the phone; `data-theme="light|dark"` on `<html>` forces it (`utils/theme.js`, from `prefs.theme`, applied in `main.js` before the first render and on every `prefs` change).
+Theme: every alias in `semantic-colors.css` is `light-dark(light, dark)`. **Light is the default** (`prefs.theme: "light"`; `index.html` starts with `data-theme="light"` so there's no dark flash). No `data-theme` = follow the phone ("Auto"); `data-theme="light|dark"` on `<html>` forces it (`utils/theme.js`, from `prefs.theme`, applied in `main.js` before the first render and on every `prefs` change).
 
 Units: an existing token if one fits; otherwise plain `px`. Never `clamp()`, `vw`, `rem`/`em`. Exceptions: `vh`/`dvh` for heights, `%` for widths, `env(safe-area-inset-*)`.
 

@@ -8,10 +8,13 @@
 // El primero que se escanea pasa a ser "Mi terrario" (se cambia desde ahí).
 // Si el terrario trae ficha técnica (modelo, ecosistema, plantas…), se lista
 // debajo de la historia, como en filotaxia.com.
+// El primer escaneo de todos pasa antes por el Manifiesto (views/manifiesto),
+// que termina en el reproductor de este terrario.
 
 import { getTerrario } from "../../content/terrarios.js";
 import { link } from "../../store/collection.js";
 import { claimIfFirst, myTerrarioId } from "../../store/my-terrario.js";
+import { get } from "../../store/store.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { toast } from "../../components/toast/toast.js";
 import { formatDate } from "../../utils/format.js";
@@ -30,6 +33,12 @@ export async function render(root, { params }) {
   const isNew = await link(terrario.id);
   const claimed = await claimIfFirst(terrario.id);
   const isMine = (await myTerrarioId()) === terrario.id;
+
+  // Primer escaneo: la introducción a la biosonificación, antes de escuchar
+  if (isNew && !(await get("manifiesto_seen"))) {
+    location.replace(`#/manifiesto/${terrario.id}`);
+    return;
+  }
 
   root.innerHTML = `
     <article class="screen terrario">

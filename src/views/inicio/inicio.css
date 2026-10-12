@@ -11,17 +11,30 @@
 .splash__brand {
     display: flex;
     flex-direction: column;
-    gap: var(--gap-sm);
+    gap: var(--gap-md);
 }
 
-.splash__title {
-    /* text-indent compensa el tracking del final, así queda centrado de verdad */
-    text-indent: var(--font-brand-tracking);
-    font-size: var(--font-brand-size);
-    line-height: var(--font-brand-line);
-    letter-spacing: var(--font-brand-tracking);
-    font-weight: var(--font-weight-medium);
-    text-transform: uppercase;
+/* Marca: PNG negros con transparencia usados como máscara; el color
+   lo pone el fondo (--color-text), así siguen al tema */
+.splash__isotipo,
+.splash__logotipo {
+    display: block;
+    margin-inline: auto;
+    background: var(--color-text);
+    mask: center / contain no-repeat;
+}
+
+.splash__isotipo {
+    width: 72px;
+    aspect-ratio: 512 / 324;
+    margin-bottom: var(--spacing-xl);
+    mask-image: url("../../assets/images/marca/isotipo.png");
+}
+
+.splash__logotipo {
+    width: 220px;
+    aspect-ratio: 960 / 123;
+    mask-image: url("../../assets/images/marca/logotipo.png");
 }
 
 .splash__title:focus {

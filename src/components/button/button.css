@@ -2,8 +2,9 @@
    Components — Button
    ============================================ */
 
-/* Pills. --primary: negro lleno (la acción de la pantalla).
-   --ghost: borde fino. --icon: círculo tocable sin borde (rewind, forward). */
+/* Rectángulos sin redondear, como los botones de filotaxia.com.
+   --primary: negro lleno (la acción de la pantalla).
+   --ghost: borde fino. --icon: área tocable sin fondo ni borde (rewind, forward). */
 
 .btn {
     display: inline-flex;
@@ -12,10 +13,10 @@
     gap: var(--gap-sm);
     min-height: var(--size-tap);
     padding: 0 var(--spacing-xl);
-    border-radius: var(--radius-full);
-    font-size: var(--font-sm-size);
-    line-height: var(--font-sm-line);
-    font-weight: var(--font-weight-medium);
+    border-radius: 0;
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    font-weight: var(--font-weight-regular);
     letter-spacing: 0;
     transition: background-color var(--transition-fast), color var(--transition-fast),
         transform var(--transition-fast), opacity var(--transition-fast);
