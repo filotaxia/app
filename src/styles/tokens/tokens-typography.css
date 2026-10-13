@@ -47,11 +47,12 @@
     --font-brand-tracking: 5px;
 
     /* --- Números (Mi terrario): regulares, tracking cerrado, cifras tabulares --- */
-    --num-md-size: 40px;         /* valor de un bloque: 22°. · En 3 días. */
+    --num-md-size: 40px;         /* valor de un bloque: 22°. · 3 días. */
     --num-md-line: 44px;
     --num-md-tracking: -1.6px;
+    --num-md-digit-tracking: -6px;   /* solo las cifras ("27", "21") */
 
-    --num-xl-size: 136px;        /* el número protagonista: 84% */
+    --num-xl-size: 136px;        /* el número protagonista: 4:11 */
     --num-xl-line: 124px;
     --num-xl-tracking: -8px;
 

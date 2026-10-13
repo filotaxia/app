@@ -43,7 +43,7 @@ imprimir-qr.html        internal tool: one printable QR per terrarium (link to i
 DESIGN.md               design system
 src/
 ├── main.js             entry: header → router
-├── router.js           hash router with params (#/terrario/:id, #/escuchar/:id?, #/manifiesto/:id?), guards and chrome
+├── router.js           hash router with params (#/terrario/:id, #/escuchar/:id?, #/manifiesto/:id?, #/mi-terrario/cuidados), guards and chrome
 ├── store/
 │   ├── store.js        THE data API: get, set, subscribe, add, remove — all async
 │   ├── local.js        localStorage adapter (the only file that touches localStorage)
@@ -79,7 +79,7 @@ Bottom nav (Pulso structure, 5 items): **Mi terrario · Colección · [Escanear]
 
 ### Mi terrario (`#/mi-terrario`)
 
-Care page modeled on an energy app's "Status." screen: the terrarium's name as on the web ("Terrario01.", from its id) + "Armonía en plantas." in grey, **days until the next watering** as the hero number (with chips and "Regué hoy"), then blocks (the terrarium photo full width → its ficha, Sonido, Con vos, Ventilación with a soft meter, Plantas, Luz, Temperatura). Air humidity is no longer shown, and the status sentence (`careStatus` in `utils/care.js`) is not used on screen for now. Riego / Ventilación are logged by the person ("Regué hoy") in `care_log`; humidity drops with the days since the last watering. **Readings are simulated** (seeded by terrarium + day, `utils/care.js`) until terrariums have sensors. Open ecosystems (`care.ventilacion_days: null`) hide Ventilación; terrariums with `plants` show a Plantas block. "Hecho hoy" only reflects a real log entry (`loggedToday`), never the scan-day fallback.
+Care page modeled on an energy app's "Status." screen: the terrarium's name as on the web ("Terrario01.", from its id) + "Armonía en plantas." in grey, **the musical piece** as the hero (its duration as the big number, a chip with the recorded date, and "Escuchar" → the player — the piece is what matters most), then blocks (the terrarium photo full width → its ficha, Riego | Luz, Ventilación with a soft meter, Plantas, and a full-width "Cuidados." card → `#/mi-terrario/cuidados`, a subpage with the care FAQ; its route starts with `mi-terrario` so the nav keeps that section active). Air humidity is no longer shown, and the status sentence (`careStatus` in `utils/care.js`) is not used on screen for now. Ventilación is logged by the person ("Ventilé hoy") in `care_log`; Riego has no button for now (it counts from the last logged watering, or from the scan day); humidity drops with the days since the last watering. **Readings are simulated** (seeded by terrarium + day, `utils/care.js`) until terrariums have sensors. Open ecosystems (`care.ventilacion_days: null`) hide Ventilación; terrariums with `plants` show a Plantas block (leaf shape per plant; its "Ondas" toggle swaps to each plant's wave). "Hecho hoy" only reflects a real log entry (`loggedToday`), never the scan-day fallback.
 
 Photos: `terrario.photo` points to `src/assets/images/terrarios/` (TR01's from filotaxia.com; TR02–06 are the site's product shots, cropped square at 800px). Plant photos live in `src/assets/images/plantas/` (360px webp) and show in the Plantas block with the plant's wave. The service worker caches them, so they also show offline. `terrariumArt()` draws the sprout underneath, so a missing photo falls back to the drawing.
 

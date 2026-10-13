@@ -6,7 +6,7 @@
 
     /* --- Layout --- */
     --width-app: 720px;          /* columna de contenido */
-    --gutter: 24px;              /* margen lateral (mobile) */
+    --gutter: 16px;              /* margen lateral (mobile) */
 
     /* --- Navegación --- */
     --size-nav: 64px;            /* alto de la barra flotante */
@@ -31,6 +31,6 @@ RESPONSIVE
 
 @media (min-width: 768px) {
     :root {
-        --gutter: 32px;
+        --gutter: 24px;
     }
 }

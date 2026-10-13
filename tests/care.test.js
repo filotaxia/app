@@ -17,7 +17,7 @@ test("nextCare: días que faltan y cuánto queda (1 = recién hecho)", () => {
 });
 
 test("dueLabel", () => {
-  assert.equal(dueLabel(5), "En 5 días");
+  assert.equal(dueLabel(5), "5 días");
   assert.equal(dueLabel(1), "Mañana");
   assert.equal(dueLabel(0), "Hoy");
   assert.equal(dueLabel(-1), "Hace 1 día");

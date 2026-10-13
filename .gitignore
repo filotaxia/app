@@ -6,3 +6,6 @@ inspo/
 
 # Ajustes locales de Claude Code (los compartidos, como launch.json, sí se suben)
 .claude/settings.local.json
+
+# Capturas de pantalla para Figma (se regeneran): no se suben
+screens/
