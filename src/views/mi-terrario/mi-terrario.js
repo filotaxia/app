@@ -1,8 +1,8 @@
 /* ============================================
-   Views — Inicio
+   Views — Mi terrario
    ============================================ */
 
-// Inicio (#/mi-terrario; la primera de la barra): el terrario propio
+// Mi terrario (#/mi-terrario; la primera de la barra): el terrario propio
 // (referencia: pantalla "Status." de una app de energía):
 // "Filotaxia." + "Armonía en plantas." en gris, Ajustes arriba a la derecha,
 // el nombre del terrario en gigante ("TR01", con un chip y "Escuchar") y bloques:
@@ -22,6 +22,7 @@ import { getTerrario, codeOf } from "../../content/terrarios.js";
 import { CARE_FAQ } from "../../content/ayuda.js";
 import { myTerrarioId, lastCare, logCare, loggedToday } from "../../store/my-terrario.js";
 import { entries } from "../../store/bitacora.js";
+import { lastScanOn } from "../../store/collection.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { block, digits } from "../../components/block/block.js";
 import { plantsBlock, bindPlants } from "../../components/plants-block/plants-block.js";
@@ -33,7 +34,7 @@ import { formatDate, formatTime } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
 import { icon, arrow } from "../../utils/icons.js";
 
-export const title = "Inicio";
+export const title = "Mi terrario";
 
 export async function render(root) {
   const terrario = getTerrario(await myTerrarioId());
@@ -50,15 +51,16 @@ export async function render(root) {
     ? nextCare({ last: await lastCare(terrario.id, "ventilacion"), every: care.ventilacion_days, today })
     : null;
   const notes = await entries(terrario.id);
+  const lastScan = await lastScanOn(terrario.id);
 
   root.innerHTML = `
     <section class="screen mine">
       ${head("Filotaxia.", "Armonía en plantas.")}
 
-      ${pieceHero(terrario)}
+      ${pieceHero(terrario, lastScan)}
 
       <div class="blocks reveal-stagger">
-        <a class="block block--full block--photo" href="#/terrario/${terrario.id}" aria-label="Ver la ficha de ${escapeHTML(terrario.name)}">
+        <a class="block block--full block--photo" href="#/terrario/${terrario.id}" aria-label="Ver la ficha de ${escapeHTML(codeOf(terrario))}">
           ${terrariumArt({ photo: terrario.photo })}
         </a>
         ${block({
@@ -116,17 +118,18 @@ function head(title, status) {
 }
 
 // El protagonista: el nombre del terrario en gigante ("TR01").
-// Debajo, un chip con la fecha en que se grabó su pieza y "Escuchar".
-function pieceHero(terrario) {
+// Debajo, un chip con la última conexión (la última vez que se escaneó
+// su QR) y "Escuchar".
+function pieceHero(terrario, lastScan) {
   return `
     <div class="mine__hero reveal">
       <p class="mine__big" aria-hidden="true">${escapeHTML(codeOf(terrario))}</p>
-      <p class="visually-hidden">Tu terrario es el ${escapeHTML(terrario.name)}.</p>
+      <p class="visually-hidden">Tu terrario es el ${escapeHTML(codeOf(terrario))}.</p>
     </div>
 
     <div class="mine__pieza reveal">
-      <ul class="mine__chips" aria-label="Tu pieza">
-        <li class="chip">Grabado ${formatDate(terrario.recorded)}</li>
+      <ul class="mine__chips" aria-label="Tu terrario">
+        <li class="chip">Última conexión ${formatDate(lastScan)}</li>
       </ul>
       <a class="block__action" href="#/escuchar/${terrario.id}">${icon("play")} Escuchar</a>
     </div>
@@ -143,7 +146,7 @@ function pieceBlock(terrario) {
       <h2 class="block__title pieza__title">
         <a class="pieza__link" href="#/escuchar/${terrario.id}" aria-label="Pieza: ${duration}. Escuchar">Pieza.</a>
       </h2>
-      <a class="pieza__scan" href="#/escanear" aria-label="Escanear otro terrario">${icon("qr-code")}</a>
+      <a class="pieza__scan" href="#/escanear" aria-label="Conectar otro terrario">${icon("qr-code")}</a>
       <span class="block__badge">Duración</span>
       <p class="block__value">${digits(duration)}</p>
     </article>
@@ -160,10 +163,10 @@ function careAction(type, label, doneToday) {
 function empty() {
   return `
     <section class="screen mine mine--empty">
-      ${head("Filotaxia.", "Escaneá tu terrario.")}
+      ${head("Filotaxia.", "Conectá tu terrario.")}
       <div class="screen__actions">
-        <p class="lead">Escaneá el QR que está en la base de tu terrario para ver sus cuidados.</p>
-        <a class="btn btn--primary" href="#/escanear">${icon("scan-line")} Escanear QR</a>
+        <p class="lead">Conectalo con el QR de su base para ver sus cuidados.</p>
+        <a class="btn btn--primary" href="#/escanear">${icon("scan-line")} Conectar mi terrario</a>
       </div>
     </section>
   `;

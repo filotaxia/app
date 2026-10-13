@@ -56,8 +56,8 @@ export const STEPS = [
   },
   {
     key: "escaneado",
-    title: "Escaneá el QR",
-    short: "Está en la base del terrario.",
+    title: "Conectá tu terrario",
+    short: "Con el QR de su base.",
     text: HOW_IT_WORKS[1],
     video: null,
   },
@@ -72,7 +72,7 @@ export const STEPS = [
     key: "cuidado",
     title: "Cuidalo",
     short: "Riego, ventilación y la guía.",
-    text: "Regá de a poco, más o menos cada 30 días, y ventilalo si es cerrado. En Inicio ves cuándo toca y en Cuidados está la guía.",
+    text: "Regá de a poco, más o menos cada 30 días, y ventilalo si es cerrado. En Mi terrario ves cuándo toca y en Cuidados, todo lo que necesita.",
     video: null,
   },
   {
@@ -117,12 +117,19 @@ export const PROCESS = [
   ],
 ];
 
-// Las cuatro capas de un terrario, de arriba hacia abajo (páginas "Capa01…04")
+// Las cuatro capas de un terrario, de arriba hacia abajo (páginas "Capa01…04"):
+// [nombre, material, texto, imagen en movimiento]. Las imágenes son los GIF
+// que usa filotaxia.com/terrarios (enlazados desde giphy, como en la web);
+// cuando haya videos propios van en src/assets/videos/ y se cambian acá.
 export const LAYERS = [
-  ["Plantas", "Suculentas", "La vida visible del terrario. Sus impulsos eléctricos se convierten en melodías que reflejan su actividad."],
-  ["Sustrato", "Tierra, perlita, arena gruesa", "La base oculta: regula el agua, el aire y los nutrientes que necesitan las raíces para expandirse."],
-  ["Metal", "Rejilla metálica", "Un límite protector que impide que las raíces lleguen al fondo y se pudran por exceso de humedad."],
-  ["Piedras", "Piedra pómez", "El drenaje natural: evita el exceso de agua y deja circular el aire para que las raíces estén sanas."],
+  ["Plantas", "Suculentas", "La vida visible del terrario. Sus impulsos eléctricos se convierten en melodías que reflejan su actividad.",
+    "https://media3.giphy.com/media/txCo7WXCwZpmM/giphy.gif"],
+  ["Sustrato", "Tierra, perlita, arena gruesa", "La base oculta: regula el agua, el aire y los nutrientes que necesitan las raíces para expandirse.",
+    "https://media0.giphy.com/media/l9md6q8WS4pwJrO4qc/giphy.gif"],
+  ["Metal", "Rejilla metálica", "Un límite protector que impide que las raíces lleguen al fondo y se pudran por exceso de humedad.",
+    "https://media3.giphy.com/media/OhBO5rAr1G0VhxM8X4/giphy.gif"],
+  ["Piedras", "Piedra pómez", "El drenaje natural: evita el exceso de agua y deja circular el aire para que las raíces estén sanas.",
+    "https://media0.giphy.com/media/55jWt7O2wPB5e/giphy.gif"],
 ];
 
 // Preguntas sobre el sonido (página "Formas")

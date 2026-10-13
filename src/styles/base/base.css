@@ -19,6 +19,17 @@ html {
     overscroll-behavior-y: none;
 }
 
+/* Sin barras de scroll en ningún lado (la página y cualquier contenedor
+   que scrollee): se siente como una app, no como una web. El scroll
+   sigue andando igual con el dedo, la rueda o el teclado. */
+* {
+    scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
 a,
 button,
 input,

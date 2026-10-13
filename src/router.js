@@ -16,7 +16,7 @@
 //   #/manifiesto/04          introducción, una sola vez tras el primer escaneo
 //   #/manifiesto             la misma, desde la barra (termina en Mi terrario)
 //
-// La barra de abajo: Terrarios · Mi terrario · Manifiesto · Filotaxia.
+// La barra de abajo: Mi terrario · Colección · Conectar · Manifiesto · Guía.
 //
 // No hay cuentas: la colección vive en el teléfono.
 //

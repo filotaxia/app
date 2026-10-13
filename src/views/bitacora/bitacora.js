@@ -23,7 +23,7 @@ import { icon } from "../../utils/icons.js";
 export const title = "Bitácora";
 export const subtitle = ({ params }) => {
   const terrario = getTerrario(params.id);
-  return terrario ? `${codeOf(terrario)} · ${terrario.name}` : "";
+  return terrario ? codeOf(terrario) : "";
 };
 export const header = true;
 export const back = ({ from }) => (from && from !== "inicio" ? `#/${from}` : "#/mi-terrario");

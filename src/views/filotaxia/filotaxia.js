@@ -1,8 +1,8 @@
 /* ============================================
-   Views — Filotaxia
+   Views — Guía
    ============================================ */
 
-// Filotaxia (#/filotaxia, una sección de la barra): la experiencia paso a
+// Guía (#/filotaxia, una sección de la barra): la experiencia paso a
 // paso (referencia: una lista de tareas del día).
 //
 //   Tu recorrido   card con el porcentaje hecho, "3/5 completados" y un punto
@@ -25,7 +25,7 @@ import { toast } from "../../components/toast/toast.js";
 import { escapeHTML } from "../../utils/html.js";
 import { icon, arrow } from "../../utils/icons.js";
 
-export const title = "Filotaxia";
+export const title = "Guía";
 export const subtitle = "La experiencia, paso a paso";
 export const header = true;
 
@@ -121,10 +121,10 @@ function stepRow(step, i, isDone) {
 // los últimos llevan a donde se puede empezar)
 function stepAction(key, mine) {
   switch (key) {
-    case "escaneado": return ["Escanear el QR", "#/escanear"];
+    case "escaneado": return ["Conectar mi terrario", "#/escanear"];
     case "escuchado": return mine ? ["Escuchar mi terrario", `#/escuchar/${mine}`] : ["Elegir un terrario", "#/coleccion"];
     case "cuidado": return ["Ver sus cuidados", "#/mi-terrario/cuidados"];
-    case "anotado": return mine ? ["Abrir la bitácora", `#/bitacora/${mine}`] : ["Escanear el QR", "#/escanear"];
+    case "anotado": return mine ? ["Abrir la bitácora", `#/bitacora/${mine}`] : ["Conectar mi terrario", "#/escanear"];
     default: return null;   // "ubicado": no hay pantalla, lo marca la persona
   }
 }

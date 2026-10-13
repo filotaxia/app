@@ -1,9 +1,11 @@
 /* ============================================
-   Views — Terrarios
+   Views — Colección
    ============================================ */
 
 /* Grilla de 2 columnas (3 desde 640): ilustración cuadrada,
-   número chico y nombre debajo. */
+   el estado chico ("Conectado" o "Sin conectar") y el código
+   del terrario ("TR01") debajo. Los que no se conectaron se ven
+   atenuados y en gris (--locked). */
 
 .collection {
     display: grid;
@@ -22,7 +24,7 @@
 }
 
 @media (hover: hover) {
-    .collection__tile:hover .terrarium-art {
+    a.collection__tile:hover .terrarium-art {
         transform: scale(0.98);
     }
 }
@@ -33,7 +35,7 @@
     gap: var(--spacing-2xs);
 }
 
-.collection__number {
+.collection__status {
     font-size: var(--font-2xs-size);
     line-height: var(--font-2xs-line);
     letter-spacing: var(--font-xs-tracking);
@@ -44,6 +46,17 @@
     font-size: var(--font-sm-size);
     line-height: var(--font-sm-line);
     font-weight: var(--font-weight-medium);
+}
+
+/* Sin conectar: la foto en gris y atenuada, el nombre en gris.
+   El texto "Sin conectar" lo dice con palabras, no solo con el color. */
+.collection__tile--locked .terrarium-art {
+    opacity: var(--opacity-disabled);
+    filter: grayscale(1);
+}
+
+.collection__tile--locked .collection__name {
+    color: var(--color-text-muted);
 }
 
 /* ============================================

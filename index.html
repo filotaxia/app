@@ -52,16 +52,16 @@
         <!-- LAYOUT: View (el router monta acá cada pantalla) -->
         <main id="view" class="app-view" tabindex="-1"></main>
 
-        <!-- LAYOUT: Bottom-Nav (estructura de Pulso): cuatro secciones, Inicio ·
-             Terrarios · Manifiesto · Filotaxia, todas iguales; riel lateral en desktop.
-             Escanear está en la card Pieza y Ajustes en el header. En todas las
-             pantallas menos el splash y el Manifiesto. -->
+        <!-- LAYOUT: Bottom-Nav (estructura de Pulso): Mi terrario · Colección · Conectar ·
+             Manifiesto · Guía; Conectar (el escáner) en el centro, en negro, como acción
+             principal. Riel lateral en desktop. Ajustes está en el header. En todas
+             las pantallas menos el splash y el Manifiesto del primer escaneo. -->
         <nav class="bottom-nav" aria-label="Secciones" data-nav hidden>
             <a class="bottom-nav__brand" href="#/mi-terrario">Filotaxia</a>
             <ul class="bottom-nav__list">
                 <li>
                     <a class="bottom-nav__link" href="#/mi-terrario" data-route="mi-terrario">
-                        <!-- Inicio (Mi terrario, #/mi-terrario). Ícono: un terrario propio, con el
+                        <!-- Mi terrario (#/mi-terrario). Ícono: un terrario propio, con el
                              trazo de Lucide: la pecera redonda del TR01,
                              la línea del sustrato y un brote adentro. El viewBox recorta el margen
                              para que se vea del mismo tamaño que los otros íconos -->
@@ -74,7 +74,7 @@
                             <path d="M12 13c-1.8 0-3-1.2-3-3 1.8 0 3 1.2 3 3z" />
                             <path d="M12 12c1.8 0 3-1.2 3-3-1.8 0-3 1.2-3 3z" />
                         </svg>
-                        <span class="bottom-nav__label">Inicio</span>
+                        <span class="bottom-nav__label">Mi terrario</span>
                     </a>
                 </li>
                 <li>
@@ -87,7 +87,22 @@
                             <rect width="7" height="7" x="14" y="14" rx="1" />
                             <rect width="7" height="7" x="3" y="14" rx="1" />
                         </svg>
-                        <span class="bottom-nav__label">Terrarios</span>
+                        <span class="bottom-nav__label">Colección</span>
+                    </a>
+                </li>
+                <li>
+                    <!-- Conectar (abre el escáner del QR): la acción principal, en el centro y en negro -->
+                    <a class="bottom-nav__link bottom-nav__link--main" href="#/escanear" data-route="escanear">
+                        <!-- Lucide: scan-line -->
+                        <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+                            <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+                            <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+                            <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+                            <path d="M7 12h10" />
+                        </svg>
+                        <span class="bottom-nav__label">Conectar</span>
                     </a>
                 </li>
                 <li>
@@ -105,7 +120,7 @@
                     <a class="bottom-nav__link" href="#/filotaxia" data-route="filotaxia">
                         <!-- El isotipo de Filotaxia (las dos hojas), como máscara: toma el color del texto -->
                         <span class="bottom-nav__icon bottom-nav__logo" aria-hidden="true"></span>
-                        <span class="bottom-nav__label">Filotaxia</span>
+                        <span class="bottom-nav__label">Guía</span>
                     </a>
                 </li>
             </ul>

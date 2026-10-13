@@ -52,6 +52,11 @@
     --color-inverse-hover: light-dark(var(--color-gray-800), var(--color-gray-300));
     --color-focus: var(--color-text);
 
+    /* --- Texto sobre fotos o videos (las capas del Manifiesto): blanco en
+       los dos temas, con un velo oscuro suave debajo para que se lea --- */
+    --color-on-media: var(--color-white);
+    --color-media-scrim: rgba(0, 0, 0, 0.3);
+
     /* Sin color de acento: como la web, todo es blanco, negro y grises */
 
     /* --- Etiquetas chicas sobre un bloque (237.8 kWh. en la referencia) --- */

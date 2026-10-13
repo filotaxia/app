@@ -6,14 +6,14 @@
 // número, nombre, fecha de grabación y duración, las ondas con las que suena,
 // barra de progreso y controles: −15 s · play/pausa · +15 s.
 //
-// Se llega desde Inicio (bloque Pieza o "Escuchar"), Terrarios, la ficha o
-// el final del Manifiesto. "← Inicio" / "← Terrarios" vuelve a
+// Se llega desde Mi terrario (bloque Pieza o "Escuchar"), Colección, la ficha o
+// el final del Manifiesto. "← Mi terrario" / "← Colección" vuelve a
 // donde se estaba; Ajustes queda arriba a la derecha.
 // #/escuchar sin id abre el terrario propio o, si no hay, el primero de la colección.
 //
 // Teclado: espacio = play/pausa · ← / → = −15 / +15 s (fuera de la barra).
 
-import { getTerrario } from "../../content/terrarios.js";
+import { getTerrario, codeOf } from "../../content/terrarios.js";
 import { WAVE_NAMES } from "../../content/plantas.js";
 import { linkedIds } from "../../store/collection.js";
 import { myTerrarioId } from "../../store/my-terrario.js";
@@ -26,7 +26,10 @@ import { formatDate, formatTime } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
 import { icon, arrow } from "../../utils/icons.js";
 
-export const title = ({ params }) => getTerrario(params.id)?.name ?? "Escuchar";
+export const title = ({ params }) => {
+  const terrario = getTerrario(params.id);
+  return terrario ? codeOf(terrario) : "Escuchar";
+};
 
 const SKIP = 15;
 
@@ -66,8 +69,8 @@ export async function render(root, { params, from }) {
         <div class="player__art reveal" data-art>${terrariumArt({ photo: terrario.photo })}</div>
 
         <div class="player__info reveal-stagger">
-          <p class="eyebrow">Terrario Nº ${escapeHTML(terrario.id)}</p>
-          <h1 class="player__name" tabindex="-1">${escapeHTML(terrario.name)}</h1>
+          <p class="eyebrow">Terrario</p>
+          <h1 class="player__name" tabindex="-1">${escapeHTML(codeOf(terrario))}</h1>
           <p class="lead">Grabado el ${formatDate(terrario.recorded)} · ${formatTime(terrario.duration)}</p>
           ${waves(terrario.waves ?? ["sine"])}
         </div>
@@ -100,13 +103,13 @@ export async function render(root, { params, from }) {
   return mountPlayer(root, terrario);
 }
 
-// La flecha de arriba vuelve a donde estaba la persona (Inicio o
-// Terrarios); si llegó de otro lado (la ficha, el Manifiesto), a la sección
+// La flecha de arriba vuelve a donde estaba la persona (Mi terrario o
+// Colección); si llegó de otro lado (la ficha, el Manifiesto), a la sección
 // que le corresponde a este terrario.
 function backTo(from = "", isMine) {
-  if (from.startsWith("mi-terrario")) return { href: "#/mi-terrario", label: "Inicio" };
-  if (from === "coleccion") return { href: "#/coleccion", label: "Terrarios" };
-  return isMine ? { href: "#/mi-terrario", label: "Inicio" } : { href: "#/coleccion", label: "Terrarios" };
+  if (from.startsWith("mi-terrario")) return { href: "#/mi-terrario", label: "Mi terrario" };
+  if (from === "coleccion") return { href: "#/coleccion", label: "Colección" };
+  return isMine ? { href: "#/mi-terrario", label: "Mi terrario" } : { href: "#/coleccion", label: "Colección" };
 }
 
 // Las ondas de la pieza (la forma de las hojas de sus plantas): ícono + nombre
@@ -191,10 +194,10 @@ function empty() {
       <div class="player__info reveal-stagger">
         <p class="eyebrow">Escuchar</p>
         <h1 class="title" tabindex="-1">Todavía no hay nada para escuchar</h1>
-        <p class="lead">Escaneá el QR de tu terrario para sumarlo a tus terrarios.</p>
+        <p class="lead">Conectá tu terrario con el QR de su base para sumarlo a tus terrarios.</p>
       </div>
       <div class="screen__actions">
-        <a class="btn btn--primary" href="#/escanear">${icon("scan-line")} Escanear QR</a>
+        <a class="btn btn--primary" href="#/escanear">${icon("scan-line")} Conectar mi terrario</a>
       </div>
     </section>
   `;

@@ -15,7 +15,7 @@
 // (Ventilación y Plantas están en Mi terrario.)
 
 import { CARE_GUIDE, CARE_FAQ } from "../../content/ayuda.js";
-import { getTerrario } from "../../content/terrarios.js";
+import { getTerrario, codeOf } from "../../content/terrarios.js";
 import { myTerrarioId, lastCare } from "../../store/my-terrario.js";
 import { markStep } from "../../store/journey.js";
 import { block } from "../../components/block/block.js";
@@ -24,7 +24,10 @@ import { todayKey } from "../../utils/dates.js";
 import { escapeHTML } from "../../utils/html.js";
 
 export const title = "Cuidados";
-export const subtitle = async () => getTerrario(await myTerrarioId())?.name ?? "Guía general";
+export const subtitle = async () => {
+  const terrario = getTerrario(await myTerrarioId());
+  return terrario ? codeOf(terrario) : "Guía general";
+};
 export const header = true;
 export const back = "#/mi-terrario";
 
