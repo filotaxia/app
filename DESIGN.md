@@ -52,14 +52,14 @@ Las **ondas** (`icon("wave-sine")`, `wave-triangle`, `wave-square`, `wave-sawtoo
 | `--font-xl-*` | 28/32 (32 desde 768) | Títulos de pantalla |
 | `--font-2xl-*` | 32/36 (40 desde 768) | Nombre en el reproductor |
 | `--font-brand-*` | 32/36, tracking 5px, mayúsculas | FILOTAXIA en el splash |
-| `--num-md-*` | 40/44, tracking -1.6 | Valor de un bloque ("22°.", "En 3 días.") |
-| `--num-xl-*` | 136/124, tracking -8 | Número protagonista de Mi terrario ("84%") |
+| `--num-md-*` | 40/44, tracking -1.6 (las cifras -6) | Valor de un bloque ("22°.", "3 días.") |
+| `--num-xl-*` | 136/124, tracking -8 | Número protagonista de Mi terrario ("4:11") |
 
 ## Espacio y forma
 
 - **Spacing** (base 8): `2xs` 2 · `xs` 4 · `sm` 8 · `md` 12 · `lg` 16 · `xl` 24 · `2xl` 32 · `3xl` 40 · `4xl` 56 · `5xl` 80.
 - **Radius:** **ninguno.** Todo es cuadrado, como en filotaxia.com: botones, bloques, hojas modales, chips, barra de navegación, interruptor y fotos. Los tokens `--radius-*` existen pero valen 0 (`tokens-radius.css`). Excepciones: son círculos el punto que cambia el tema (`components/theme-dot`), el play y el punto de la barra de progreso del reproductor, y la barra de navegación tiene un redondeo suave (16px la barra, 12px el fondo de la sección activa).
-- **Layout:** columna de 720px · gutter 24 → 32 (≥768) · botón principal 52 de alto · play 64 · área tocable mínima 44.
+- **Layout:** columna de 720px · gutter 16 → 24 (≥768) · botón principal 52 de alto · play 64 · área tocable mínima 44.
 
 ## Navegación (de Pulso)
 
@@ -89,7 +89,8 @@ El header grande (título + subtítulo) solo está en Colección y Ajustes. Mi t
 ## Pantallas
 
 - **Inicio:** isotipo + logotipo + "Armonía en Plantas" al centro; sigue sola.
-- **Mi terrario** (referencia "Status." de una app de energía): el nombre del terrario como en la web ("Terrario01.") en negro y "Armonía en plantas." en gris debajo, arriba a la derecha el punto que cambia el tema; aire; los **días que faltan para el próximo riego** en gigante (`--num-xl`, con "días" chico al lado; "Hoy" si toca o está atrasado), debajo chips (Para el próximo riego · Cada N días) y "Regué hoy" a la derecha; grilla de bloques de 2 columnas con 8px de aire: **la foto del terrario** a todo el ancho (4:3, lleva a la ficha) · **Sonido.** (link al reproductor) | **Con vos.** · **Ventilación.** a todo el ancho con medidor suave y "Ventilé hoy" · (**Plantas.**) · **Luz.** | **Temperatura.** Títulos de bloque con punto; etiqueta blanca arriba a la derecha (debajo del título en los de media columna); valor grande abajo. En ecosistemas abiertos no hay Ventilación; si el terrario tiene plantas cargadas aparece **Plantas.** (lista numerada 01 / 02 / 03 con foto cuadrada de cada planta vista de arriba y, debajo del nombre, su hoja y su onda; etiqueta "Ecosistema abierto"). Después **Cuidados.**: preguntas frecuentes que se abren (filas con línea fina y un + que gira a ×). Al pie, "¿No es este? Cambiar terrario" (hoja para elegir).
+- **Mi terrario** (referencia "Status." de una app de energía): el nombre del terrario como en la web ("Terrario01.") en negro y "Armonía en plantas." en gris debajo, arriba a la derecha el punto que cambia el tema; aire; **la pieza musical** de protagonista: su duración en gigante (`--num-xl`, "4:11"), debajo un chip (Grabado …) y "▶ Escuchar" a la derecha (lleva al reproductor); grilla de bloques de 2 columnas con 8px de aire: **la foto del terrario** a todo el ancho (4:3, lleva a la ficha) · **Riego.** (ícono calendario) | **Luz.** · **Ventilación.** a todo el ancho con medidor suave y "Ventilé hoy" · (**Plantas.**) · **Cuidados.** a todo el ancho ("N preguntas", "Cómo cuidarlo." y →; lleva a la subpágina Cuidados). Títulos de bloque con punto; etiqueta blanca arriba a la derecha (debajo del título en los de media columna); valor grande abajo. En ecosistemas abiertos no hay Ventilación; si el terrario tiene plantas cargadas aparece **Plantas.** (lista numerada 01/ 02/ 03/ con foto de cada planta vista de arriba y, debajo del nombre, la forma de su hoja; arriba a la derecha el botón "Ondas" (sin ícono), que cambia el título a "Ondas.", pasa a decir "Plantas" para volver y muestra en cada fila el dibujo de su onda en lugar de la foto, y su onda en lugar de la hoja). Al pie, "¿No es este? Cambiar terrario" (hoja para elegir).
+- **Cuidados** (`#/mi-terrario/cuidados`, subpágina de Mi terrario): header grande "Cuidados" con el nombre del terrario de subtítulo y flecha que vuelve a Mi terrario; las preguntas frecuentes que se abren (filas con línea fina y un + que gira a ×). La barra sigue marcando Mi terrario.
 - **Escanear:** título centrado arriba, visor de 200px con esquinas negras y una línea que barre, ayuda debajo, "Simular escaneo →" al pie.
 - **Terrario:** foto (o ilustración) a todo el ancho, eyebrow, nombre, historia; si tiene ficha técnica, **Especificaciones** (eyebrow + filas con línea fina: etiqueta gris a la izquierda, dato a la derecha: Modelo, Ecosistema, Recipiente, Medidas, Planta 01…); abrirla suma el terrario a la colección (aviso la primera vez). Botón "Escuchar" + link "Ir a mi colección".
 - **Escuchar:** "← Colección", ilustración (76% del ancho), eyebrow, nombre grande, "Grabado el … · 3:42", chips con las ondas de la pieza (ícono + nombre), barra fina con tiempos, −15 · play · +15.

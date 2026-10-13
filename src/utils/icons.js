@@ -14,6 +14,7 @@
 
 const PATHS = {
   "audio-lines": `<path d="M2 10v3"/><path d="M6 6v11"/><path d="M10 3v18"/><path d="M14 8v7"/><path d="M18 5v13"/><path d="M22 10v3"/>`,
+  "calendar": `<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>`,
   "check": `<path d="M20 6 9 17l-5-5"/>`,
   "pause": `<rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/>`,
   "play": `<path d="M6 4.8a1 1 0 0 1 1.5-.86l11.4 7.2a1 1 0 0 1 0 1.72L7.5 20.06A1 1 0 0 1 6 19.2z" fill="currentColor" stroke="none"/>`,

@@ -26,7 +26,7 @@ export function nextCare({ last, every, today }) {
 }
 
 export function dueLabel(daysLeft) {
-  if (daysLeft > 1) return `En ${daysLeft} días`;
+  if (daysLeft > 1) return `${daysLeft} días`;
   if (daysLeft === 1) return "Mañana";
   if (daysLeft === 0) return "Hoy";
   return daysLeft === -1 ? "Hace 1 día" : `Hace ${-daysLeft} días`;

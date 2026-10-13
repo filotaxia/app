@@ -5,6 +5,7 @@
 // Router por hash. Las rutas de la app:
 //   #/inicio            splash
 //   #/mi-terrario       el terrario propio y sus cuidados
+//   #/mi-terrario/cuidados   preguntas frecuentes de cuidados
 //   #/escanear          escaneo del QR
 //   #/terrario/04       ficha de un terrario (abrirla lo suma a la colección)
 //   #/coleccion         mi colección        #/ajustes    ajustes
@@ -34,6 +35,7 @@ import * as terrario from "./views/terrario/terrario.js";
 import * as coleccion from "./views/coleccion/coleccion.js";
 import * as escuchar from "./views/escuchar/escuchar.js";
 import * as ajustes from "./views/ajustes/ajustes.js";
+import * as cuidados from "./views/cuidados/cuidados.js";
 import * as manifiesto from "./views/manifiesto/manifiesto.js";
 import { setHeader, focusHeaderTitle } from "./layout/header/header.js";
 
@@ -41,6 +43,7 @@ import { setHeader, focusHeaderTitle } from "./layout/header/header.js";
 const ROUTES = [
   ["inicio", inicio],
   ["mi-terrario", miTerrario],
+  ["mi-terrario/cuidados", cuidados],
   ["escanear", escanear],
   ["terrario/:id", terrario],
   ["coleccion", coleccion],

@@ -4,25 +4,25 @@
 
 // El terrario propio y sus cuidados (referencia: pantalla "Status." de una
 // app de energía): el nombre del terrario como en la web ("Terrario01.") + "Armonía
-// en plantas." en gris, los días que
-// faltan para el próximo riego en gigante (con chips y "Regué hoy") y bloques:
+// en plantas." en gris, la pieza musical como protagonista (su duración en
+// gigante, con chips y "Escuchar") y bloques:
 //
 //   (foto)         la foto del terrario a todo el ancho; lleva a su ficha
-//   Sonido. | Con vos.
+//   Riego. | Luz.
 //   Ventilación.   (medidor suave; no aparece en ecosistemas abiertos)
-//   Plantas.       (si el terrario las tiene cargadas)
-//   Luz. | Temperatura.
-//   Cuidados.      (preguntas frecuentes, de filotaxia.com)
+//   Plantas.       (si el terrario las tiene cargadas; el botón "Ondas" muestra sus ondas)
+//   Cuidados.      (lleva a la subpágina con las preguntas frecuentes, views/cuidados)
 //
-// Riego y ventilación se registran acá ("Regué hoy"); las lecturas son
-// simuladas hasta que haya sensores (ver utils/care.js).
+// La ventilación se registra acá ("Ventilé hoy"). El riego ya no tiene botón:
+// cuenta desde el último registrado en care_log o, si no hay, desde el día
+// del escaneo. Las lecturas son simuladas hasta que haya sensores (ver utils/care.js).
 
 import { getTerrario } from "../../content/terrarios.js";
 import { CARE_FAQ } from "../../content/ayuda.js";
 import { getPlanta, WAVE_NAMES } from "../../content/plantas.js";
 import { get, set } from "../../store/store.js";
 import { linkedIds } from "../../store/collection.js";
-import { myTerrarioId, setMyTerrario, lastCare, logCare, loggedToday, linkedOn } from "../../store/my-terrario.js";
+import { myTerrarioId, setMyTerrario, lastCare, logCare, loggedToday } from "../../store/my-terrario.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { themeDot } from "../../components/theme-dot/theme-dot.js";
 import { openSheet } from "../../components/sheet/sheet.js";
@@ -31,7 +31,7 @@ import { nextCare, dueLabel, readings } from "../../utils/care.js";
 import { todayKey, daysBetween } from "../../utils/dates.js";
 import { formatDate, formatTime } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
-import { icon } from "../../utils/icons.js";
+import { icon, arrow } from "../../utils/icons.js";
 import { oppositeTheme } from "../../utils/theme.js";
 
 export const title = "Mi terrario";
@@ -53,8 +53,6 @@ export async function render(root) {
   // Ecosistema abierto: no se ventila (ventilacion_days es null)
   const vent = care.ventilacion_days ? nextCare({ last: lastVent, every: care.ventilacion_days, today }) : null;
   const reading = readings({ terrario, today, daysSinceRiego: daysBetween(lastRiego, today) });
-  const sinceDate = await linkedOn(terrario.id);
-  const sinceDays = daysBetween(sinceDate, today) + 1;   // el día que se escaneó cuenta como el primero
 
   root.innerHTML = `
     <section class="screen mine">
@@ -66,14 +64,19 @@ export async function render(root) {
         ${themeDot()}
       </header>
 
-      ${riegoHero(riego, care, await loggedToday(terrario.id, "riego"))}
+      ${pieceHero(terrario)}
 
       <div class="blocks reveal-stagger">
         <a class="block block--full block--photo" href="#/terrario/${terrario.id}" aria-label="Ver la ficha de ${escapeHTML(terrario.name)}">
           ${terrariumArt({ photo: terrario.photo })}
         </a>
-        ${block({ title: "Sonido", badge: "Escuchar", icon: "audio-lines", value: formatTime(terrario.duration), href: `#/escuchar/${terrario.id}` })}
-        ${block({ title: "Con vos", badge: `Desde ${formatDate(sinceDate)}`, icon: "sprout", value: sinceDays === 1 ? "1 día" : `${sinceDays} días` })}
+        ${block({
+          title: "Riego",
+          badge: `Cada ${care.riego_days} días`,
+          icon: "calendar",
+          value: dueLabel(riego.daysLeft),
+        })}
+        ${block({ title: "Luz", badge: care.light, icon: "sun", value: `${reading.lightHours} h` })}
         ${vent
           ? block({
               title: "Ventilación",
@@ -85,18 +88,15 @@ export async function render(root) {
             })
           : ""}
         ${plantsBlock(terrario)}
-        ${block({ title: "Luz", badge: care.light, icon: "sun", value: `${reading.lightHours} h` })}
-        ${block({ title: "Temperatura", badge: `Ideal ${care.temp[0]}–${care.temp[1]}°`, icon: "thermometer", value: `${reading.temp}°` })}
+        ${block({
+          title: "Cuidados",
+          badge: `${CARE_FAQ.length} preguntas`,
+          value: "Cómo cuidarlo",
+          action: `<span class="block__go">${arrow()}</span>`,
+          full: true,
+          href: "#/mi-terrario/cuidados",
+        })}
       </div>
-
-      <section class="faq reveal" aria-labelledby="faq-title">
-        <h2 class="faq__title" id="faq-title">Cuidados.</h2>
-        ${CARE_FAQ.map(([question, answer]) => `
-          <details class="faq__item">
-            <summary class="faq__question">${question}</summary>
-            <p class="faq__answer lead">${answer}</p>
-          </details>`).join("")}
-      </section>
 
       <div class="mine__footer">
         <button class="text-link" type="button" data-change>¿No es este? Cambiar terrario</button>
@@ -114,6 +114,7 @@ export async function render(root) {
   });
 
   root.querySelector("[data-change]").addEventListener("click", () => openChange(terrario.id));
+  bindPlants(root);
   bindThemeDot(root);
 }
 
@@ -126,29 +127,20 @@ function bindThemeDot(root) {
   });
 }
 
-// El protagonista: los días que faltan para el próximo riego, en gigante.
-// Debajo, los chips y "Regué hoy".
-function riegoHero(riego, care, doneToday) {
-  const { daysLeft } = riego;
-  const big = daysLeft > 0
-    ? `${daysLeft}<span class="mine__unit">${daysLeft === 1 ? "día" : "días"}</span>`
-    : "Hoy";
-  const when = daysLeft > 0
-    ? "Para el próximo riego"
-    : daysLeft === 0 ? "Toca regar" : `Atrasado ${-daysLeft} ${daysLeft === -1 ? "día" : "días"}`;
-
+// El protagonista: la pieza musical del terrario, su duración en gigante.
+// Debajo, un chip con la fecha en que se grabó y "Escuchar".
+function pieceHero(terrario) {
   return `
     <div class="mine__hero reveal">
-      <p class="mine__big" aria-hidden="true">${big}</p>
-      <p class="visually-hidden">Próximo riego: ${dueLabel(daysLeft).toLowerCase()}.</p>
+      <p class="mine__big" aria-hidden="true">${formatTime(terrario.duration)}</p>
+      <p class="visually-hidden">Tu pieza dura ${formatTime(terrario.duration)}.</p>
     </div>
 
-    <div class="mine__riego reveal">
-      <ul class="mine__chips" aria-label="Riego">
-        <li class="chip">${when}</li>
-        <li class="chip">Cada ${care.riego_days} días</li>
+    <div class="mine__pieza reveal">
+      <ul class="mine__chips" aria-label="Tu pieza">
+        <li class="chip">Grabado ${formatDate(terrario.recorded)}</li>
       </ul>
-      ${careAction("riego", "Regué hoy", doneToday)}
+      <a class="block__action" href="#/escuchar/${terrario.id}">${icon("play")} Escuchar</a>
     </div>
   `;
 }
@@ -166,23 +158,45 @@ function block({ title, badge, icon: iconName, value, meter, action = "", full =
       <h2 class="block__title">${title}.</h2>
       <span class="block__badge">${escapeHTML(badge)}</span>
       ${iconName ? `<span class="block__icon">${icon(iconName)}</span>` : ""}
-      <p class="block__value${value.length > 9 ? " block__value--long" : ""}">${escapeHTML(value)}.</p>
+      <p class="block__value${value.length > 9 ? " block__value--long" : ""}">${digits(value)}.</p>
       ${action}
     </${tag}>
   `;
 }
 
-// Plantas del terrario, una por fila: foto, nombre y la onda con la que suena
-// (según la forma de su hoja, content/plantas.js). El ecosistema va de etiqueta.
+// Aprieta el espacio entre cifras ("27" de "27 días") más que entre letras.
+// El tracking va en todas las cifras menos la última: así lo que sigue
+// ("días", "°") queda a la distancia de siempre.
+// El texto se escapa en partes, para no partir un "&#39;" al buscar cifras.
+function digits(text) {
+  return String(text)
+    .split(/(\d+)/)
+    .map((part, i) => {
+      if (i % 2 === 0) return escapeHTML(part);
+      if (part.length === 1) return part;
+      return `<span class="block__digits">${part.slice(0, -1)}</span>${part.slice(-1)}`;
+    })
+    .join("");
+}
+
+// Plantas del terrario, una por fila: foto, nombre y la forma de su hoja.
+// El botón "Ondas" cambia la vista: el título pasa a "Ondas.", el botón a
+// "Plantas" (para volver) y, en lugar
+// de la foto y la hoja, cada fila muestra el dibujo de la onda con la que
+// suena (según la forma de su hoja, content/plantas.js). Las dos versiones ya
+// están en el HTML; el CSS muestra una u otra según data-view (ver bindPlants).
 function plantsBlock(terrario) {
   if (!terrario.plants?.length) return "";
-  const ecosistema = terrario.specs?.ecosistema;
+  const plantas = terrario.plants.map(getPlanta);
+  const hasWaves = plantas.some((planta) => planta.wave);
   return `
-    <article class="block block--full block--list">
-      <h2 class="block__title">Plantas.</h2>
-      ${ecosistema ? `<span class="block__badge">Ecosistema ${escapeHTML(ecosistema.toLowerCase())}</span>` : ""}
+    <article class="block block--full block--list" data-plants data-view="plantas">
+      <h2 class="block__title" data-plants-title>Plantas.</h2>
+      ${hasWaves
+        ? `<button class="block__badge block__toggle" type="button" aria-label="Ver ondas" data-plants-toggle>Ondas</button>`
+        : ""}
       <ol class="block__list">
-        ${terrario.plants.map(getPlanta).map(plantRow).join("")}
+        ${plantas.map(plantRow).join("")}
       </ol>
     </article>
   `;
@@ -191,16 +205,35 @@ function plantsBlock(terrario) {
 function plantRow(planta, i) {
   return `
     <li class="plant">
-      <span class="block__list-index">${String(i + 1).padStart(2, "0")}</span>
+      <span class="block__list-index">${String(i + 1).padStart(2, "0")}/</span>
       ${planta.photo ? `<img class="plant__photo" src="${planta.photo}" alt="" loading="lazy" decoding="async" />` : ""}
+      ${planta.wave ? `<span class="plant__photo plant__wave-art" aria-hidden="true">${icon(`wave-${planta.wave}`)}</span>` : ""}
       <span class="plant__text">
         <span class="plant__name">${escapeHTML(planta.name)}</span>
         ${planta.wave
-          ? `<span class="plant__wave">${icon(`wave-${planta.wave}`)} Hoja ${planta.leafLabel.toLowerCase()} · onda ${WAVE_NAMES[planta.wave].toLowerCase()}</span>`
+          ? `<span class="plant__detail plant__detail--leaf">Hoja ${planta.leafLabel.toLowerCase()}</span>
+             <span class="plant__detail plant__detail--wave">Onda ${WAVE_NAMES[planta.wave].toLowerCase()}</span>`
           : ""}
       </span>
     </li>
   `;
+}
+
+// Botón del bloque de plantas: alterna entre ver las hojas y las ondas.
+// El botón dice a qué vista lleva ("Ondas" o "Plantas").
+function bindPlants(root) {
+  const block = root.querySelector("[data-plants]");
+  const toggle = root.querySelector("[data-plants-toggle]");
+  if (!block || !toggle) return;
+  const title = block.querySelector("[data-plants-title]");
+
+  toggle.addEventListener("click", () => {
+    const waves = block.dataset.view !== "ondas";
+    block.dataset.view = waves ? "ondas" : "plantas";
+    title.textContent = waves ? "Ondas." : "Plantas.";
+    toggle.textContent = waves ? "Plantas" : "Ondas";
+    toggle.setAttribute("aria-label", waves ? "Ver plantas" : "Ver ondas");
+  });
 }
 
 function careAction(type, label, doneToday) {

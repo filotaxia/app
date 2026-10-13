@@ -3,7 +3,7 @@
    ============================================ */
 
 /* Layout de la referencia "Status.": nombre + estado arriba, aire, el número
-   gigante (días para el riego) con su barra de acento, chips y "Regué hoy",
+   gigante (la duración de la pieza), chips y "Escuchar",
    y una grilla de bloques de 2 columnas pegados (8px de aire) que arranca
    con la foto del terrario a todo el ancho. */
 
@@ -36,7 +36,7 @@
 }
 
 /* Miniatura del terrario (lleva a su ficha), en lugar del logo de la referencia */
-/* --- Número protagonista: días para el próximo riego --- */
+/* --- Número protagonista: la duración de la pieza --- */
 .mine__hero {
     margin-top: var(--spacing-6xl);
 }
@@ -51,21 +51,33 @@
     margin-left: -6px;
 }
 
-/* "días", chico al lado del número */
-.mine__unit {
-    margin-left: var(--spacing-md);
-    font-size: var(--font-xl-size);
-    line-height: var(--font-xl-line);
-    letter-spacing: var(--font-xl-tracking);
-}
-
-/* Chips a la izquierda, "Regué hoy" a la derecha */
-.mine__riego {
+/* Chips a la izquierda, "Escuchar" a la derecha */
+.mine__pieza {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--gap-md);
     margin-top: var(--spacing-lg);
+}
+
+/* "Escuchar", del mismo tamaño que los chips de al lado (28px de alto).
+   El área tocable sigue siendo de 44px, por encima y por debajo. */
+.mine__pieza .block__action {
+    position: relative;
+    min-height: 28px;
+}
+
+.mine__pieza .block__action::before {
+    content: "";
+    position: absolute;
+    inset: 50% 0 auto;
+    height: var(--size-tap);
+    transform: translateY(-50%);
+}
+
+.mine__pieza .block__action svg {
+    width: 10px;
+    height: 10px;
 }
 
 /* --- Chips --- */
@@ -95,7 +107,7 @@
         "icon"
         "value";
     gap: var(--spacing-xs) var(--spacing-sm);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
     border-radius: var(--radius-block);
     background: var(--color-block-bg);
     overflow: hidden;
@@ -174,6 +186,12 @@
     font-variant-numeric: tabular-nums;
 }
 
+/* Las cifras van más apretadas que las letras (el span envuelve todas
+   menos la última, ver digits() en mi-terrario.js) */
+.block__digits {
+    letter-spacing: var(--num-md-digit-tracking);
+}
+
 /* Valores largos ("Hace 2 días") un talle menos, para que entren en una línea */
 .block__value--long {
     font-size: var(--font-2xl-size);
@@ -193,7 +211,7 @@
     background: var(--color-meter-soft);
 }
 
-/* Acción: pill chica abajo a la derecha ("Regué hoy") */
+/* Acción: pill chica abajo a la derecha ("Ventilé hoy") */
 .block__action {
     grid-area: action;
     align-self: end;
@@ -260,7 +278,37 @@
     font-variant-numeric: tabular-nums;
 }
 
-/* Una planta: número, foto redonda (vista de arriba), nombre y su onda */
+/* Flecha de los bloques que llevan a otra pantalla ("Cuidados.") */
+.block__go {
+    grid-area: action;
+    align-self: end;
+    justify-self: end;
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+}
+
+/* Botón "Ondas" / "Plantas": la etiqueta de arriba a la derecha, pero
+   tocable. En la vista Ondas se invierte, como la opción elegida. */
+.block__toggle {
+    position: relative;
+    color: var(--color-text);
+}
+
+/* Área tocable de 44px sin agrandar la etiqueta */
+.block__toggle::before {
+    content: "";
+    position: absolute;
+    inset: 50% -8px auto;
+    height: var(--size-tap);
+    transform: translateY(-50%);
+}
+
+[data-view="ondas"] .block__toggle {
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+}
+
+/* Una planta: número, foto redonda (vista de arriba), nombre y su hoja (u onda) */
 .block__list .plant {
     align-items: center;
 }
@@ -280,83 +328,40 @@
     min-width: 0;
 }
 
-.plant__wave {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--gap-xs);
+.plant__detail {
     font-size: var(--font-xs-size);
     line-height: var(--font-xs-line);
     letter-spacing: var(--font-xs-tracking);
     color: var(--color-text-muted);
 }
 
-.plant__wave svg {
-    width: var(--icon-sm);
-    height: var(--icon-sm);
+/* El dibujo de la onda, en el lugar de la foto (vista Ondas) */
+.plant__wave-art {
+    display: grid;
+    place-items: center;
 }
 
-/* El bloque "Sonido" es un link entero */
+.plant__wave-art svg {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+    stroke-width: 1.5;
+}
+
+/* Hojas u ondas, según el botón (la foto solo se esconde si hay dibujo) */
+[data-view="plantas"] .plant__detail--wave,
+[data-view="plantas"] .plant__wave-art,
+[data-view="ondas"] .plant__detail--leaf,
+[data-view="ondas"] .plant__photo:has(+ .plant__wave-art) {
+    display: none;
+}
+
+/* Los bloques que son links enteros (la foto, Cuidados) */
 a.block {
     transition: transform var(--transition-fast);
 }
 
 a.block:active {
     transform: scale(0.98);
-}
-
-/* --- Cuidados: preguntas frecuentes que se abren (details nativo) --- */
-.faq {
-    margin-top: var(--spacing-3xl);
-}
-
-.faq__title {
-    margin-bottom: var(--spacing-md);
-    font-size: var(--font-xl-size);
-    line-height: var(--font-xl-line);
-    letter-spacing: var(--font-xl-tracking);
-}
-
-.faq__item {
-    border-bottom: 1px solid var(--color-line);
-}
-
-.faq__item:first-of-type {
-    border-top: 1px solid var(--color-line);
-}
-
-.faq__question {
-    min-height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--gap-md);
-    padding-block: var(--spacing-md);
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
-    list-style: none;
-    cursor: pointer;
-}
-
-.faq__question::-webkit-details-marker {
-    display: none;
-}
-
-/* Un + que gira a × al abrir */
-.faq__question::after {
-    content: "+";
-    flex-shrink: 0;
-    font-size: var(--font-lg-size);
-    color: var(--color-text-muted);
-    transition: transform var(--transition-normal);
-}
-
-.faq__item[open] .faq__question::after {
-    transform: rotate(45deg);
-}
-
-.faq__answer {
-    padding-bottom: var(--spacing-lg);
-    max-width: 480px;
 }
 
 .mine__footer {
