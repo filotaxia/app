@@ -3,15 +3,17 @@
    ============================================ */
 
 // Ajustes: una lista de filas:
-// Mis terrarios · Apariencia (Auto / Claro / Oscuro, se aplica al instante)
-// · Notificaciones (hoja con interruptor) · Ayuda (hoja) · Ver el Manifiesto
-// (la introducción del primer escaneo, otra vez) · Contacto (hoja).
+// Apariencia (Auto / Claro / Oscuro, se aplica al instante) · Notificaciones
+// (hoja con interruptor) · Contacto (hoja). El paso a paso que antes era
+// "Ayuda" ahora es la sección Filotaxia de la barra (views/filotaxia).
+// Se llega desde el punto de arriba a la derecha (no está en la barra);
+// la flecha vuelve a la pantalla de la que se vino.
 
 import { get, set } from "../../store/store.js";
 import { openSheet } from "../../components/sheet/sheet.js";
 import { segmented } from "../../components/segmented/segmented.js";
 import { arrow } from "../../utils/icons.js";
-import { HOW_IT_WORKS, CARE_FAQ, PROCESS, LAYERS, SOUND_FAQ, CONTACT } from "../../content/ayuda.js";
+import { CONTACT } from "../../content/ayuda.js";
 
 const THEME_OPTIONS = [
   { value: "system", label: "Auto" },
@@ -20,8 +22,11 @@ const THEME_OPTIONS = [
 ];
 
 export const title = "Ajustes";
-export const subtitle = "Tu colección vive en este teléfono";
+export const subtitle = "Tus terrarios viven en este teléfono";
 export const header = true;
+
+// Vuelve a donde estaba la persona (si venía de otra pantalla de la app)
+export const back = ({ from }) => (from && from !== "inicio" ? `#/${from}` : "#/mi-terrario");
 
 export async function render(root) {
   const next = arrow();
@@ -29,14 +34,11 @@ export async function render(root) {
 
   root.innerHTML = `
     <nav class="list reveal" aria-label="Ajustes">
-      <a class="list-row" href="#/coleccion">Mis terrarios ${next}</a>
       <div class="list-row">
         <span aria-hidden="true">Apariencia</span>
         ${segmented({ name: "theme", legend: "Apariencia", value: prefs.theme ?? "light", options: THEME_OPTIONS })}
       </div>
       <button class="list-row" type="button" data-notifications>Notificaciones ${next}</button>
-      <button class="list-row" type="button" data-help>Ayuda ${next}</button>
-      <a class="list-row" href="#/manifiesto">Ver el Manifiesto ${next}</a>
       <button class="list-row" type="button" data-contact>Contacto ${next}</button>
     </nav>
   `;
@@ -47,7 +49,6 @@ export async function render(root) {
   });
 
   root.querySelector("[data-notifications]").addEventListener("click", openNotifications);
-  root.querySelector("[data-help]").addEventListener("click", openHelp);
   root.querySelector("[data-contact]").addEventListener("click", openContact);
 }
 
@@ -68,56 +69,6 @@ async function openNotifications() {
 
   sheet.element.querySelector("[data-switch]").addEventListener("change", async (event) => {
     await set("prefs", { ...(await get("prefs")), notifications: event.target.checked });
-  });
-}
-
-// Ayuda (textos de filotaxia.com, content/ayuda.js): "¿Cómo funciona?" en
-// tres pasos, de la planta a la música, las cuatro capas y las preguntas
-function openHelp() {
-  const index = (i) => `<span class="help__index">${String(i + 1).padStart(2, "0")}/</span>`;
-  const faq = (list) => list.map(([q, a]) => `<div class="help__item"><dt>${q}</dt><dd class="lead">${a}</dd></div>`).join("");
-
-  openSheet({
-    title: "Ayuda",
-    body: `
-      <section class="help">
-        <h3 class="eyebrow">¿Cómo funciona?</h3>
-        <ol class="help__steps">
-          ${HOW_IT_WORKS.map((step, i) => `
-            <li class="help__step">
-              ${index(i)}
-              <p class="lead">${step}</p>
-            </li>`).join("")}
-        </ol>
-      </section>
-      <section class="help">
-        <h3 class="eyebrow">De la planta a la música</h3>
-        <ol class="help__steps">
-          ${PROCESS.map(([name, text], i) => `
-            <li class="help__step">
-              ${index(i)}
-              <div class="help__item">
-                <p class="help__step-title">${name}</p>
-                <p class="lead">${text}</p>
-              </div>
-            </li>`).join("")}
-        </ol>
-      </section>
-      <section class="help">
-        <h3 class="eyebrow">Las cuatro capas</h3>
-        <dl class="help__faq">
-          ${LAYERS.map(([name, material, text]) => `
-            <div class="help__item">
-              <dt>${name} <span class="help__meta">${material}</span></dt>
-              <dd class="lead">${text}</dd>
-            </div>`).join("")}
-        </dl>
-      </section>
-      <section class="help">
-        <h3 class="eyebrow">Preguntas frecuentes</h3>
-        <dl class="help__faq">${faq(SOUND_FAQ)}${faq(CARE_FAQ)}</dl>
-      </section>
-    `,
   });
 }
 

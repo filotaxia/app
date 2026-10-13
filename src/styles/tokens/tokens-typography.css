@@ -34,7 +34,7 @@
     --font-lg-line: 22px;
     --font-lg-tracking: -0.2px;
 
-    --font-xl-size: 28px;        /* títulos de pantalla: Mi Colección, Las Flechas */
+    --font-xl-size: 28px;        /* títulos de pantalla: Terrarios, Las Flechas */
     --font-xl-line: 32px;
     --font-xl-tracking: -0.6px;
 
@@ -52,9 +52,13 @@
     --num-md-tracking: -1.6px;
     --num-md-digit-tracking: -6px;   /* solo las cifras ("27", "21") */
 
-    --num-xl-size: 136px;        /* el número protagonista: 4:11 */
-    --num-xl-line: 124px;
-    --num-xl-tracking: -8px;
+    --num-lg-size: 72px;         /* el porcentaje del recorrido (Filotaxia): 60% */
+    --num-lg-line: 72px;
+    --num-lg-tracking: -3px;
+
+    --num-xl-size: 96px;         /* el protagonista: TR01 */
+    --num-xl-line: 88px;
+    --num-xl-tracking: -5px;
 
 }
 

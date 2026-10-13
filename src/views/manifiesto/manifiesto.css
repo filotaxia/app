@@ -2,14 +2,19 @@
    Views — Manifiesto
    ============================================ */
 
-/* Pantalla completa sin barra: arriba el progreso (5 líneas finas) con el
-   contador y "Saltar", en el medio el carrusel (scroll-snap horizontal,
-   una pantalla por vez) y abajo "Siguiente" o el botón final. */
+/* Pantalla completa: arriba el progreso (5 líneas finas) con el contador
+   y "Saltar", en el medio el carrusel (scroll-snap horizontal, una pantalla
+   por vez) y abajo "Siguiente" o el botón final. En el primer escaneo va
+   sin barra; abierto desde la barra, deja lugar abajo para ella. */
 
 .manifiesto {
     height: 100dvh;
     display: flex;
     flex-direction: column;
+}
+
+.app-shell[data-nav] .manifiesto {
+    height: calc(100dvh - var(--view-pad-bottom));
 }
 
 .manifiesto h1:focus {
@@ -151,13 +156,14 @@
     width: 100%;
     aspect-ratio: 1;
     /* en teléfonos bajos se achican para que entren con el título:
-       330px ≈ barra de arriba + título + "Siguiente" + márgenes */
-    max-height: calc((100dvh - 330px) / 2);
+       330px ≈ barra de arriba + título + "Siguiente" + márgenes, 44px los
+       puntos de la vista y --view-pad-bottom la barra de abajo (si está) */
+    max-height: calc((100dvh - 374px - var(--view-pad-bottom)) / 2);
     /* las tarjetas entran una tras otra (--i lo pone el componente) */
     animation: reveal-in 0.7s var(--ease-out) calc(0.15s + var(--i) * 0.1s) both;
 }
 
-.manifiesto__slide--split > .leaf-waves {
+.manifiesto__slide--split > .leaf-waves-flip {
     animation: none;
 }
 
@@ -400,6 +406,12 @@
 
 .manifiesto__actions .btn {
     width: 100%;
+}
+
+/* "Saltar" / "Cerrar": link de texto sin la línea de abajo
+   ("Siguiente →" la conserva) */
+.manifiesto__skip {
+    border-bottom: none;
 }
 
 /* ============================================

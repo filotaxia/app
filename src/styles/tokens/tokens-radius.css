@@ -6,8 +6,8 @@
    sus esquinas (botones, bloques, hojas modales, chips, barra, interruptor,
    fotos). Los tokens quedan en 0 para que, si algún día se quiere volver a
    redondear algo, alcance con cambiar un valor acá.
-   Excepciones: son círculos el punto que cambia el tema (components/theme-dot),
-   el play y el punto de la barra de progreso del reproductor (views/escuchar);
+   Excepciones: son círculos el punto de Ajustes (components/settings-link),
+   el play y el punto de la barra de progreso del reproductor (views/terrario);
    la barra de navegación tiene un redondeo suave (layout/bottom-nav). */
 
 :root {

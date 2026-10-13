@@ -1,0 +1,170 @@
+/* ============================================
+   Components — Block
+   ============================================ */
+
+/* Bloque de dato, de la referencia "Status." de una app de energía:
+   fondo gris, título con punto arriba a la izquierda, etiqueta blanca,
+   ícono y valor grande abajo. Lo usan Mi terrario y Cuidados. */
+
+/* --- Grilla de bloques: 2 columnas pegadas, 8px de aire --- */
+.blocks {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+}
+
+.block {
+    position: relative;
+    min-height: 168px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas:
+        "title"
+        "badge"
+        "icon"
+        "value";
+    gap: var(--spacing-xs) var(--spacing-sm);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-block);
+    background: var(--color-block-bg);
+    overflow: hidden;
+}
+
+/* A todo el ancho: etiqueta arriba a la derecha y acción abajo a la derecha,
+   como el bloque de batería de la referencia. (En los de media columna no
+   entran título y etiqueta en la misma línea: la etiqueta va debajo.) */
+.block--full {
+    grid-column: 1 / -1;
+    min-height: 136px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "title badge"
+        "icon  icon"
+        "value action";
+}
+
+/* Todo lo de adentro va por encima del relleno del medidor */
+.block > :not(.block__fill) {
+    position: relative;
+}
+
+.block__title {
+    grid-area: title;
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+/* Etiqueta chica blanca arriba a la derecha */
+.block__badge {
+    grid-area: badge;
+    align-self: start;
+    justify-self: start;
+    padding: var(--spacing-2xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    background: var(--color-badge-bg);
+    font-size: var(--font-2xs-size);
+    line-height: var(--font-xs-line);
+    white-space: nowrap;
+}
+
+.block--full .block__badge {
+    justify-self: end;
+}
+
+.block__icon {
+    grid-area: icon;
+    align-self: end;
+}
+
+.block__icon svg {
+    width: 28px;
+    height: 28px;
+    stroke-width: 1.25;
+}
+
+.block__value {
+    grid-area: value;
+    align-self: end;
+    font-size: var(--num-md-size);
+    line-height: var(--num-md-line);
+    letter-spacing: var(--num-md-tracking);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Las cifras van más apretadas que las letras (el span envuelve todas
+   menos la última, ver digits() en mi-terrario.js) */
+.block__digits {
+    letter-spacing: var(--num-md-digit-tracking);
+}
+
+/* Valores largos ("Hace 2 días") un talle menos, para que entren en una línea */
+.block__value--long {
+    font-size: var(--font-2xl-size);
+    line-height: var(--font-2xl-line);
+    letter-spacing: var(--font-2xl-tracking);
+}
+
+/* Medidor: el fondo se llena hasta --fill (el ancho que queda del ciclo) */
+.block__fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--fill, 0%);
+    transition: width 0.6s var(--ease-out);
+}
+
+.block--soft .block__fill {
+    background: var(--color-meter-soft);
+}
+
+/* Acción: pill chica abajo a la derecha ("Ventilé hoy") */
+.block__action {
+    grid-area: action;
+    align-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    min-height: 36px;
+    padding: 0 var(--spacing-md);
+    border-radius: 0;
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    transition: transform var(--transition-fast);
+}
+
+.block__action:active {
+    transform: scale(0.96);
+}
+
+.block__action--done {
+    background: var(--color-badge-bg);
+    color: var(--color-text-muted);
+}
+
+.block__action svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Flecha de los bloques que llevan a otra pantalla ("Cuidados.") */
+.block__go {
+    grid-area: action;
+    align-self: end;
+    justify-self: end;
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+}
+
+/* Los bloques que son links enteros (Bitácora, Cuidados) */
+a.block {
+    transition: transform var(--transition-fast);
+}
+
+a.block:active {
+    transform: scale(0.98);
+}

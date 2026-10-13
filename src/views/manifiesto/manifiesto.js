@@ -14,10 +14,11 @@
 //                  en un piano roll que un cabezal recorre, con nombre y fecha
 //   5. Cierre      "Escuchar mi terrario" → reproductor
 //
-// Se ve una sola vez: la ficha (views/terrario) manda acá en el primer escaneo,
-// con el id del terrario (#/manifiesto/04). "Saltar" o el botón final guardan
-// `manifiesto_seen` y siguen al reproductor de ese terrario.
-// Desde Ajustes se vuelve a abrir sin id (#/manifiesto): ahí "Saltar" es "Cerrar".
+// Se abre solo una vez: la ficha (views/terrario) manda acá en el primer
+// escaneo, con el id del terrario (#/manifiesto/04). "Saltar" o el botón
+// final guardan `manifiesto_seen` y siguen al reproductor de ese terrario.
+// También es una sección de la barra, sin id (#/manifiesto): ahí "Saltar"
+// es "Cerrar" y el botón final, "Volver al inicio".
 //
 // La pantalla 1 apoya la cita abajo a la izquierda (como las cards de citas
 // de filotaxia.com); la 3 va con el título arriba y las tarjetas grandes
@@ -32,13 +33,15 @@ import { myTerrarioId } from "../../store/my-terrario.js";
 import { TERRARIOS, getTerrario } from "../../content/terrarios.js";
 import { QUOTES, nextQuoteIndex } from "../../content/citas.js";
 import { buildScore, seedFrom } from "../../audio/score.js";
-import { leafWaves } from "../../components/leaf-waves/leaf-waves.js";
+import { leafWaves, bindLeafWaves } from "../../components/leaf-waves/leaf-waves.js";
 import { formatDate } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
 import { arrow } from "../../utils/icons.js";
 
 export const title = "Manifiesto";
-export const nav = false;
+// Sin barra en el primer escaneo (con id: es parte del onboarding);
+// abierto desde la barra (sin id), la barra sigue ahí
+export const nav = ({ params }) => !params.id;
 
 const SLIDES = [
   // 1. Gancho: una cita del Manifiesto de filotaxia.com (libro + autor abajo)
@@ -56,8 +59,9 @@ const SLIDES = [
     <p class="eyebrow">Biosonificación</p>
     ${mechanism()}
   `,
-  // 3. Idioma: título arriba a la izquierda y las cuatro hojas grandes abajo,
-  //    en igualdad (todavía no es tu terrario); cada una gira: hoja → su onda
+  // 3. Idioma: título arriba a la izquierda y las cuatro tarjetas grandes abajo,
+  //    en igualdad (todavía no es tu terrario): primero las ondas y, a los 3 s,
+  //    giran a sus hojas; los dos puntos de arriba a la derecha cambian la vista
   `
     <p class="manifiesto__title">Cada planta.<br />Su propia onda.</p>
     ${leafWaves({ flip: true })}
@@ -93,9 +97,9 @@ export async function render(root, { params }) {
   const quote = QUOTES[quoteIndex];
 
   // Con id: viene del primer escaneo → termina en el reproductor de ese terrario.
-  // Sin id: se abrió desde Ajustes → "Cerrar" vuelve ahí.
-  const player = params.id ? `#/escuchar/${params.id}` : "#/escuchar";
-  const exit = params.id ? player : "#/ajustes";
+  // Sin id: se abrió desde la barra → termina en Inicio (#/mi-terrario).
+  const exit = params.id ? `#/escuchar/${params.id}` : "#/mi-terrario";
+  const finishLabel = params.id ? "Escuchar mi terrario" : "Volver al inicio";
   const last = SLIDES.length - 1;
 
   root.innerHTML = `
@@ -122,7 +126,7 @@ export async function render(root, { params }) {
 
       <div class="manifiesto__actions">
         <button class="text-link" type="button" data-next>Siguiente ${arrow()}</button>
-        <a class="btn btn--primary" href="${player}" data-done hidden>Escuchar mi terrario</a>
+        <a class="btn btn--primary" href="${exit}" data-done hidden>${finishLabel}</a>
       </div>
     </section>
   `;
@@ -135,6 +139,7 @@ export async function render(root, { params }) {
   const finish = root.querySelector(".btn[data-done]");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let current = 0;
+  const waves = bindLeafWaves(root);   // los dos puntos de la pantalla 3
 
   function goTo(index) {
     const target = Math.max(0, Math.min(last, index));
@@ -150,6 +155,8 @@ export async function render(root, { params }) {
     count.textContent = `${String(index + 1).padStart(2, "0")} / ${String(SLIDES.length).padStart(2, "0")}`;
     next.hidden = index === last;
     finish.hidden = index !== last;
+    // Pantalla 3: a los 3 s de verla, las ondas giran a sus hojas
+    if (slides[index].querySelector("[data-leaf-waves]")) waves.play();
   }
 
   // La pantalla que más se ve es la actual (sirve igual para swipe, tap o teclado)
@@ -184,6 +191,7 @@ export async function render(root, { params }) {
 
   return () => {
     observer.disconnect();
+    waves.stop();
     document.removeEventListener("keydown", onKey);
   };
 }
@@ -293,7 +301,7 @@ function notesGraphic() {
 /* ---------------------------------------- */
 
 // El terrario de la pantalla 4: el recién escaneado (id en la ruta); si se
-// abrió desde Ajustes, el propio o el primero de la colección; si no hay
+// abrió desde la barra, el propio o el primero de la colección; si no hay
 // ninguno, el primero del catálogo.
 async function pickTerrario(id) {
   const candidates = [id, await myTerrarioId(), ...(await linkedIds())];

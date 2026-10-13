@@ -2,7 +2,8 @@
    Views — Escanear
    ============================================ */
 
-/* Título arriba al centro, visor en el medio, link al pie. */
+/* Ajustes arriba a la derecha, título arriba al centro, visor en el medio,
+   link al pie. */
 
 .scan {
     display: flex;
@@ -11,8 +12,15 @@
     text-align: center;
 }
 
+.scan__top {
+    align-self: stretch;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: calc(var(--spacing-md) * -1);
+}
+
 .scan__title {
-    margin-top: var(--spacing-2xl);
+    margin-top: var(--spacing-sm);
     font-size: var(--font-lg-size);
     line-height: var(--font-lg-line);
     letter-spacing: var(--font-lg-tracking);

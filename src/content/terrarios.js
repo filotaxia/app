@@ -32,7 +32,7 @@ export const TERRARIOS = [
     recorded: "2026-06-14",
     duration: 251,
     story: "Este terrario reúne tres suculentas con formas triangulares y sinusoidales. La combinación de estas ondas genera una pieza musical marcada por contrastes: sonidos definidos y rítmicos de las ondas triangulares junto a matices suaves y continuos de las ondas sinusoidales.",
-    photo: "src/assets/images/terrarios/tr01.jpg",   // copiada de filotaxia.com
+    photo: "src/assets/images/terrarios/tr01.jpg",   // la de producto de filotaxia.com, como las demás
     specs: { ecosistema: "Abierto", recipiente: "Vidrio", medidas: "25 × 20 × 17 cm" },
     plants: ["Haworthia Attenuata", "Haworthia Fasciata", "Haworthia Venosa"],
     waves: ["triangle", "sine"],
@@ -94,4 +94,9 @@ export const TERRARIO_IDS = TERRARIOS.map((terrario) => terrario.id);
 
 export function getTerrario(id) {
   return TERRARIOS.find((terrario) => terrario.id === id) ?? null;
+}
+
+// El código corto del terrario, como en filotaxia.com: "TR01"
+export function codeOf(terrario) {
+  return terrario.model ?? `TR${terrario.id}`;
 }
