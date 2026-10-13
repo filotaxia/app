@@ -13,8 +13,8 @@
 // Al pie: "Escuchar" (el reproductor), sus cuidados o la colección, y su
 // Bitácora (views/bitacora). Ajustes queda arriba a la derecha.
 
-import { getTerrario } from "../../content/terrarios.js";
-import { link } from "../../store/collection.js";
+import { getTerrario, codeOf } from "../../content/terrarios.js";
+import { link, markScanned } from "../../store/collection.js";
 import { claimIfFirst, myTerrarioId } from "../../store/my-terrario.js";
 import { get } from "../../store/store.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
@@ -23,9 +23,12 @@ import { toast } from "../../components/toast/toast.js";
 import { formatDate } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
 
-export const title = ({ params }) => getTerrario(params.id)?.name ?? "Terrario";
+export const title = ({ params }) => {
+  const terrario = getTerrario(params.id);
+  return terrario ? codeOf(terrario) : "Terrario";
+};
 
-export async function render(root, { params }) {
+export async function render(root, { params, from }) {
   const terrario = getTerrario(params.id);
 
   if (!terrario) {
@@ -34,6 +37,11 @@ export async function render(root, { params }) {
   }
 
   const isNew = await link(terrario.id);
+
+  // ¿Llegó escaneando? Con la cámara del teléfono el QR abre la app directo
+  // en la ficha (sin pantalla anterior); con la de la app, desde Conectar.
+  // Abrir la ficha desde Mi terrario u otra pantalla no cuenta como conexión.
+  if (!from || from === "escanear") await markScanned(terrario.id);
   const claimed = await claimIfFirst(terrario.id);
   const isMine = (await myTerrarioId()) === terrario.id;
 
@@ -49,8 +57,8 @@ export async function render(root, { params }) {
       <div class="terrario__art reveal">${terrariumArt({ photo: terrario.photo })}</div>
 
       <div class="terrario__info reveal-stagger">
-        <p class="eyebrow">Terrario Nº ${escapeHTML(terrario.id)}</p>
-        <h1 class="title" tabindex="-1">${escapeHTML(terrario.name)}</h1>
+        <p class="eyebrow">Terrario</p>
+        <h1 class="title" tabindex="-1">${escapeHTML(codeOf(terrario))}</h1>
         <p class="terrario__story lead">
           Un ecosistema vivo que empezó a sonar el ${formatDate(terrario.recorded)}.
           ${escapeHTML(terrario.story)}
@@ -69,8 +77,8 @@ export async function render(root, { params }) {
     </article>
   `;
 
-  if (claimed) toast(`${terrario.name} es tu terrario`);
-  else if (isNew) toast(`${terrario.name} se sumó a tus terrarios`);
+  if (claimed) toast(`${codeOf(terrario)} es tu terrario`);
+  else if (isNew) toast(`${codeOf(terrario)} se sumó a tus terrarios`);
 }
 
 // "Especificaciones": filas con la etiqueta chica a la izquierda y el dato a la derecha
@@ -110,7 +118,7 @@ function notFound() {
         <p class="lead">El código no corresponde a ningún terrario de Filotaxia. Probá escanearlo de nuevo.</p>
       </div>
       <div class="screen__actions">
-        <a class="btn btn--primary" href="#/escanear">Volver a escanear</a>
+        <a class="btn btn--primary" href="#/escanear">Volver a intentar</a>
       </div>
     </section>
   `;

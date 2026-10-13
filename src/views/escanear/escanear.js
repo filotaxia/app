@@ -9,9 +9,11 @@
 // - Si la persona no da permiso, se explica cómo darlo y se puede reintentar.
 // - También se puede escanear con la app de cámara del teléfono: el QR es
 //   un link a la ficha (…/#/terrario/04) y abre la app directo ahí.
-// - "Simular escaneo" abre la ficha de un terrario de prueba.
-// Se llega desde el QR chico de la card Pieza (Mi terrario) o, sin terrario
-// todavía, desde "Escanear QR"; Ajustes queda arriba a la derecha.
+// - "Simular conexión" abre la ficha de un terrario de prueba.
+// Para la persona esto es "Conectar" (tono de la marca: escanear es solo el
+// cómo). Se llega desde "Conectar" en el centro de la barra, el QR chico de
+// la card Pieza (Mi terrario) o, sin terrario todavía, desde "Conectar mi
+// terrario"; Ajustes queda arriba a la derecha.
 
 import { TERRARIO_IDS } from "../../content/terrarios.js";
 import { linkedIds } from "../../store/collection.js";
@@ -20,12 +22,12 @@ import { parseTerrarioCode } from "../../utils/qr.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
 import { arrow } from "../../utils/icons.js";
 
-export const title = "Escanear";
+export const title = "Conectar";
 
 const HINTS = {
-  default: "Lo vas a encontrar pegado en la base<br />del terrario, discreto, junto al sustrato.",
-  denied: "Para escanear, permití el acceso a la cámara<br />en los ajustes del navegador.",
-  insecure: "La cámara necesita una conexión segura (https).<br />Podés escanear con la cámara del teléfono.",
+  default: "Apuntá la cámara al QR de su base.",
+  denied: "Para conectar, permití el acceso a la cámara<br />en los ajustes del navegador.",
+  insecure: "La cámara necesita una conexión segura (https).<br />Podés usar la cámara del teléfono.",
   unknown: "Este QR no es de un terrario de Filotaxia.<br />Probá con el que está en la base.",
 };
 
@@ -33,7 +35,7 @@ export async function render(root) {
   root.innerHTML = `
     <section class="screen scan">
       <div class="scan__top">${settingsLink()}</div>
-      <h1 class="scan__title reveal" tabindex="-1">Escaneá el QR<br />de tu terrario</h1>
+      <h1 class="scan__title reveal" tabindex="-1">Conectá<br />tu terrario</h1>
 
       <div class="scan__middle reveal">
         <div class="scan__frame" data-frame data-state="starting">
@@ -48,7 +50,7 @@ export async function render(root) {
       </div>
 
       <div class="screen__actions">
-        <button class="text-link" type="button" data-simulate>Simular escaneo ${arrow()}</button>
+        <button class="text-link" type="button" data-simulate>Simular conexión ${arrow()}</button>
       </div>
     </section>
   `;

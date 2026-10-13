@@ -125,7 +125,7 @@
 
         // Genera un QR (SVG) por terrario del catálogo con qrcode-generator (MIT, CDN).
         import qrcode from "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/+esm";
-        import { TERRARIOS } from "./src/content/terrarios.js";
+        import { TERRARIOS, codeOf } from "./src/content/terrarios.js";
         import { escapeHTML } from "./src/utils/html.js";
 
         const form = document.querySelector("[data-form]");
@@ -144,8 +144,7 @@
                 return `
                     <article class="qr-card">
                         ${qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true })}
-                        <p class="eyebrow">Nº ${escapeHTML(terrario.id)}</p>
-                        <p class="qr-card__name">${escapeHTML(terrario.name)}</p>
+                        <p class="qr-card__name">${escapeHTML(codeOf(terrario))}</p>
                         <p class="qr-card__url">${escapeHTML(url)}</p>
                     </article>
                 `;

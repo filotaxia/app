@@ -22,7 +22,7 @@ export function formatDate(key) {
 }
 
 export function pluralTerrarios(count) {
-  if (count === 0) return "Todavía no escaneaste terrarios";
-  if (count === 1) return "1 terrario escaneado";
-  return `${count} terrarios escaneados`;
+  if (count === 0) return "Todavía no conectaste terrarios";
+  if (count === 1) return "1 terrario conectado";
+  return `${count} terrarios conectados`;
 }

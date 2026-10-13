@@ -21,7 +21,7 @@ test("formatDate: YYYY-MM-DD a DD/MM/YYYY sin pasar por UTC", () => {
 });
 
 test("pluralTerrarios", () => {
-  assert.equal(pluralTerrarios(0), "Todavía no escaneaste terrarios");
-  assert.equal(pluralTerrarios(1), "1 terrario escaneado");
-  assert.equal(pluralTerrarios(4), "4 terrarios escaneados");
+  assert.equal(pluralTerrarios(0), "Todavía no conectaste terrarios");
+  assert.equal(pluralTerrarios(1), "1 terrario conectado");
+  assert.equal(pluralTerrarios(4), "4 terrarios conectados");
 });

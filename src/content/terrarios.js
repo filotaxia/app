@@ -3,7 +3,8 @@
    ============================================ */
 
 // Catálogo de terrarios. Cada terrario tiene un QR pegado en la base
-// con su número (ver utils/qr.js). `recorded` es el día en que la planta
+// con su número (ver utils/qr.js). Su nombre es su código: "TR01"
+// (codeOf(), abajo); no tienen otro nombre. `recorded` es el día en que la planta
 // empezó a sonar ("YYYY-MM-DD") y `duration` el largo de la pieza en segundos.
 //
 // `care`: sus cuidados (ver utils/care.js) — cada cuántos días regar y
@@ -27,7 +28,6 @@ export const TERRARIOS = [
     // Ejemplo con contenido real: el TR01 de filotaxia.com
     // (https://filotaxia.com/src/pages/terrarios/terrario01.html)
     id: "01",
-    name: "Sustrato Base",
     model: "TR01",
     recorded: "2026-06-14",
     duration: 251,
@@ -40,7 +40,6 @@ export const TERRARIOS = [
   },
   {
     id: "02",
-    name: "Gota Cayendo",
     model: "TR02",
     photo: "src/assets/images/terrarios/tr02.jpg",
     recorded: "2026-07-22",
@@ -50,7 +49,6 @@ export const TERRARIOS = [
   },
   {
     id: "03",
-    name: "4 Rocas",
     model: "TR03",
     photo: "src/assets/images/terrarios/tr03.jpg",
     recorded: "2026-08-30",
@@ -60,7 +58,6 @@ export const TERRARIOS = [
   },
   {
     id: "04",
-    name: "Las Flechas",
     model: "TR04",
     photo: "src/assets/images/terrarios/tr04.jpg",
     recorded: "2026-10-09",
@@ -70,7 +67,6 @@ export const TERRARIOS = [
   },
   {
     id: "05",
-    name: "Raíz Lenta",
     model: "TR05",
     photo: "src/assets/images/terrarios/tr05.jpg",
     recorded: "2026-09-12",
@@ -80,7 +76,6 @@ export const TERRARIOS = [
   },
   {
     id: "06",
-    name: "Niebla Baja",
     model: "TR06",
     photo: "src/assets/images/terrarios/tr06.jpg",
     recorded: "2026-09-27",

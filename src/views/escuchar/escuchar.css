@@ -2,9 +2,16 @@
    Views — Escuchar
    ============================================ */
 
-/* Reproductor centrado: ilustración, info, barra fina y controles. */
+/* Reproductor centrado: ilustración, info, barra fina y controles.
+   Sin scroll: la pantalla mide exactamente el alto disponible y, si no
+   entra todo (celulares bajos), la foto se achica; el resto no cambia. */
+
+html:has(.player) {
+    overflow-y: hidden;
+}
 
 .player {
+    height: calc(100dvh - var(--view-pad-bottom));
     display: flex;
     flex-direction: column;
 }
@@ -27,12 +34,23 @@
     align-items: center;
     justify-content: center;
     gap: var(--gap-xl);
+    min-height: 0;   /* deja que la foto se achique en vez de desbordar */
     padding-block: var(--spacing-xl);
     text-align: center;
 }
 
+/* La foto toma el alto que sobra (hasta el 76% del ancho) y sigue cuadrada */
 .player__art {
     width: 76%;
+    min-height: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.player__art .terrarium-art {
+    width: auto;
+    max-width: 100%;
+    height: 100%;
 }
 
 .player__info {

@@ -3,9 +3,10 @@
    ============================================ */
 
 /* Mobile: barra flotante de vidrio (como la de Fitness de Apple), centrada
-   y separada de los bordes. Cuatro secciones iguales con ícono + label:
-   Inicio · Terrarios · Manifiesto · Filotaxia. La sección activa lleva
-   un fondo suave.
+   y separada de los bordes. Cinco ítems con ícono + label:
+   Mi terrario · Colección · Conectar · Manifiesto · Guía. Conectar (el escáner), la
+   acción principal, va en el centro con fondo negro; la sección activa
+   lleva un fondo suave.
    Desktop (>= 1024): riel vertical fijo a la izquierda.
 
    Es de lo poco redondeado de la app (el resto es cuadrado, como la web):
@@ -48,7 +49,7 @@
 .bottom-nav__list {
     height: calc(var(--size-nav) - 2 * var(--spacing-xs));
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     align-items: stretch; /* cada ítem (y su pill) ocupa todo el alto de la barra */
 }
 
@@ -61,7 +62,7 @@
     gap: var(--spacing-2xs);
     border-radius: 12px;
     color: var(--color-nav-text);
-    transition: color var(--transition-fast), background-color var(--transition-fast);
+    transition: color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .bottom-nav__icon {
@@ -109,7 +110,31 @@
     stroke-width: 2;
 }
 
-/* El terrario de Inicio: dibujado con más zoom (viewBox recortado), así
+/* Conectar: la acción principal. Mismo tamaño y redondeo que la pill
+   activa, pero en negro (inverso), así se lee como el botón de la barra.
+   Va después de las reglas de hover/activo para ganarles. */
+.bottom-nav__link--main,
+.bottom-nav__link--main[aria-current="page"] {
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+}
+
+@media (hover: hover) {
+    .bottom-nav__link--main:not([aria-current="page"]):hover {
+        background: var(--color-inverse-hover);
+        color: var(--color-inverse-text);
+    }
+}
+
+.bottom-nav__link--main .bottom-nav__icon {
+    stroke-width: 2;
+}
+
+.bottom-nav__link--main:active {
+    transform: scale(0.96);
+}
+
+/* El terrario de Mi terrario: dibujado con más zoom (viewBox recortado), así
    que lleva un trazo más fino para quedar igual que el resto. Tiene detalles
    chicos (las hojas del brote): no engorda cuando está activo. */
 .bottom-nav__icon--terrario,

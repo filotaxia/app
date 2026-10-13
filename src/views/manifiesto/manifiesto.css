@@ -3,8 +3,9 @@
    ============================================ */
 
 /* Pantalla completa: arriba el progreso (5 líneas finas) con el contador
-   y "Saltar", en el medio el carrusel (scroll-snap horizontal, una pantalla
-   por vez) y abajo "Siguiente" o el botón final. En el primer escaneo va
+   y "Saltar" y debajo el carrusel (scroll-snap horizontal, una pantalla
+   por vez), que ocupa todo el resto: no hay "Siguiente" a la vista, el
+   botón final está dentro de la pantalla 5. En el primer escaneo va
    sin barra; abierto desde la barra, deja lugar abajo para ella. */
 
 .manifiesto {
@@ -60,12 +61,7 @@
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    cursor: pointer;
-}
-
-.manifiesto__track::-webkit-scrollbar {
-    display: none;
+    cursor: pointer;   /* sin barra de scroll: la saca base.css para toda la app */
 }
 
 /* Cada pantalla centra su contenido en el alto disponible */
@@ -104,7 +100,7 @@
     animation-play-state: running;
 }
 
-/* Frase grande + atribución chica (pantallas 1, 4 y 5) */
+/* Frase grande + atribución chica (pantallas 1, 5 y 6) */
 .manifiesto__quote {
     display: flex;
     flex-direction: column;
@@ -119,7 +115,7 @@
     text-wrap: pretty;
 }
 
-/* Pantallas 4 y 5: frase centrada */
+/* Pantallas 5 y 6: frase centrada */
 .manifiesto__quote--center {
     align-items: center;
     text-align: center;
@@ -140,10 +136,212 @@
     color: var(--color-text);
 }
 
-/* Pantalla 3: título grande arriba a la izquierda, tarjetas grandes abajo */
+/* Pantalla 2: las cuatro capas. Arriba cuatro franjas horizontales
+   apiladas, como las capas del terrario (plantas arriba, piedras abajo),
+   ocupando el alto que queda: la encendida se abre (más alta y a color)
+   y las demás se achican y se apagan. Debajo el número grande y el texto
+   de la capa encendida. */
+.manifiesto__slide--layers {
+    justify-content: flex-start;
+    gap: var(--gap-lg);
+    padding-top: var(--spacing-xl);
+}
+
+.layers {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+}
+
+.layers__bars {
+    flex: 1;
+    min-height: 220px;   /* cuatro franjas cerradas de 44 + una que se ve abierta */
+    max-height: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+}
+
+/* Cada franja: la imagen de su capa recortada a lo ancho. Se reparten el
+   alto con flex-grow: 1 cada una y 4 la abierta (.is-open); el cambio de
+   alto se anima (cambiá el 4 para abrirla más o menos). */
+.layers__bar {
+    position: relative;
+    flex: 1 1 0;
+    min-height: var(--size-tap);   /* cerrada, igual se puede tocar */
+    overflow: hidden;
+    border-radius: 0;
+    background: var(--color-block-bg);
+    transition: flex-grow 0.6s var(--ease-standard);
+}
+
+.layers__bar.is-open {
+    flex-grow: 4;
+}
+
+.layers__media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1);
+    opacity: var(--opacity-disabled);
+    transition: opacity var(--transition-normal), filter var(--transition-normal);
+}
+
+/* La capa abierta, a todo color */
+.layers__bar.is-open .layers__media {
+    filter: none;
+    opacity: 1;
+}
+
+/* El botón cubre toda la franja: es lo que se toca */
+.layers__hit {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.layers__hit:focus-visible {
+    outline-offset: -4px;
+}
+
+/* Detalles de la capa abierta, como en filotaxia.com/terrarios:
+   "Capa01/" arriba a la izquierda, el nombre en el centro, el material
+   abajo a la izquierda y el punto abajo a la derecha ("+ info" va arriba a
+   la derecha, aparte porque es un link). En blanco sobre un velo oscuro
+   suave. Aparecen cuando la franja ya se abrió y no tapan los toques. */
+.layers__details {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    align-items: start;
+    padding: var(--spacing-md);
+    background: var(--color-media-scrim);
+    color: var(--color-on-media);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.layers__bar.is-open .layers__details {
+    opacity: 1;
+    transition: opacity var(--transition-normal) 0.3s;
+}
+
+.layers__corner {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+}
+
+.layers__corner--bottom {
+    grid-row: 3;
+    align-self: end;
+}
+
+.layers__title {
+    grid-row: 2;
+    align-self: center;
+    justify-self: center;
+    font-size: var(--font-2xl-size);
+    line-height: var(--font-2xl-line);
+    letter-spacing: var(--font-2xl-tracking);
+}
+
+/* El punto blanco de 15px, como en la web (y el de Ajustes) */
+.layers__dot {
+    position: absolute;
+    right: var(--spacing-md);
+    bottom: var(--spacing-md);
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;   /* círculo a propósito, como el punto de Ajustes */
+    background: var(--color-on-media);
+}
+
+/* "+ info": botón chico con borde blanco, arriba a la derecha. Solo se ve
+   (y se puede tocar o enfocar) en la capa abierta */
+.layers__more {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    min-height: 32px;
+    padding: 0 var(--spacing-md);
+    border: 1px solid var(--color-on-media);
+    font-size: var(--font-sm-size);
+    color: var(--color-on-media);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity var(--transition-fast), visibility 0s var(--transition-fast);
+}
+
+/* Se ve de 32px pero se toca en 44 */
+.layers__more::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+}
+
+.layers__bar.is-open .layers__more {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity var(--transition-normal) 0.3s;
+}
+
+.layers__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+}
+
+/* El número grande, como el "TR01" de Mi terrario */
+.layers__number {
+    font-size: var(--num-xl-size);
+    line-height: var(--num-xl-line);
+    letter-spacing: var(--num-xl-tracking);
+}
+
+/* El texto reserva cuatro líneas: así las barras no saltan al cambiar de capa */
+.layers__text {
+    min-height: calc(var(--font-lg-line) * 4);
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+    letter-spacing: var(--font-lg-tracking);
+    color: var(--color-text-muted);
+}
+
+.layers__name {
+    color: var(--color-text);
+}
+
+/* Pantalla 3: título grande arriba a la izquierda y, debajo, las tarjetas
+   ocupando todo el alto que queda (dos filas iguales). En pantallas muy
+   altas la grilla no pasa de 640px, así las tarjetas no se estiran de más. */
 .manifiesto__slide--split {
-    justify-content: space-between;
-    padding-top: var(--spacing-2xl);
+    justify-content: flex-start;
+    gap: var(--gap-lg);
+    padding-top: var(--spacing-xl);
+}
+
+.manifiesto__slide--split > .leaf-waves-flip {
+    flex: 1;
+    min-height: 0;
+    max-height: 640px;
+    margin-top: auto;
+}
+
+.manifiesto__slide--split .leaf-waves {
+    flex: 1;
+    min-height: 0;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
 .manifiesto__title {
@@ -152,13 +350,10 @@
     letter-spacing: var(--font-2xl-tracking);
 }
 
+/* Cada tarjeta llena su celda de la grilla */
 .manifiesto__slide--split .leaf-wave {
     width: 100%;
-    aspect-ratio: 1;
-    /* en teléfonos bajos se achican para que entren con el título:
-       330px ≈ barra de arriba + título + "Siguiente" + márgenes, 44px los
-       puntos de la vista y --view-pad-bottom la barra de abajo (si está) */
-    max-height: calc((100dvh - 374px - var(--view-pad-bottom)) / 2);
+    height: 100%;
     /* las tarjetas entran una tras otra (--i lo pone el componente) */
     animation: reveal-in 0.7s var(--ease-out) calc(0.15s + var(--i) * 0.1s) both;
 }
@@ -175,7 +370,7 @@
 }
 
 /* ---------------------------------------- */
-/* Pantalla 2: el mecanismo paso a paso */
+/* Pantalla 4: el mecanismo paso a paso */
 /* ---------------------------------------- */
 
 /* Una línea de tiempo: número a la izquierda con una línea fina que baja
@@ -383,6 +578,12 @@
 
 /* Menos movimiento: todo aparece de una, sin pulso */
 @media (prefers-reduced-motion: reduce) {
+    .layers__bar,
+    .layers__bar .layers__details,
+    .layers__bar .layers__more {
+        transition: none;
+    }
+
     .manifiesto__slide *,
     .manifiesto__slide *::before {
         animation-delay: 0s !important;
@@ -396,20 +597,16 @@
 }
 
 /* --- Abajo a la izquierda: "Siguiente" o el botón final, igual en las 5 --- */
-.manifiesto__actions {
-    min-height: var(--size-btn);
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    margin-top: var(--spacing-xl);
+/* Pantalla 6: la frase al centro del alto y el botón final abajo */
+.manifiesto__slide--end .manifiesto__quote {
+    margin-block: auto;
 }
 
-.manifiesto__actions .btn {
+.manifiesto__finish {
     width: 100%;
 }
 
-/* "Saltar" / "Cerrar": link de texto sin la línea de abajo
-   ("Siguiente →" la conserva) */
+/* "Saltar" / "Cerrar": link de texto sin la línea de abajo */
 .manifiesto__skip {
     border-bottom: none;
 }
@@ -430,13 +627,7 @@ RESPONSIVE
     }
 
     /* Las acciones siguen la misma columna que el contenido */
-    .manifiesto__actions {
-        width: 100%;
-        max-width: 480px;
-        margin-inline: auto;
-    }
-
-    .manifiesto__actions .btn {
+    .manifiesto__slide > .manifiesto__finish {
         width: auto;
         min-width: 320px;
     }

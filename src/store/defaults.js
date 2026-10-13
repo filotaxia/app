@@ -7,7 +7,8 @@
 // No hay cuentas: todo vive en el teléfono. Escanear un QR (o abrir
 // su link) suma el terrario a la colección y listo.
 //
-//   links            terrarios escaneados: [{ id, terrario_id, linked_at }]
+//   links            terrarios escaneados: [{ id, terrario_id, linked_at, scanned_at }]
+//                    (linked_at: el primer escaneo · scanned_at: el último)
 //   my_terrario      id del terrario propio (el primero que se escanea)
 //   care_log         cuidados hechos: [{ id, terrario_id, type: "riego" | "ventilacion", date }]
 //   bitacora         notas de cada terrario: [{ id, terrario_id, date, created_at, note, photo_id }]
