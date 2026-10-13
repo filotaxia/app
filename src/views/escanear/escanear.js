@@ -10,11 +10,14 @@
 // - También se puede escanear con la app de cámara del teléfono: el QR es
 //   un link a la ficha (…/#/terrario/04) y abre la app directo ahí.
 // - "Simular escaneo" abre la ficha de un terrario de prueba.
+// Se llega desde el QR chico de la card Pieza (Mi terrario) o, sin terrario
+// todavía, desde "Escanear QR"; Ajustes queda arriba a la derecha.
 
 import { TERRARIO_IDS } from "../../content/terrarios.js";
 import { linkedIds } from "../../store/collection.js";
 import { startQrCamera } from "../../camera/qr-camera.js";
 import { parseTerrarioCode } from "../../utils/qr.js";
+import { settingsLink } from "../../components/settings-link/settings-link.js";
 import { arrow } from "../../utils/icons.js";
 
 export const title = "Escanear";
@@ -29,6 +32,7 @@ const HINTS = {
 export async function render(root) {
   root.innerHTML = `
     <section class="screen scan">
+      <div class="scan__top">${settingsLink()}</div>
       <h1 class="scan__title reveal" tabindex="-1">Escaneá el QR<br />de tu terrario</h1>
 
       <div class="scan__middle reveal">
@@ -90,9 +94,11 @@ export async function render(root) {
   return () => stop();
 }
 
-// El terrario de prueba: el Nº 01 (el ejemplo completo, TR01) o, si ya está
-// en la colección, el primero que falte. Así la demo siempre suma uno nuevo.
+// El terrario de prueba: uno de los 6 al azar, entre los que todavía no se
+// escanearon (así la demo siempre suma uno nuevo); si ya están todos, cualquiera.
 async function simulatedId() {
   const linked = await linkedIds();
-  return TERRARIO_IDS.find((id) => !linked.includes(id)) ?? "01";
+  const missing = TERRARIO_IDS.filter((id) => !linked.includes(id));
+  const pool = missing.length ? missing : TERRARIO_IDS;
+  return pool[Math.floor(Math.random() * pool.length)];
 }

@@ -10,7 +10,7 @@
 
     /* --- Navegación --- */
     --size-nav: 64px;            /* alto de la barra flotante */
-    --size-nav-max: 480px;       /* ancho máximo de la barra (5 secciones) */
+    --size-nav-max: 360px;       /* ancho máximo de la barra (4 secciones) */
     --size-rail: 104px;          /* riel lateral (>= 1024) */
 
     /* --- Controles --- */

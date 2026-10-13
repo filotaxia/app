@@ -9,8 +9,11 @@
     flex-direction: column;
 }
 
-.player > .back-link {
-    align-self: flex-start;
+/* "← Mi terrario" a la izquierda, el punto de Ajustes a la derecha */
+.player__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-top: calc(var(--spacing-md) * -1);
 }
 

@@ -1,0 +1,109 @@
+/* ============================================
+   Components — Plants block
+   ============================================ */
+
+/* --- Plantas: lista en lugar de valor --- */
+.block--list {
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+        "title badge"
+        "list  list";
+    min-height: 0;
+}
+
+.block__list {
+    grid-area: list;
+    align-self: end;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+    letter-spacing: var(--font-lg-tracking);
+}
+
+.block__list li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--gap-md);
+}
+
+.block__list-index {
+    font-size: var(--font-2xs-size);
+    letter-spacing: var(--font-xs-tracking);
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Botón "Ondas" / "Plantas": la etiqueta de arriba a la derecha, pero
+   tocable, negra y del tamaño del botón "Escuchar". */
+.block__toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 var(--spacing-md);
+    border-radius: 0;
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Área tocable de 44px sin agrandar la etiqueta */
+.block__toggle::before {
+    content: "";
+    position: absolute;
+    inset: 50% -8px auto;
+    height: var(--size-tap);
+    transform: translateY(-50%);
+}
+
+/* Una planta: número, foto redonda (vista de arriba), nombre y su hoja (u onda) */
+.block__list .plant {
+    align-items: center;
+}
+
+.plant__photo {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: var(--color-badge-bg);
+    object-fit: cover;
+}
+
+.plant__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.plant__detail {
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    letter-spacing: var(--font-xs-tracking);
+    color: var(--color-text-muted);
+}
+
+/* El dibujo de la onda, en el lugar de la foto (vista Ondas) */
+.plant__wave-art {
+    display: grid;
+    place-items: center;
+}
+
+.plant__wave-art svg {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+    stroke-width: 1.5;
+}
+
+/* Hojas u ondas, según el botón (la foto solo se esconde si hay dibujo) */
+[data-view="plantas"] .plant__detail--wave,
+[data-view="plantas"] .plant__wave-art,
+[data-view="ondas"] .plant__detail--leaf,
+[data-view="ondas"] .plant__photo:has(+ .plant__wave-art) {
+    display: none;
+}

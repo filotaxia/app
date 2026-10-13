@@ -1,9 +1,10 @@
 /* ============================================
-   Components — Theme dot
+   Components — Settings link
    ============================================ */
 
-/* El botón ocupa el área tocable; el punto adentro mide 15px como en la web */
-.theme-dot {
+/* El link ocupa el área tocable de 44px; el punto adentro mide 15px como en
+   la web. El borde derecho del área queda pegado al margen de la pantalla. */
+.settings-link {
     flex-shrink: 0;
     width: var(--size-tap);
     height: var(--size-tap);
@@ -12,14 +13,14 @@
     margin-right: calc(var(--spacing-md) * -1);
 }
 
-.theme-dot__circle {
+.settings-link__dot {
     width: 15px;
     height: 15px;
-    border-radius: 50%;   /* el único círculo de la app, a propósito */
+    border-radius: 50%;   /* círculo a propósito, como el play */
     background: var(--color-text);
     transition: transform var(--transition-fast), background-color var(--transition-normal);
 }
 
-.theme-dot:active .theme-dot__circle {
+.settings-link:active .settings-link__dot {
     transform: scale(0.8);
 }

@@ -2,13 +2,20 @@
    Views — Terrario
    ============================================ */
 
-/* Ilustración arriba a todo el ancho, texto alineado a la izquierda,
-   acciones al pie. */
+/* Ajustes arriba a la derecha, ilustración a todo el ancho, texto alineado
+   a la izquierda, acciones al pie. */
 
 .terrario {
     display: flex;
     flex-direction: column;
     gap: var(--gap-xl);
+}
+
+.terrario__top {
+    display: flex;
+    justify-content: flex-end;
+    /* pegado arriba y a la foto (el gap de la ficha es de 24px) */
+    margin-block: calc(var(--spacing-md) * -1) calc(var(--spacing-lg) * -1);
 }
 
 .terrario--empty {

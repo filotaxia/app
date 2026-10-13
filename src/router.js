@@ -3,15 +3,20 @@
    ============================================ */
 
 // Router por hash. Las rutas de la app:
-//   #/inicio            splash
-//   #/mi-terrario       el terrario propio y sus cuidados
-//   #/mi-terrario/cuidados   preguntas frecuentes de cuidados
-//   #/escanear          escaneo del QR
-//   #/terrario/04       ficha de un terrario (abrirla lo suma a la colección)
-//   #/coleccion         mi colección        #/ajustes    ajustes
-//   #/escuchar/04       reproductor (#/escuchar solo → el último escuchado)
-//   #/manifiesto/04     introducción, una sola vez tras el primer escaneo
-//                       (#/manifiesto solo → abierto de nuevo desde Ajustes)
+//   #/inicio                 splash
+//   #/mi-terrario            el terrario propio y sus cuidados
+//   #/mi-terrario/cuidados   riego, ventilación, plantas y la guía general
+//   #/escanear               escaneo del QR (desde el bloque Pieza)
+//   #/terrario/04            ficha de un terrario (abrirla lo suma a la colección)
+//   #/escuchar/04            reproductor (#/escuchar solo → el terrario propio)
+//   #/bitacora/04            bitácora de un terrario
+//   #/coleccion              mi colección
+//   #/ajustes                ajustes (desde el punto de arriba a la derecha)
+//   #/filotaxia              la experiencia paso a paso (antes, la hoja Ayuda de Ajustes)
+//   #/manifiesto/04          introducción, una sola vez tras el primer escaneo
+//   #/manifiesto             la misma, desde la barra (termina en Mi terrario)
+//
+// La barra de abajo: Terrarios · Mi terrario · Manifiesto · Filotaxia.
 //
 // No hay cuentas: la colección vive en el teléfono.
 //
@@ -19,11 +24,13 @@
 //   title               texto o función (ctx) => texto (pestaña y header)
 //   subtitle            opcional, igual que title (debajo del título del header)
 //   header              true → se muestra el header grande (título + subtítulo)
-//   nav                 false → sin barra (splash y manifiesto)
+//   nav                 false → sin barra (el splash); o función (ctx) => boolean
+//                       (el Manifiesto la esconde solo en el primer escaneo)
 //   back                opcional: hash de la flecha de volver del header
+//                       (texto o función (ctx) => texto)
 //   render(root, ctx)   pinta la vista; puede devolver una función de limpieza
 //
-// ctx = { params: { id } }
+// ctx = { params: { id }, from: "coleccion" }   (from: la ruta de la que se viene)
 //
 // Para volver a pintar la vista actual desde cualquier lado:
 //   window.dispatchEvent(new Event("filotaxia:refresh"))
@@ -34,8 +41,10 @@ import * as escanear from "./views/escanear/escanear.js";
 import * as terrario from "./views/terrario/terrario.js";
 import * as coleccion from "./views/coleccion/coleccion.js";
 import * as escuchar from "./views/escuchar/escuchar.js";
+import * as bitacora from "./views/bitacora/bitacora.js";
 import * as ajustes from "./views/ajustes/ajustes.js";
 import * as cuidados from "./views/cuidados/cuidados.js";
+import * as filotaxia from "./views/filotaxia/filotaxia.js";
 import * as manifiesto from "./views/manifiesto/manifiesto.js";
 import { setHeader, focusHeaderTitle } from "./layout/header/header.js";
 
@@ -46,9 +55,11 @@ const ROUTES = [
   ["mi-terrario/cuidados", cuidados],
   ["escanear", escanear],
   ["terrario/:id", terrario],
-  ["coleccion", coleccion],
   ["escuchar/:id?", escuchar],
+  ["bitacora/:id", bitacora],
+  ["coleccion", coleccion],
   ["ajustes", ajustes],
+  ["filotaxia", filotaxia],
   ["manifiesto/:id?", manifiesto],
 ];
 const DEFAULT_ROUTE = "inicio";
@@ -61,11 +72,13 @@ let outlet = null;
 let cleanupView = null;
 let navigationId = 0;   // para descartar renders viejos si se navega muy rápido
 let isFirstRender = true;
+let currentRoute = "";  // la ruta de la pantalla actual
+let previousRoute = ""; // y la de la anterior (ctx.from)
 
 export function startRouter(container) {
   outlet = container;
   window.addEventListener("hashchange", () => render({ moveFocus: true }));
-  window.addEventListener("filotaxia:refresh", () => render({ moveFocus: false }));
+  window.addEventListener("filotaxia:refresh", () => render({ moveFocus: false, refresh: true }));
   render({ moveFocus: false });
 }
 
@@ -95,8 +108,9 @@ function match(path) {
   return null;
 }
 
-async function render({ moveFocus }) {
-  const found = match(currentPath());
+async function render({ moveFocus, refresh = false }) {
+  const path = currentPath();
+  const found = match(path);
 
   // Hash vacío o desconocido → inicio. replace() no deja la ruta inválida
   // en el historial; el cambio de hash vuelve a disparar render().
@@ -107,7 +121,10 @@ async function render({ moveFocus }) {
 
   const { view, params, section } = found;
   const id = ++navigationId;
-  const ctx = { params };
+  // Al volver a pintar la misma pantalla (filotaxia:refresh), from no cambia
+  if (!refresh) previousRoute = currentRoute;
+  currentRoute = path;
+  const ctx = { params, from: previousRoute };
 
   // 1. Limpiar la vista anterior
   cleanupView?.();
@@ -115,7 +132,7 @@ async function render({ moveFocus }) {
 
   // 2. Marco: header y barra según la vista (antes de pintar, así la
   //    vista ya mide bien su alto disponible)
-  const showNav = view.nav !== false;
+  const showNav = typeof view.nav === "function" ? view.nav(ctx) : view.nav !== false;
   shell.toggleAttribute("data-nav", showNav);
   navEl.toggleAttribute("hidden", !showNav);
   headerEl.toggleAttribute("hidden", !view.header);
@@ -138,7 +155,12 @@ async function render({ moveFocus }) {
   const title = await resolve(view.title, ctx);
   document.title = title === "Filotaxia" ? "Filotaxia" : `${title} · Filotaxia`;
   if (view.header) {
-    setHeader({ title, subtitle: await resolve(view.subtitle, ctx), back: view.back });
+    setHeader({
+      title,
+      subtitle: await resolve(view.subtitle, ctx),
+      back: await resolve(view.back, ctx),
+      settings: section !== "ajustes",
+    });
   }
   markActive(section);
 
@@ -157,7 +179,7 @@ async function resolve(value, ctx) {
 }
 
 // Marca con aria-current los links a la sección actual
-// (los de la barra)
+// (los de la barra y el de Ajustes del header)
 function markActive(section) {
   document.querySelectorAll("[data-route]").forEach((link) => {
     if (link.dataset.route === section) link.setAttribute("aria-current", "page");

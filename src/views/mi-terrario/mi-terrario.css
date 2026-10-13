@@ -1,11 +1,11 @@
 /* ============================================
-   Views — Mi terrario
+   Views — Inicio
    ============================================ */
 
-/* Layout de la referencia "Status.": nombre + estado arriba, aire, el número
-   gigante (la duración de la pieza), chips y "Escuchar",
-   y una grilla de bloques de 2 columnas pegados (8px de aire) que arranca
-   con la foto del terrario a todo el ancho. */
+/* Layout de la referencia "Status.": "Filotaxia." + "Armonía en plantas."
+   arriba (Ajustes a la derecha), aire, el número gigante (el nombre del
+   terrario, "TR01"), un chip y "Escuchar", y la grilla de bloques de 2
+   columnas (components/block) que arranca con la foto a todo el ancho. */
 
 .mine {
     display: flex;
@@ -35,8 +35,7 @@
     color: var(--color-text-faint);
 }
 
-/* Miniatura del terrario (lleva a su ficha), en lugar del logo de la referencia */
-/* --- Número protagonista: la duración de la pieza --- */
+/* --- Número protagonista: el nombre del terrario ("TR01") --- */
 .mine__hero {
     margin-top: var(--spacing-6xl);
 }
@@ -48,7 +47,7 @@
     line-height: var(--num-xl-line);
     letter-spacing: var(--num-xl-tracking);
     /* el tracking negativo come el borde izquierdo de la primera cifra */
-    margin-left: -6px;
+    margin-left: -4px;
 }
 
 /* Chips a la izquierda, "Escuchar" a la derecha */
@@ -88,43 +87,8 @@
 }
 
 /* --- Bloques --- */
-.blocks {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-sm);
+.mine .blocks {
     margin-top: var(--spacing-lg);
-}
-
-.block {
-    position: relative;
-    min-height: 168px;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto 1fr auto;
-    grid-template-areas:
-        "title"
-        "badge"
-        "icon"
-        "value";
-    gap: var(--spacing-xs) var(--spacing-sm);
-    padding: var(--spacing-md);
-    border-radius: var(--radius-block);
-    background: var(--color-block-bg);
-    overflow: hidden;
-}
-
-/* A todo el ancho: etiqueta arriba a la derecha y acción abajo a la derecha,
-   como el bloque de batería de la referencia. (En los de media columna no
-   entran título y etiqueta en la misma línea: la etiqueta va debajo.) */
-.block--full {
-    grid-column: 1 / -1;
-    min-height: 136px;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-rows: auto 1fr auto;
-    grid-template-areas:
-        "title badge"
-        "icon  icon"
-        "value action";
 }
 
 /* La foto del terrario a todo el ancho, sin relleno: lleva a su ficha */
@@ -138,236 +102,59 @@
     aspect-ratio: 4 / 3;
 }
 
-/* Todo lo de adentro va por encima del relleno del medidor */
-.block > :not(.block__fill) {
-    position: relative;
-}
-
-.block__title {
-    grid-area: title;
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
-}
-
-/* Etiqueta chica blanca arriba a la derecha */
-.block__badge {
-    grid-area: badge;
-    align-self: start;
-    justify-self: start;
-    padding: var(--spacing-2xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    background: var(--color-badge-bg);
-    font-size: var(--font-2xs-size);
-    line-height: var(--font-xs-line);
-    white-space: nowrap;
-}
-
-.block--full .block__badge {
-    justify-self: end;
-}
-
-.block__icon {
-    grid-area: icon;
-    align-self: end;
-}
-
-.block__icon svg {
-    width: 28px;
-    height: 28px;
-    stroke-width: 1.25;
-}
-
-.block__value {
-    grid-area: value;
-    align-self: end;
-    font-size: var(--num-md-size);
-    line-height: var(--num-md-line);
-    letter-spacing: var(--num-md-tracking);
-    font-variant-numeric: tabular-nums;
-}
-
-/* Las cifras van más apretadas que las letras (el span envuelve todas
-   menos la última, ver digits() en mi-terrario.js) */
-.block__digits {
-    letter-spacing: var(--num-md-digit-tracking);
-}
-
-/* Valores largos ("Hace 2 días") un talle menos, para que entren en una línea */
-.block__value--long {
-    font-size: var(--font-2xl-size);
-    line-height: var(--font-2xl-line);
-    letter-spacing: var(--font-2xl-tracking);
-}
-
-/* Medidor: el fondo se llena hasta --fill (el ancho que queda del ciclo) */
-.block__fill {
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: var(--fill, 0%);
-    transition: width 0.6s var(--ease-out);
-}
-
-.block--soft .block__fill {
-    background: var(--color-meter-soft);
-}
-
-/* Acción: pill chica abajo a la derecha ("Ventilé hoy") */
-.block__action {
-    grid-area: action;
-    align-self: end;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--gap-xs);
-    min-height: 36px;
-    padding: 0 var(--spacing-md);
-    border-radius: 0;
-    background: var(--color-inverse-bg);
-    color: var(--color-inverse-text);
-    font-size: var(--font-xs-size);
-    line-height: var(--font-xs-line);
-    font-weight: var(--font-weight-medium);
-    white-space: nowrap;
+/* --- Pieza: todo el bloque es un link, salvo el QR de la esquina --- */
+.block--pieza {
     transition: transform var(--transition-fast);
 }
 
-.block__action:active {
-    transform: scale(0.96);
-}
-
-.block__action--done {
-    background: var(--color-badge-bg);
-    color: var(--color-text-muted);
-}
-
-.block__action svg {
-    width: 14px;
-    height: 14px;
-}
-
-/* --- Plantas: lista en lugar de valor --- */
-.block--list {
-    grid-template-rows: auto 1fr;
-    grid-template-areas:
-        "title badge"
-        "list  list";
-    min-height: 0;
-}
-
-.block__list {
-    grid-area: list;
-    align-self: end;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-xl);
-    font-size: var(--font-lg-size);
-    line-height: var(--font-lg-line);
-    letter-spacing: var(--font-lg-tracking);
-}
-
-.block__list li {
-    display: flex;
-    align-items: baseline;
-    gap: var(--gap-md);
-}
-
-.block__list-index {
-    font-size: var(--font-2xs-size);
-    letter-spacing: var(--font-xs-tracking);
-    color: var(--color-text-muted);
-    font-variant-numeric: tabular-nums;
-}
-
-/* Flecha de los bloques que llevan a otra pantalla ("Cuidados.") */
-.block__go {
-    grid-area: action;
-    align-self: end;
-    justify-self: end;
-    font-size: var(--font-xl-size);
-    line-height: var(--font-xl-line);
-}
-
-/* Botón "Ondas" / "Plantas": la etiqueta de arriba a la derecha, pero
-   tocable. En la vista Ondas se invierte, como la opción elegida. */
-.block__toggle {
-    position: relative;
-    color: var(--color-text);
-}
-
-/* Área tocable de 44px sin agrandar la etiqueta */
-.block__toggle::before {
-    content: "";
-    position: absolute;
-    inset: 50% -8px auto;
-    height: var(--size-tap);
-    transform: translateY(-50%);
-}
-
-[data-view="ondas"] .block__toggle {
-    background: var(--color-inverse-bg);
-    color: var(--color-inverse-text);
-}
-
-/* Una planta: número, foto redonda (vista de arriba), nombre y su hoja (u onda) */
-.block__list .plant {
-    align-items: center;
-}
-
-.plant__photo {
-    flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-full);
-    background: var(--color-badge-bg);
-    object-fit: cover;
-}
-
-.plant__text {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-.plant__detail {
-    font-size: var(--font-xs-size);
-    line-height: var(--font-xs-line);
-    letter-spacing: var(--font-xs-tracking);
-    color: var(--color-text-muted);
-}
-
-/* El dibujo de la onda, en el lugar de la foto (vista Ondas) */
-.plant__wave-art {
-    display: grid;
-    place-items: center;
-}
-
-.plant__wave-art svg {
-    width: var(--icon-lg);
-    height: var(--icon-lg);
-    stroke-width: 1.5;
-}
-
-/* Hojas u ondas, según el botón (la foto solo se esconde si hay dibujo) */
-[data-view="plantas"] .plant__detail--wave,
-[data-view="plantas"] .plant__wave-art,
-[data-view="ondas"] .plant__detail--leaf,
-[data-view="ondas"] .plant__photo:has(+ .plant__wave-art) {
-    display: none;
-}
-
-/* Los bloques que son links enteros (la foto, Cuidados) */
-a.block {
-    transition: transform var(--transition-fast);
-}
-
-a.block:active {
+.block--pieza:active {
     transform: scale(0.98);
 }
 
-.mine__footer {
-    display: flex;
-    justify-content: center;
-    padding-top: var(--spacing-xl);
+/* El link del título cubre todo el bloque (el título no lo encierra:
+   .block le pone position: relative a sus hijos) */
+.block > .pieza__title {
+    position: static;
+}
+
+.pieza__link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;   /* por encima del ícono y el valor, que también se posicionan */
+}
+
+.pieza__link:focus-visible {
+    outline: none;
+}
+
+.pieza__link:focus-visible::after {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+/* El QR, chico y discreto (como los de verdad, en la base del terrario),
+   en la esquina de arriba a la derecha. Área tocable de 44px; queda por
+   encima del link que cubre el bloque. */
+.block > .pieza__scan {
+    position: absolute;
+    top: var(--spacing-2xs);
+    right: var(--spacing-2xs);
+    z-index: 2;
+    width: var(--size-tap);
+    height: var(--size-tap);
+    display: grid;
+    place-items: center;
+    color: var(--color-text);
+}
+
+.pieza__scan svg {
+    width: var(--icon-md);
+    height: var(--icon-md);
+}
+
+.pieza__scan:active {
+    transform: scale(0.9);
 }
 
 .mine--empty .screen__actions {
@@ -377,56 +164,6 @@ a.block:active {
 .mine--empty .btn svg {
     width: var(--icon-sm);
     height: var(--icon-sm);
-}
-
-/* --- Hoja "¿Cuál es tu terrario?" --- */
-.pick {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.pick__row {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: var(--gap-md);
-    padding: var(--spacing-sm);
-    border-radius: var(--radius-md);
-    text-align: left;
-    transition: background-color var(--transition-fast);
-}
-
-.pick__row[aria-current] {
-    background: var(--color-block-bg);
-}
-
-@media (hover: hover) {
-    .pick__row:hover {
-        background: var(--color-block-bg);
-    }
-}
-
-.pick__art {
-    flex-shrink: 0;
-    width: 52px;
-}
-
-.pick__text {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2xs);
-}
-
-.pick__name {
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
-}
-
-.pick__row svg {
-    width: var(--icon-md);
-    height: var(--icon-md);
 }
 
 /* ============================================

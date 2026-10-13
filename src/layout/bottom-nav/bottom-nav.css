@@ -3,8 +3,9 @@
    ============================================ */
 
 /* Mobile: barra flotante de vidrio (como la de Fitness de Apple), centrada
-   y separada de los bordes. Cinco secciones con ícono + label; Escanear al
-   centro, como cuadrado negro. La sección activa lleva un fondo suave.
+   y separada de los bordes. Cuatro secciones iguales con ícono + label:
+   Inicio · Terrarios · Manifiesto · Filotaxia. La sección activa lleva
+   un fondo suave.
    Desktop (>= 1024): riel vertical fijo a la izquierda.
 
    Es de lo poco redondeado de la app (el resto es cuadrado, como la web):
@@ -47,7 +48,7 @@
 .bottom-nav__list {
     height: calc(var(--size-nav) - 2 * var(--spacing-xs));
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     align-items: stretch; /* cada ítem (y su pill) ocupa todo el alto de la barra */
 }
 
@@ -69,8 +70,7 @@
     stroke-width: 1.5;
 }
 
-/* Los íconos sueltos (20px) ocupan lo mismo que el círculo de Escanear (28px):
-   el espacio que falta va arriba, así todos los labels quedan a la misma altura */
+/* Aire arriba y abajo del ícono (20px): la barra mantiene su alto */
 .bottom-nav__link > .bottom-nav__icon {
     margin-block: var(--spacing-xs);
 }
@@ -79,6 +79,16 @@
     font-size: var(--font-xs-size);
     line-height: var(--font-xs-line);
     font-weight: var(--font-weight-medium);
+}
+
+/* Filotaxia: el isotipo de la marca (las dos hojas, src/assets/images/marca/)
+   en lugar de un ícono de Lucide. Es un PNG usado como máscara, así toma
+   el color del texto como los demás íconos. Es más ancho que alto. */
+.bottom-nav__logo {
+    display: block;
+    width: 26px;
+    background: currentColor;
+    mask: url("../../assets/images/marca/isotipo.png") center / contain no-repeat;
 }
 
 /* Sección activa: pill de fondo y texto negro */
@@ -99,30 +109,12 @@
     stroke-width: 2;
 }
 
-/* --- Escanear: círculo negro dentro de la barra --- */
-.bottom-nav__link--main {
-    color: var(--color-text);
-}
-
-.bottom-nav__fab {
-    width: 28px;
-    height: 28px;
-    display: grid;
-    place-items: center;
-    border-radius: var(--radius-full);
-    background: var(--color-inverse-bg);
-    color: var(--color-inverse-text);
-    transition: transform var(--transition-fast);
-}
-
-.bottom-nav__fab .bottom-nav__icon {
-    width: var(--icon-sm);
-    height: var(--icon-sm);
-    stroke-width: 2;
-}
-
-.bottom-nav__link--main:active .bottom-nav__fab {
-    transform: scale(0.92);
+/* El terrario de Inicio: dibujado con más zoom (viewBox recortado), así
+   que lleva un trazo más fino para quedar igual que el resto. Tiene detalles
+   chicos (las hojas del brote): no engorda cuando está activo. */
+.bottom-nav__icon--terrario,
+.bottom-nav__link[aria-current="page"] .bottom-nav__icon--terrario {
+    stroke-width: 1.2;
 }
 
 /* ============================================
@@ -170,15 +162,5 @@ RESPONSIVE
 
     .bottom-nav__link {
         height: 76px;
-    }
-
-    .bottom-nav__fab {
-        width: 48px;
-        height: 48px;
-    }
-
-    .bottom-nav__fab .bottom-nav__icon {
-        width: var(--icon-lg);
-        height: var(--icon-lg);
     }
 }

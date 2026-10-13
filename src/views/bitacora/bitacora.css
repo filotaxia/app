@@ -1,0 +1,118 @@
+/* ============================================
+   Views — Bitácora
+   ============================================ */
+
+/* "Nueva entrada" arriba y las notas debajo, separadas por líneas finas
+   (fecha y "Borrar", la nota y la foto 4:3); la hoja para escribir una nueva. */
+
+/* --- Bitácora: "Nueva entrada" y las notas, la más nueva arriba --- */
+.bitacora {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xl);
+}
+
+.bitacora .btn svg,
+.entry-form .btn svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+.bitacora__empty {
+    max-width: 320px;
+}
+
+.bitacora__list {
+    border-top: 1px solid var(--color-line);
+}
+
+/* Una entrada: fecha y "Borrar" arriba, la nota y la foto debajo */
+.entry {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    padding-block: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-line);
+}
+
+.entry__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-md);
+}
+
+/* "Borrar": chico y gris, con área tocable de 44px */
+.entry__delete {
+    min-height: var(--size-tap);
+    margin-block: calc(var(--spacing-md) * -1);
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    color: var(--color-text-muted);
+    transition: color var(--transition-fast);
+}
+
+@media (hover: hover) {
+    .entry__delete:hover {
+        color: var(--color-text);
+    }
+}
+
+.entry__note {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    white-space: pre-line;   /* respeta los saltos de línea de la nota */
+}
+
+.entry__photo,
+.entry-form__preview {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    background: var(--color-block-bg);
+}
+
+/* --- Hoja "Nueva entrada" --- */
+.entry-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+}
+
+/* El campo de siempre (components/field), pero de varias líneas */
+.entry-form__note {
+    height: auto;
+    min-height: 112px;
+    padding-block: var(--spacing-sm);
+    resize: vertical;
+    font-family: inherit;
+    line-height: var(--font-base-line);
+}
+
+.entry-form__photo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-sm);
+}
+
+.entry-form__photo .btn {
+    gap: var(--gap-sm);
+    cursor: pointer;
+}
+
+/* El input de archivo está escondido adentro del botón: el foco se ve en el botón */
+.entry-form__photo .btn:has(input:focus-visible) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+
+@media (min-width: 768px) {
+    .bitacora {
+        max-width: 560px;
+    }
+}

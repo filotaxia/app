@@ -28,9 +28,3 @@ export function applyTheme(theme = "light") {
   });
 }
 
-// El tema contrario al que se ve ahora (para el punto de Mi terrario).
-// Con "system" mira cómo está el teléfono en este momento.
-export function oppositeTheme(theme = "light") {
-  const dark = theme === "dark" || (theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
-  return dark ? "light" : "dark";
-}

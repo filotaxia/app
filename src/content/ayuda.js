@@ -5,6 +5,8 @@
 // Textos de ayuda, tomados de filotaxia.com: "¿Cómo funciona?" en tres pasos
 // y las preguntas de cuidados (página del TR01), cómo se hace la música
 // (página "Formas"), las cuatro capas del terrario y el contacto.
+// CARE_GUIDE (la guía de Cuidados) y los pasos 04 y 05 de STEPS son un
+// borrador propio, armado con lo que dice la web: revisarlos antes de publicar.
 
 export const HOW_IT_WORKS = [
   "Colocá el terrario en un lugar con luz indirecta, preferentemente cerca de una ventana. Esto asegura que las plantas reciban la iluminación adecuada para mantenerse saludables.",
@@ -32,6 +34,70 @@ export const CARE_FAQ = [
   [
     "¿Qué hago si una planta dentro del terrario se daña o muere?",
     "Podés retirarla y reemplazarla fácilmente sin afectar al resto del ecosistema. Así el terrario se mantiene vivo y en equilibrio.",
+  ],
+];
+
+// La experiencia paso a paso (views/filotaxia): lo que hace la persona,
+// de la caja a la bitácora.
+//   key     el paso en el recorrido (store/journey.js sabe si ya está hecho)
+//   title   el título de la fila
+//   short   una línea debajo del título (resumen de filotaxia.com o borrador propio)
+//   text    el texto completo, en la hoja del video (los tres primeros son los de
+//           "¿Cómo funciona?" de filotaxia.com; los dos últimos, un borrador propio)
+//   video   el video tutorial, en src/assets/videos/ (null = todavía no está:
+//           la hoja muestra "Video en preparación")
+export const STEPS = [
+  {
+    key: "ubicado",
+    title: "Ubicá tu terrario",
+    short: "Luz indirecta, cerca de una ventana.",
+    text: HOW_IT_WORKS[0],
+    video: null,
+  },
+  {
+    key: "escaneado",
+    title: "Escaneá el QR",
+    short: "Está en la base del terrario.",
+    text: HOW_IT_WORKS[1],
+    video: null,
+  },
+  {
+    key: "escuchado",
+    title: "Escuchá su pieza",
+    short: "Sus plantas, convertidas en música.",
+    text: HOW_IT_WORKS[2],
+    video: null,
+  },
+  {
+    key: "cuidado",
+    title: "Cuidalo",
+    short: "Riego, ventilación y la guía.",
+    text: "Regá de a poco, más o menos cada 30 días, y ventilalo si es cerrado. En Inicio ves cuándo toca y en Cuidados está la guía.",
+    video: null,
+  },
+  {
+    key: "anotado",
+    title: "Anotá en la bitácora",
+    short: "Notas y fotos de cómo cambia.",
+    text: "Un brote nuevo, el último riego, cómo sonaba hoy. Sumá notas y fotos para ver cómo cambia con el tiempo.",
+    video: null,
+  },
+];
+
+// Guía general de cuidados (views/cuidados): la misma para todos los
+// terrarios, no cambia según las plantas. [tema, texto]
+export const CARE_GUIDE = [
+  [
+    "Riego",
+    "En general alcanza con regar cada 30 días. Antes, tocá el sustrato: si todavía está húmedo, esperá. Regá de a poco sobre el sustrato, no sobre las hojas; es mejor quedarse corto que pasarse.",
+  ],
+  [
+    "Luz",
+    "Un lugar con mucha luz natural indirecta, cerca de una ventana. Evitá el sol directo: a través del vidrio quema las hojas. Si las plantas se estiran hacia un lado, les falta luz.",
+  ],
+  [
+    "Sustrato",
+    "Tierra, perlita y arena gruesa sobre una rejilla de metal y piedra pómez: las capas están armadas para que el agua drene y el aire circule. No lo compactes ni lo mezcles; si ves agua acumulada en el fondo, dejá de regar hasta que se seque.",
   ],
 ];
 

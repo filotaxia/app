@@ -1,5 +1,5 @@
 /* ============================================
-   Views — Colección
+   Views — Terrarios
    ============================================ */
 
 /* Grilla de 2 columnas (3 desde 640): ilustración cuadrada,
@@ -44,28 +44,6 @@
     font-size: var(--font-sm-size);
     line-height: var(--font-sm-line);
     font-weight: var(--font-weight-medium);
-}
-
-/* --- Sin terrarios todavía --- */
-.collection-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--gap-lg);
-}
-
-.collection-empty__art {
-    width: 50%;
-    max-width: 200px;
-}
-
-.collection-empty .lead {
-    max-width: 320px;
-}
-
-.collection-empty .btn svg {
-    width: var(--icon-sm);
-    height: var(--icon-sm);
 }
 
 /* ============================================

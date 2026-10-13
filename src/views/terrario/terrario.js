@@ -5,17 +5,20 @@
 // Ficha del terrario: ilustración, número, nombre e historia.
 // Se llega escaneando su QR (desde la app o con la cámara del teléfono),
 // así que abrirla ya suma el terrario a la colección: no hace falta cuenta.
-// El primero que se escanea pasa a ser "Mi terrario" (se cambia desde ahí).
+// El primero que se escanea pasa a ser "Mi terrario".
 // Si el terrario trae ficha técnica (modelo, ecosistema, plantas…), se lista
 // debajo de la historia, como en filotaxia.com.
 // El primer escaneo de todos pasa antes por el Manifiesto (views/manifiesto),
 // que termina en el reproductor de este terrario.
+// Al pie: "Escuchar" (el reproductor), sus cuidados o la colección, y su
+// Bitácora (views/bitacora). Ajustes queda arriba a la derecha.
 
 import { getTerrario } from "../../content/terrarios.js";
 import { link } from "../../store/collection.js";
 import { claimIfFirst, myTerrarioId } from "../../store/my-terrario.js";
 import { get } from "../../store/store.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
+import { settingsLink } from "../../components/settings-link/settings-link.js";
 import { toast } from "../../components/toast/toast.js";
 import { formatDate } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
@@ -42,6 +45,7 @@ export async function render(root, { params }) {
 
   root.innerHTML = `
     <article class="screen terrario">
+      <div class="terrario__top">${settingsLink()}</div>
       <div class="terrario__art reveal">${terrariumArt({ photo: terrario.photo })}</div>
 
       <div class="terrario__info reveal-stagger">
@@ -59,13 +63,14 @@ export async function render(root, { params }) {
         <a class="btn btn--primary" href="#/escuchar/${terrario.id}">Escuchar</a>
         ${isMine
           ? `<a class="text-link" href="#/mi-terrario">Ver sus cuidados</a>`
-          : `<a class="text-link" href="#/coleccion">Ir a mi colección</a>`}
+          : `<a class="text-link" href="#/coleccion">Ir a mis terrarios</a>`}
+        <a class="text-link" href="#/bitacora/${terrario.id}">Ver su bitácora</a>
       </div>
     </article>
   `;
 
   if (claimed) toast(`${terrario.name} es tu terrario`);
-  else if (isNew) toast(`${terrario.name} se sumó a tu colección`);
+  else if (isNew) toast(`${terrario.name} se sumó a tus terrarios`);
 }
 
 // "Especificaciones": filas con la etiqueta chica a la izquierda y el dato a la derecha

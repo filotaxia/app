@@ -67,11 +67,44 @@
 .leaf-wave__icon--sawtooth { mask-image: url("../../assets/images/ondas/vco-saw.png"); }
 .leaf-wave__icon--square { mask-image: url("../../assets/images/ondas/vco-square.png"); }
 
-/* --- Flip: tarjetas de dos caras que giran solas ---
-   Frente: la hoja (foto) en la tarjeta clara. Dorso: su onda, en negro
-   (el color inverso: en tema oscuro, al revés). Ciclo de 6 s: el frente
-   se queda ~2 s, gira, el dorso se queda ~2 s y sigue girando hasta volver
-   al frente. Cada tarjeta arranca un poco después que la anterior (--i). */
+/* --- Flip: tarjetas de dos caras ---
+   Frente: la onda, en negro (el color inverso: en tema oscuro, al revés).
+   Dorso: la hoja (foto) en la tarjeta clara. Giran cuando cambia
+   data-face ("onda" → "hoja"), cada una un poco después que la anterior
+   (--i). Arriba a la derecha, los dos puntos para elegir la vista. */
+.leaf-waves-flip {
+    display: flex;
+    flex-direction: column;
+}
+
+.leaf-waves__dots {
+    align-self: flex-end;
+    display: flex;
+    /* el último punto queda alineado con el borde derecho de la grilla */
+    margin: calc(var(--spacing-md) * -1) calc(var(--spacing-xs) * -1) 0 0;
+}
+
+/* Cada punto: 8px a la vista, 18 × 44 tocables (10px de aire entre los dos) */
+.leaf-waves__dot {
+    width: 18px;
+    height: var(--size-tap);
+    display: grid;
+    place-items: center;
+}
+
+.leaf-waves__dot::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;   /* círculo a propósito, como el punto de Ajustes */
+    background: var(--color-track);
+    transition: background-color var(--transition-fast);
+}
+
+.leaf-waves__dot[aria-pressed="true"]::before {
+    background: var(--color-text);
+}
+
 .leaf-wave--flip {
     padding: 0;
     background: none;
@@ -83,7 +116,11 @@
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
-    animation: leaf-wave-flip 6s var(--ease-standard) calc(1.2s + var(--i) * 0.3s) infinite both;
+    transition: transform 0.8s var(--ease-standard) calc(var(--i) * 0.1s);
+}
+
+[data-face="hoja"] .leaf-wave__inner {
+    transform: rotateY(180deg);
 }
 
 .leaf-wave--flip .leaf-wave__face {
@@ -93,14 +130,17 @@
     backface-visibility: hidden;
 }
 
-.leaf-wave__face--back {
-    transform: rotateY(180deg);
+.leaf-wave__face--onda {
     background: var(--color-inverse-bg);
     color: var(--color-inverse-text);
 }
 
-.leaf-wave__face--back .leaf-wave__icon {
+.leaf-wave__face--onda .leaf-wave__icon {
     width: 52%;
+}
+
+.leaf-wave__face--back {
+    transform: rotateY(180deg);
 }
 
 /* La hoja, centrada en el espacio del dibujo y sin deformarse:
@@ -114,12 +154,6 @@
     object-fit: contain;
 }
 
-@keyframes leaf-wave-flip {
-    0%, 35% { transform: rotateY(0deg); }
-    50%, 85% { transform: rotateY(180deg); }
-    100% { transform: rotateY(360deg); }
-}
-
 /* Con una hoja resaltada: esa en negro sólido, las demás atenuadas */
 .leaf-waves--highlight .leaf-wave {
     opacity: 0.4;
@@ -131,9 +165,9 @@
     color: var(--color-inverse-text);
 }
 
-/* Menos movimiento: no giran, queda el frente */
+/* Menos movimiento: cambian de cara sin girar */
 @media (prefers-reduced-motion: reduce) {
     .leaf-wave__inner {
-        animation: none;
+        transition: none;
     }
 }
