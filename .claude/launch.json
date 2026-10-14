@@ -4,8 +4,24 @@
     {
       "name": "filotaxia",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", ".", "-l", "4180"],
+      "runtimeArgs": [
+        "serve",
+        ".",
+        "-l",
+        "4180"
+      ],
       "port": 4180
+    },
+    {
+      "name": "filotaxia-4181",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "serve",
+        ".",
+        "-l",
+        "4181"
+      ],
+      "port": 4181
     }
   ]
 }

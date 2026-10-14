@@ -7,32 +7,39 @@
 //
 //   1. Gancho      una cita de filotaxia.com, distinta cada vez que se abre
 //                  (content/citas.js; la última mostrada queda en el store)
-//   2. Capas       el terrario por dentro: cuatro franjas horizontales, una por
-//                  capa (con su imagen en movimiento), y debajo el número
-//                  grande y el texto de la capa encendida; pasan solas
-//   3. Idioma      cada forma de hoja → su onda (components/leaf-waves)
-//   4. Por dentro  la foto del TR01 con puntos sobre sus capas y sus
+//   2. Por dentro  la foto del TR01 con puntos sobre sus capas y sus
 //                  plantas: tocar uno lo explica
+//   3. Capas       el terrario por dentro: cuatro franjas horizontales, una por
+//                  capa (con su imagen en movimiento), y debajo "/Capa01" y
+//                  el texto de la capa encendida; pasan solas
+//   4. Idioma      cada forma de hoja → su onda (components/leaf-waves)
 //   5. Mecanismo   01 / 02 / 03, de la planta a la nota, con un gráfico por paso
 //                  que entra uno después del otro (señal → sensor → notas)
 //   6. Prueba      la huella de TU pieza: sus notas reales (audio/score.js)
 //                  en un piano roll que un cabezal recorre, con nombre y fecha
-//   7. Cierre      "Escuchar mi terrario" → reproductor
+//   7. Escuchar    el reproductor de ese terrario, adentro del Manifiesto
+//                  (el mismo de views/escuchar: renderPlayer), solo la foto
+//                  y los controles, sin scroll
 //
 // Se abre solo una vez: la ficha (views/terrario) manda acá en el primer
-// escaneo, con el id del terrario (#/manifiesto/04). "Saltar" o el botón
-// final guardan `manifiesto_seen` y siguen al reproductor de ese terrario.
+// escaneo, con el id del terrario (#/manifiesto/04). "Saltar" guarda
+// `manifiesto_seen` y sigue al reproductor de ese terrario; llegar a la 7
+// también lo guarda (ya lo vio todo).
 // También es una sección de la barra, sin id (#/manifiesto): ahí "Saltar"
-// es "Cerrar" y el botón final, "Volver a mi terrario".
+// es "Cerrar" (vuelve a Mi terrario). En la 7 siempre dice "Cerrar".
+// El terrario de las pantallas 6 y 7 lo elige pickTerrario.
 //
 // La pantalla 1 apoya la cita abajo a la izquierda (como las cards de citas
-// de filotaxia.com); la 2, la 3 y la 4 llenan el alto (gráfico arriba, texto
-// abajo / título arriba, tarjetas o terrario abajo); las demás van centradas.
+// de filotaxia.com); la 2, la 3 y la 4 llenan el alto (título arriba,
+// terrario o tarjetas abajo / gráfico arriba, texto abajo); las demás van centradas.
 //
-// Se pasa de pantalla deslizando (scroll-snap nativo), tocando (izquierda
-// = atrás, resto = adelante) o con las flechas del teclado. No hay botón
-// "Siguiente" a la vista (así las pantallas tienen más lugar): queda uno
-// escondido para lectores de pantalla. El botón final va dentro de la 7.
+// Se pasa de pantalla solo tocando o con click (tercio izquierdo = atrás,
+// resto = adelante) o con las flechas del teclado: deslizar o hacer scroll
+// no la mueve (overflow hidden en el CSS; el JS la corre con scrollTo).
+// No hay botón "Siguiente" a la vista (así las pantallas tienen más lugar):
+// queda uno escondido para lectores de pantalla. En la 7 los toques ya no
+// pasan de pantalla (son del reproductor) y las flechas adelantan o
+// atrasan la pieza.
 
 import { get, set } from "../../store/store.js";
 import { linkedIds } from "../../store/collection.js";
@@ -43,6 +50,7 @@ import { LAYERS, INSIDE_TERRARIUM } from "../../content/ayuda.js";
 import { getPlanta, WAVE_NAMES } from "../../content/plantas.js";
 import { buildScore, seedFrom } from "../../audio/score.js";
 import { leafWaves, bindLeafWaves } from "../../components/leaf-waves/leaf-waves.js";
+import { renderPlayer } from "../escuchar/escuchar.js";
 import { formatDate } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
 
@@ -56,33 +64,33 @@ const SLIDES = [
   ({ quote }) => `
     <figure class="manifiesto__quote">
       <blockquote class="manifiesto__big">“${quote.text}”</blockquote>
-      <figcaption class="lead">
-        <cite class="manifiesto__cite">${quote.book}</cite>
-        <span>— ${quote.author}</span>
+      <figcaption class="manifiesto__byline">
+        <cite class="manifiesto__cite">/${quote.book}</cite>
+        <span>${quote.author}</span>
       </figcaption>
     </figure>
   `,
-  // 2. Capas: el terrario por dentro (ver layers() más abajo)
+  // 2. Por dentro: la foto del terrario con sus puntos
+  //    (ver anatomy() más abajo)
   `
-    <p class="eyebrow">Un terrario, cuatro capas</p>
+    <p class="manifiesto__title">Cada capa.<br />Cada planta.</p>
+    ${anatomy()}
+  `,
+  // 3. Capas: el terrario por dentro (ver layers() más abajo)
+  `
+    <p class="manifiesto__kicker">(Un terrario, cuatro capas)</p>
     ${layers()}
   `,
-  // 3. Idioma: título arriba a la izquierda y las cuatro tarjetas grandes abajo,
+  // 4. Idioma: título arriba a la izquierda y las cuatro tarjetas grandes abajo,
   //    en igualdad (todavía no es tu terrario): primero las hojas y, a los 3 s,
   //    giran a sus ondas; los dos puntos de arriba a la derecha cambian la vista
   `
     <p class="manifiesto__title">Cada planta.<br />Su propia onda.</p>
     ${leafWaves({ flip: true })}
   `,
-  // 4. Por dentro: la foto del terrario con sus puntos
-  //    (ver anatomy() más abajo)
-  `
-    <p class="manifiesto__title">Cada capa.<br />Cada planta.</p>
-    ${anatomy()}
-  `,
   // 5. Mecanismo: paso a paso, cada uno con su gráfico (ver mechanism() más abajo)
   `
-    <p class="eyebrow">Biosonificación</p>
+    <p class="manifiesto__kicker">(Biosonificación)</p>
     ${mechanism()}
   `,
   // 6. Prueba: depende del terrario, por eso es una función (ver render)
@@ -90,25 +98,27 @@ const SLIDES = [
     ${pieceGraphic(terrario)}
     <div class="manifiesto__quote">
       <p class="manifiesto__big">Esta pieza nació de esta planta, en este momento exacto.</p>
-      <p class="eyebrow">${escapeHTML(codeOf(terrario))} · ${formatDate(terrario.recorded)}</p>
+      <p class="manifiesto__byline">
+        <span class="manifiesto__cite">/${escapeHTML(codeOf(terrario))}</span>
+        <span>Grabada el ${formatDate(terrario.recorded)}</span>
+      </p>
     </div>
   `,
-  // 7. Cierre: la frase al centro y el botón final abajo
-  ({ exit, finishLabel }) => `
-    <div class="manifiesto__quote manifiesto__quote--center">
-      <p class="manifiesto__big">Esto es lo que estás por escuchar.</p>
-    </div>
-    <a class="btn btn--primary manifiesto__finish" href="${exit}" data-done>${finishLabel}</a>
+  // 7. Escuchar: el reproductor (solo su primera vista) se arma acá la primera
+  //    vez que se llega (ver mountPlayer en render), así no se cargan los MIDI
+  //    si nadie llega
+  `
+    <div class="manifiesto__player" data-player-slot></div>
   `,
 ];
 
 // Ubicación del contenido: centrado salvo estas
 const SLIDE_LAYOUT = {
   0: "manifiesto__slide--bottom",   // la cita, abajo a la izquierda
-  1: "manifiesto__slide--layers",   // barras arriba, número y texto abajo
-  2: "manifiesto__slide--split",    // título arriba, tarjetas abajo
-  3: "manifiesto__slide--anatomy",  // título arriba, terrario y su explicación abajo
-  6: "manifiesto__slide--end",      // frase al centro, botón abajo
+  1: "manifiesto__slide--anatomy",  // título arriba, terrario y su explicación abajo
+  2: "manifiesto__slide--layers",   // barras arriba, número y texto abajo
+  3: "manifiesto__slide--split",    // título arriba, tarjetas abajo
+  6: "manifiesto__slide--player",   // el reproductor, que scrollea hacia abajo
 };
 
 export async function render(root, { params }) {
@@ -119,10 +129,9 @@ export async function render(root, { params }) {
   await set("manifiesto_quote", quoteIndex);
   const quote = QUOTES[quoteIndex];
 
-  // Con id: viene del primer escaneo → termina en el reproductor de ese terrario.
-  // Sin id: se abrió desde la barra → termina en Mi terrario (#/mi-terrario).
+  // "Saltar" / "Cerrar". Con id: viene del primer escaneo → sigue al reproductor
+  // de ese terrario. Sin id: se abrió desde la barra → vuelve a Mi terrario.
   const exit = params.id ? `#/escuchar/${params.id}` : "#/mi-terrario";
-  const finishLabel = params.id ? "Escuchar mi terrario" : "Volver a mi terrario";
   const last = SLIDES.length - 1;
 
   root.innerHTML = `
@@ -135,7 +144,7 @@ export async function render(root, { params }) {
         </ol>
         <div class="manifiesto__meta">
           <span class="eyebrow" data-count aria-hidden="true">01 / 0${SLIDES.length}</span>
-          <a class="text-link manifiesto__skip" href="${exit}" data-done>${params.id ? "Saltar" : "Cerrar"}</a>
+          <a class="text-link manifiesto__skip" href="${exit}" data-done data-skip-link>${params.id ? "Saltar" : "Cerrar"}</a>
         </div>
       </div>
 
@@ -143,11 +152,11 @@ export async function render(root, { params }) {
         ${SLIDES.map((slide, i) => `
           <section class="manifiesto__slide ${SLIDE_LAYOUT[i] ?? ""}" data-slide="${i}" aria-roledescription="pantalla"
             aria-label="${i + 1} de ${SLIDES.length}" ${i ? 'aria-hidden="true"' : ""}>
-            ${typeof slide === "function" ? slide({ terrario, quote, exit, finishLabel }) : slide}
+            ${typeof slide === "function" ? slide({ terrario, quote }) : slide}
           </section>`).join("")}
       </div>
 
-      <!-- Para lectores de pantalla: a la vista se pasa deslizando o tocando -->
+      <!-- Para lectores de pantalla: a la vista se pasa tocando -->
       <button class="visually-hidden" type="button" data-next>Siguiente pantalla</button>
     </section>
   `;
@@ -158,46 +167,68 @@ export async function render(root, { params }) {
   const count = root.querySelector("[data-count]");
   const next = root.querySelector("[data-next]");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let current = 0;
-  const waves = bindLeafWaves(root);   // los dos puntos de la pantalla 3
-  const layerCycle = bindLayers(root);  // las barras de la pantalla 2
-  bindAnatomy(root);                    // los puntos de la pantalla 4
+  let current = 0;   // la pantalla a la que vamos (solo la cambia goTo)
+  const waves = bindLeafWaves(root);   // los dos puntos de la pantalla 4
+  const layerCycle = bindLayers(root);  // las barras de la pantalla 3
+  bindAnatomy(root);                    // los puntos de la pantalla 2
+  const skip = root.querySelector("[data-skip-link]");
+  let stopPlayer = null;   // apaga el reproductor de la 7 (si ya se armó)
+  let left = false;        // ya se salió del Manifiesto
+
+  // Pantalla 7: arma el reproductor la primera vez que se llega. Llegar
+  // hasta acá cuenta como haberlo visto todo; arriba, "Cerrar" vuelve a
+  // Mi terrario (también en el primer escaneo: "Saltar" ya no tiene sentido)
+  async function mountPlayer() {
+    if (stopPlayer) return;
+    stopPlayer = () => {};   // marca que ya arrancó, mientras carga
+    skip.textContent = "Cerrar";
+    skip.setAttribute("href", "#/mi-terrario");
+    await set("manifiesto_seen", true);
+    const stop = await renderPlayer(slides[last].querySelector("[data-player-slot]"), terrario, { embedded: true });
+    if (left) stop();   // se fue mientras cargaba
+    else stopPlayer = stop;
+  }
 
   function goTo(index) {
     const target = Math.max(0, Math.min(last, index));
+    current = target;   // ya, sin esperar al deslizado: así dos toques rápidos pasan dos pantallas
     track.scrollTo({ left: target * track.clientWidth, behavior: reduceMotion ? "auto" : "smooth" });
   }
 
   // Pinta la pantalla actual: barras de progreso y contador
+  // (no toca `current`: mientras desliza de la 1 a la 3 pasa por la 2, y eso
+  // no tiene que cambiar a dónde vamos)
   function show(index) {
-    current = index;
     slides[index].dataset.seen = "";   // arranca su animación de entrada (una vez)
     bars.forEach((bar, i) => bar.classList.toggle("is-done", i <= index));
     slides.forEach((slide, i) => slide.toggleAttribute("aria-hidden", i !== index));
     count.textContent = `${String(index + 1).padStart(2, "0")} / ${String(SLIDES.length).padStart(2, "0")}`;
     next.hidden = index === last;
-    // Pantalla 3: a los 3 s de verla, las hojas giran a sus ondas
+    // Pantalla 4: a los 3 s de verla, las hojas giran a sus ondas
     if (slides[index].querySelector("[data-leaf-waves]")) waves.play();
-    // Pantalla 2: las capas pasan solas solo mientras se ve
+    // Pantalla 3: las capas pasan solas solo mientras se ve
     if (slides[index].querySelector("[data-layers]")) layerCycle.play();
     else layerCycle.stop();
+    if (index === last) mountPlayer();
   }
 
-  // La pantalla que más se ve es la actual (sirve igual para swipe, tap o teclado)
+  // La pantalla que más se ve es la actual (sirve igual para tap, click o teclado)
   const observer = new IntersectionObserver(
     (entries) => entries.forEach((entry) => entry.isIntersecting && show(Number(entry.target.dataset.slide))),
     { root: track, threshold: 0.6 },
   );
   slides.forEach((slide) => observer.observe(slide));
 
-  // Tocar: el tercio izquierdo vuelve, el resto avanza
+  // Tocar: el tercio izquierdo vuelve, el resto avanza (en la 7 no: ahí los
+  // toques son del reproductor)
   track.addEventListener("click", (event) => {
+    if (current === last) return;
     const { left, width } = track.getBoundingClientRect();
     goTo(event.clientX - left < width / 3 ? current - 1 : current + 1);
   });
   next.addEventListener("click", () => goTo(current + 1));
 
-  // Saltar / Cerrar / Escuchar mi terrario: ya lo vio
+  // Saltar / Cerrar: ya lo vio
   root.querySelectorAll("[data-done]").forEach((link) => {
     link.addEventListener("click", async (event) => {
       event.preventDefault();
@@ -207,13 +238,17 @@ export async function render(root, { params }) {
     });
   });
 
+  // En la 7 las flechas son del reproductor (−15 / +15 s)
   function onKey(event) {
+    if (current === last) return;
     if (event.key === "ArrowRight") goTo(current + 1);
     if (event.key === "ArrowLeft") goTo(current - 1);
   }
   document.addEventListener("keydown", onKey);
 
   return () => {
+    left = true;
+    stopPlayer?.();
     observer.disconnect();
     waves.stop();
     layerCycle.stop();
@@ -222,7 +257,7 @@ export async function render(root, { params }) {
 }
 
 /* ---------------------------------------- */
-/* Pantalla 4: el terrario por dentro */
+/* Pantalla 2: el terrario por dentro */
 
 // La foto del TR01 y, encima, un punto de vidrio por capa y uno por planta,
 // en el lugar que dice INSIDE_TERRARIUM (content/ayuda.js). Debajo, qué es el
@@ -231,11 +266,13 @@ function anatomy() {
   const { image, alt, spots } = INSIDE_TERRARIUM;
   return `
     <div class="anatomy" data-anatomy>
-      <div class="anatomy__figure">
-        <img class="anatomy__image" src="${image}" alt="${alt}" decoding="async" />
-        ${spots.map((spot, i) => `
-          <button class="anatomy__dot" type="button" data-spot="${i}"
-            style="--x: ${spot.x}%; --y: ${spot.y}%" aria-pressed="${i === 0}" aria-label="${spotName(spot)}"></button>`).join("")}
+      <div class="anatomy__stage">
+        <div class="anatomy__figure">
+          <img class="anatomy__image" src="${image}" alt="${alt}" decoding="async" />
+          ${spots.map((spot, i) => `
+            <button class="anatomy__dot" type="button" data-spot="${i}"
+              style="--x: ${spot.x}; --y: ${spot.y}" aria-pressed="${i === 0}" aria-label="${spotName(spot)}"></button>`).join("")}
+        </div>
       </div>
       <div class="anatomy__info" data-spot-info aria-live="polite">${spotInfo(spots[0])}</div>
     </div>
@@ -251,13 +288,13 @@ function spotInfo(spot) {
   if (spot.kind === "capa") {
     const [name, , text] = LAYERS[spot.layer];
     return `
-      <p class="anatomy__name">${name}</p>
+      <p class="anatomy__name">/${name}</p>
       <p class="anatomy__text">${text}</p>
     `;
   }
   const planta = getPlanta(spot.name);
   return `
-    <p class="anatomy__name">${escapeHTML(planta.name)}</p>
+    <p class="anatomy__name">/${escapeHTML(planta.name)}</p>
     <p class="anatomy__text">${planta.wave
       ? `Hoja ${planta.leafLabel.toLowerCase()}: suena con una onda ${WAVE_NAMES[planta.wave].toLowerCase()}.`
       : "Una de las plantas del terrario."}</p>
@@ -281,12 +318,12 @@ function bindAnatomy(root) {
 }
 
 /* ---------------------------------------- */
-/* Pantalla 2: las cuatro capas */
+/* Pantalla 3: las cuatro capas */
 
 // Arriba, una franja horizontal por capa, apiladas como en el terrario
 // (plantas arriba, piedras abajo), con su imagen en movimiento: la capa
 // encendida se abre (más alta y a color) y muestra su nombre centrado.
-// Debajo de las franjas, su número ("(Capa01)") y el texto que la
+// Debajo de las franjas, su número ("/Capa01") y el texto que la
 // explica. Tocar una franja la abre.
 //
 // Cada franja es una caja con un botón que la cubre entera (para tocarla)
@@ -308,7 +345,7 @@ function layers() {
           </div>`).join("")}
       </div>
       <div class="layers__info">
-        <p class="layers__number" data-layer-number aria-hidden="true">Capa01/</p>
+        <p class="layers__number" data-layer-number aria-hidden="true">/Capa01</p>
         <p class="layers__text" data-layer-text>${text}</p>
       </div>
     </div>
@@ -336,7 +373,7 @@ function bindLayers(root) {
     const [, , text] = LAYERS[index];
     bars.forEach((bar, i) => bar.classList.toggle("is-open", i === index));
     hits.forEach((hit, i) => hit.setAttribute("aria-pressed", String(i === index)));
-    number.textContent = `Capa${pad(index + 1)}/`;
+    number.textContent = `/Capa${pad(index + 1)}`;
     copy.textContent = text;
     if (!reduceMotion) {
       [number, copy].forEach((el) => el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, easing: "ease-out" }));
@@ -473,7 +510,7 @@ function notesGraphic() {
 /* Pantalla 6: la huella de tu pieza */
 /* ---------------------------------------- */
 
-// El terrario de la pantalla 6: el recién escaneado (id en la ruta); si se
+// El terrario de las pantallas 6 y 7 (su pieza y su reproductor): el recién escaneado (id en la ruta); si se
 // abrió desde la barra, el propio o el primero de la colección; si no hay
 // ninguno, el primero del catálogo.
 async function pickTerrario(id) {

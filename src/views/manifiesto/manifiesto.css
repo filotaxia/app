@@ -3,8 +3,8 @@
    ============================================ */
 
 /* Pantalla completa: arriba el progreso (una línea fina por pantalla) con el contador
-   y "Saltar" y debajo el carrusel (scroll-snap horizontal, una pantalla
-   por vez), que ocupa todo el resto: no hay "Siguiente" a la vista, el
+   y "Saltar" y debajo el carrusel (una pantalla por vez, se pasa tocando),
+   que ocupa todo el resto: no hay "Siguiente" a la vista, el
    botón final está dentro de la pantalla 7. En el primer escaneo va
    sin barra; abierto desde la barra, deja lugar abajo para ella. */
 
@@ -12,6 +12,14 @@
     height: 100dvh;
     display: flex;
     flex-direction: column;
+}
+
+/* Mientras está abierto, la página entera queda quieta: en el celu no se
+   puede arrastrar ni hacer rebotar con el dedo */
+html:has(.manifiesto),
+html:has(.manifiesto) body {
+    overflow: hidden;
+    overscroll-behavior: none;
 }
 
 .app-shell[data-nav] .manifiesto {
@@ -57,9 +65,15 @@
 .manifiesto__track {
     flex: 1;
     display: flex;
+    min-height: 0;
     margin-inline: calc(var(--gutter) * -1);
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
+    /* No se mueve con el dedo, la ruedita ni el trackpad (overflow hidden):
+       se pasa de pantalla solo tocando o con las flechas, y el JS lo
+       desliza con scrollTo. touch-action: manipulation saca la demora
+       del doble toque */
+    overflow: hidden;
+    overscroll-behavior: none;
+    touch-action: manipulation;
     scroll-snap-type: x mandatory;
     cursor: pointer;   /* sin barra de scroll: la saca base.css para toda la app */
 }
@@ -100,7 +114,7 @@
     animation-play-state: running;
 }
 
-/* Frase grande + atribución chica (pantallas 1, 5 y 6) */
+/* Frase grande + atribución chica (pantallas 1, 6 y 7) */
 .manifiesto__quote {
     display: flex;
     flex-direction: column;
@@ -125,10 +139,18 @@
     text-wrap: balance;
 }
 
-/* Atribución: libro y autor, uno debajo del otro */
-.manifiesto__quote figcaption {
+/* Texto chico de todas las pantallas, siempre igual: arriba un nombre con
+   barra en el color del texto principal ("/Capa01", "/Plantas", "/TR01",
+   "/La vida secreta de las plantas") y debajo el texto en gris, los dos del
+   tamaño de "Cerrar" (--font-base). Las frases grandes y los títulos son
+   aparte (--font-2xl). Acá: la atribución de las citas (libro y autor) y
+   la de la pieza (código y fecha) */
+.manifiesto__byline {
     display: flex;
     flex-direction: column;
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    color: var(--color-text-muted);
 }
 
 .manifiesto__cite {
@@ -136,7 +158,16 @@
     color: var(--color-text);
 }
 
-/* Pantalla 2: las cuatro capas. Arriba cuatro franjas horizontales
+/* Bajada de arriba de la pantalla, entre paréntesis: "(Un terrario, cuatro
+   capas)", "(Biosonificación)". Del tamaño de "Cerrar", sin mayúsculas y en el
+   color del texto principal (blanco en oscuro, negro en claro) */
+.manifiesto__kicker {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    color: var(--color-text);
+}
+
+/* Pantalla 3: las cuatro capas. Arriba cuatro franjas horizontales
    apiladas, como las capas del terrario (plantas arriba, piedras abajo),
    ocupando el alto que queda: la encendida se abre (más alta y a color)
    y las demás se achican y se apagan. Debajo el número grande y el texto
@@ -157,7 +188,7 @@
 
 .layers__bars {
     flex: 1;
-    min-height: 280px;   /* tres franjas cerradas de 44 + una bien abierta */
+    min-height: 260px;   /* tres franjas cerradas de 44 + una bien abierta */
     max-height: 440px;
     display: flex;
     flex-direction: column;
@@ -240,33 +271,48 @@
 .layers__info {
     display: flex;
     flex-direction: column;
-    gap: var(--gap-sm);
 }
 
-/* "Capa01/" de la capa abierta: grande, pero --font-2xl (no --num-md: tiene
-   letras, no es una cifra, así que no necesita el tracking tan cerrado) */
+/* "/Capa01" de la capa abierta: del mismo tamaño que el texto, pero en el
+   color del texto principal (blanco en oscuro, negro en claro). Igual que
+   "/Plantas" en la pantalla 2 */
 .layers__number {
-    font-size: var(--font-2xl-size);
-    line-height: var(--font-2xl-line);
-    letter-spacing: var(--font-2xl-tracking);
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    color: var(--color-text);
 }
 
-/* El texto reserva cuatro líneas: así las barras no saltan al cambiar de capa */
+/* El texto reserva tres líneas (la más larga ocupa tres a 375px): así las
+   barras no saltan al cambiar de capa */
 .layers__text {
-    min-height: calc(var(--font-lg-line) * 4);
-    font-size: var(--font-lg-size);
-    line-height: var(--font-lg-line);
-    letter-spacing: var(--font-lg-tracking);
+    min-height: calc(var(--font-base-line) * 3);
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
     color: var(--color-text-muted);
 }
 
-/* Pantalla 3: título grande arriba a la izquierda y, debajo, las tarjetas
+/* Pantalla 4: título grande arriba a la izquierda y, debajo, las tarjetas
    ocupando todo el alto que queda (dos filas iguales). En pantallas muy
    altas la grilla no pasa de 640px, así las tarjetas no se estiran de más. */
 .manifiesto__slide--split {
+    position: relative;   /* para ubicar los dos puntos (ver abajo) */
     justify-content: flex-start;
     gap: var(--gap-lg);
     padding-top: var(--spacing-xl);
+}
+
+/* Los dos puntos (hojas · ondas) salen de su fila y van a la derecha,
+   apoyados en la línea de abajo del texto del título: 6px por encima de
+   su borde de abajo (el título tiene dos líneas: 2 × --font-2xl-line).
+   Cada punto es un círculo de 8px en el medio de un área tocable de 44:
+   por eso se resta la mitad del área y 4px (+ esos 6). El último punto
+   queda alineado con el borde derecho de las tarjetas (−4px: el aire
+   tocable que tiene a su derecha) */
+.manifiesto__slide--split .leaf-waves__dots {
+    position: absolute;
+    top: calc(var(--spacing-xl) + var(--font-2xl-line) * 2 - var(--size-tap) / 2 - 10px);
+    right: calc(var(--gutter) - var(--spacing-xs));
+    margin: 0;
 }
 
 .manifiesto__slide--split > .leaf-waves-flip {
@@ -308,8 +354,8 @@
 }
 
 /* ---------------------------------------- */
-/* Pantalla 4: el terrario por dentro
-   Título arriba; debajo la foto del terrario (cuadrada, hasta 400px) con
+/* Pantalla 2: el terrario por dentro
+   Título arriba; debajo la foto del terrario (todo el ancho, cuadrada si entra) con
    los puntos encima y, al pie, qué es el punto elegido. */
 .manifiesto__slide--anatomy {
     justify-content: flex-start;
@@ -322,33 +368,61 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--gap-md);
+    gap: var(--gap-lg);   /* foto ↔ texto: el mismo aire que en las capas (.layers) */
 }
 
-/* La caja tiene la proporción de la foto (cuadrada): así los % de cada
-   punto caen siempre en el mismo lugar del terrario */
+/* El lugar para la foto: todo el alto que deja el texto de abajo. Es un
+   contenedor (container-type) para que la foto pueda medirse contra él
+   (cqw / cqh: como vw / vh, pero de este lugar). La foto va abajo de todo
+   (end): así queda pegada al texto, con el gap de .anatomy, y si sobra
+   alto queda arriba, entre el título y la foto */
+.anatomy__stage {
+    flex: 1;
+    min-height: 0;
+    container-type: size;
+    display: grid;
+    align-items: end;
+}
+
+/* La foto ocupa siempre todo el ancho y es más alta que ancha (hasta 4:5,
+   o sea 125% del ancho) si hay lugar; si no, toma el alto que haya. La foto
+   original es cuadrada, así que se recorta: a los costados (fondo blanco)
+   cuando la caja es alta, arriba y abajo cuando es baja.
+     --h      el alto de la caja: el lugar que hay, hasta 125% del ancho
+     --side   el lado al que se agranda la foto cuadrada para cubrir la caja
+     --focus-x / --focus-y  qué parte queda a la vista al recortar (0 = un
+              borde, 0.5 = el centro, 1 = el otro); 0.6 en alto deja el
+              terrario entero (sus puntos van del 37% al 78% de la foto)
+   Para hacerla más o menos alta, cambiá el 125cqw. */
 .anatomy__figure {
+    --h: min(100cqh, 125cqw);
+    --side: max(100cqw, var(--h));
+    --focus-x: 0.5;
+    --focus-y: 0.6;
     position: relative;
     width: 100%;
-    max-width: 400px;
-    margin-inline: auto;
-    aspect-ratio: 1;
+    height: var(--h);
 }
 
 .anatomy__image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: calc(var(--focus-x) * 100%) calc(var(--focus-y) * 100%);
 }
 
 /* Cada punto: 44px tocables y, al centro, un disco de vidrio esmerilado
    (glassmorphism: blanco translúcido que desenfoca la foto de atrás, sin
    borde) con un centro blanco sólido. Igual para capas y plantas; el
    elegido, con el centro más grande. Redondos a propósito. */
+/* --x / --y: dónde cae en la foto cuadrada, de 0 a 100 (INSIDE_TERRARIUM).
+   La foto agrandada mide --side de lado; lo recortado corre su borde
+   (lado − ancho de la caja) × --focus-x a la izquierda y (lado − alto)
+   × --focus-y hacia arriba, así que el punto se corre lo mismo */
 .anatomy__dot {
     position: absolute;
-    left: var(--x);
-    top: var(--y);
+    left: calc(var(--x) * var(--side) / 100 - (var(--side) - 100cqw) * var(--focus-x));
+    top: calc(var(--y) * var(--side) / 100 - (var(--side) - var(--h)) * var(--focus-y));
     width: var(--size-tap);
     height: var(--size-tap);
     display: grid;
@@ -399,14 +473,15 @@
 .anatomy__info {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-2xs);
-    min-height: calc(var(--font-2xl-line) + var(--font-base-line) * 3);
+    min-height: calc(var(--font-base-line) * 4);   /* nombre + hasta tres líneas */
 }
 
+/* "/Plantas", "/Haworthia Attenuata": del mismo tamaño que el texto, pero en
+   el color del texto principal (como "/Capa01" en la pantalla de las capas) */
 .anatomy__name {
-    font-size: var(--font-2xl-size);
-    line-height: var(--font-2xl-line);
-    letter-spacing: var(--font-2xl-tracking);
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    color: var(--color-text);
 }
 
 .anatomy__text {
@@ -475,9 +550,9 @@
 }
 
 .flow__text {
-    font-size: var(--font-lg-size);
-    line-height: var(--font-lg-line);
-    letter-spacing: var(--font-lg-tracking);
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    color: var(--color-text-muted);   /* gris, como el texto de las capas */
     animation: reveal-in 0.7s var(--ease-out) calc(var(--delay) + 0.4s) both paused;
 }
 
@@ -642,13 +717,34 @@
     }
 }
 
-/* Pantalla 7: la frase al centro del alto y el botón final abajo */
-.manifiesto__slide--end .manifiesto__quote {
-    margin-block: auto;
+/* ---------------------------------------- */
+/* Pantalla 7: el reproductor (views/escuchar, renderPlayer), solo la foto
+   y los controles: sin los bloques de abajo, así que no scrollea. Es
+   relative para que el fondo del reproductor (la foto, absolute) ocupe
+   todo su ancho y su alto, y un contenedor (container-type) para que el
+   reproductor mida su alto (cqh). */
+.manifiesto__slide--player {
+    position: relative;
+    container-type: size;
+    justify-content: flex-start;
+    gap: 0;
+    padding-bottom: 0;
 }
 
-.manifiesto__finish {
-    width: 100%;
+/* Sin la entrada con fade de las otras pantallas: el reproductor ya
+   tiene la suya, y un transform acá rompería el fondo */
+.manifiesto__slide--player > * {
+    animation: none;
+}
+
+/* La foto y los controles ocupan justo el alto de la pantalla */
+.manifiesto__player .player--embedded {
+    height: 100cqh;
+    padding-bottom: var(--spacing-xl);
+}
+
+.manifiesto__slide--player .player__backdrop {
+    height: 100%;
 }
 
 /* "Saltar" / "Cerrar": link de texto sin la línea de abajo */
@@ -671,9 +767,13 @@ RESPONSIVE
         margin-inline: auto;
     }
 
-    /* Las acciones siguen la misma columna que el contenido */
-    .manifiesto__slide > .manifiesto__finish {
-        width: auto;
-        min-width: 320px;
+    /* Los puntos siguen el borde derecho de la columna de 480px */
+    .manifiesto__slide--split .leaf-waves__dots {
+        right: calc(max(var(--gutter), (100% - 480px) / 2) - var(--spacing-xs));
+    }
+
+    /* El reproductor usa todo el ancho de la pantalla 7 (sin la columna de 480) */
+    .manifiesto__slide--player > * {
+        max-width: none;
     }
 }
