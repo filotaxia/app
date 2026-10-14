@@ -2,7 +2,8 @@
    Tests — Content
    ============================================ */
 
-// Que los catálogos (terrarios, plantas y citas) estén completos y coincidan entre sí,
+// Que los catálogos (terrarios, plantas, citas y los puntos del terrario del
+// Manifiesto) estén completos y coincidan entre sí,
 // y que cada foto que nombran exista.
 
 import { test } from "node:test";
@@ -11,6 +12,7 @@ import { existsSync } from "node:fs";
 import { TERRARIOS } from "../src/content/terrarios.js";
 import { PLANTAS, LEAVES, WAVE_NAMES, getPlanta } from "../src/content/plantas.js";
 import { QUOTES, nextQuoteIndex } from "../src/content/citas.js";
+import { INSIDE_TERRARIUM, LAYERS } from "../src/content/ayuda.js";
 
 const root = new URL("../", import.meta.url);
 const exists = (path) => existsSync(new URL(path, root));
@@ -50,4 +52,13 @@ test("citas: completas, y nextQuoteIndex las recorre sin repetir dos seguidas", 
   assert.equal(nextQuoteIndex(null), 0);
   assert.equal(nextQuoteIndex(0), 1);
   assert.equal(nextQuoteIndex(QUOTES.length - 1), 0);
+});
+
+test("INSIDE_TERRARIUM: la foto existe y cada punto apunta a una capa o planta que existe, dentro de la imagen", () => {
+  assert.ok(exists(INSIDE_TERRARIUM.image), INSIDE_TERRARIUM.image);
+  INSIDE_TERRARIUM.spots.forEach((spot) => {
+    if (spot.kind === "capa") assert.ok(LAYERS[spot.layer], `capa ${spot.layer}`);
+    else assert.ok(PLANTAS.some((planta) => planta.name === spot.name), `planta ${spot.name}`);
+    assert.ok(spot.x >= 0 && spot.x <= 100 && spot.y >= 0 && spot.y <= 100, "dentro de la imagen");
+  });
 });

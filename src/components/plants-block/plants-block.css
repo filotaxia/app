@@ -61,7 +61,8 @@
     transform: translateY(-50%);
 }
 
-/* Una planta: número, foto redonda (vista de arriba), nombre y su hoja (u onda) */
+/* Una planta: número, foto (vista de arriba, sin fondo: el webp ya es
+   transparente), nombre y su hoja (u onda) */
 .block__list .plant {
     align-items: center;
 }
@@ -70,8 +71,6 @@
     flex-shrink: 0;
     width: 40px;
     height: 40px;
-    border-radius: var(--radius-full);
-    background: var(--color-badge-bg);
     object-fit: cover;
 }
 

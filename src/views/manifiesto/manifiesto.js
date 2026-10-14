@@ -2,7 +2,7 @@
    Views — Manifiesto
    ============================================ */
 
-// Introducción a la biosonificación en seis pantallas, para que la pieza
+// Introducción a la biosonificación en siete pantallas, para que la pieza
 // se escuche como lo que es (y no como ruido al azar):
 //
 //   1. Gancho      una cita de filotaxia.com, distinta cada vez que se abre
@@ -11,11 +11,13 @@
 //                  capa (con su imagen en movimiento), y debajo el número
 //                  grande y el texto de la capa encendida; pasan solas
 //   3. Idioma      cada forma de hoja → su onda (components/leaf-waves)
-//   4. Mecanismo   01 / 02 / 03, de la planta a la nota, con un gráfico por paso
+//   4. Por dentro  la foto del TR01 con puntos sobre sus capas y sus
+//                  plantas: tocar uno lo explica
+//   5. Mecanismo   01 / 02 / 03, de la planta a la nota, con un gráfico por paso
 //                  que entra uno después del otro (señal → sensor → notas)
-//   5. Prueba      la huella de TU pieza: sus notas reales (audio/score.js)
+//   6. Prueba      la huella de TU pieza: sus notas reales (audio/score.js)
 //                  en un piano roll que un cabezal recorre, con nombre y fecha
-//   6. Cierre      "Escuchar mi terrario" → reproductor
+//   7. Cierre      "Escuchar mi terrario" → reproductor
 //
 // Se abre solo una vez: la ficha (views/terrario) manda acá en el primer
 // escaneo, con el id del terrario (#/manifiesto/04). "Saltar" o el botón
@@ -24,27 +26,25 @@
 // es "Cerrar" y el botón final, "Volver a mi terrario".
 //
 // La pantalla 1 apoya la cita abajo a la izquierda (como las cards de citas
-// de filotaxia.com); la 2 y la 3 llenan el alto (gráfico arriba, texto
-// abajo / título arriba, tarjetas abajo); las demás van centradas.
+// de filotaxia.com); la 2, la 3 y la 4 llenan el alto (gráfico arriba, texto
+// abajo / título arriba, tarjetas o terrario abajo); las demás van centradas.
 //
 // Se pasa de pantalla deslizando (scroll-snap nativo), tocando (izquierda
 // = atrás, resto = adelante) o con las flechas del teclado. No hay botón
 // "Siguiente" a la vista (así las pantallas tienen más lugar): queda uno
-// escondido para lectores de pantalla. El botón final va dentro de la 5.
+// escondido para lectores de pantalla. El botón final va dentro de la 7.
 
 import { get, set } from "../../store/store.js";
 import { linkedIds } from "../../store/collection.js";
 import { myTerrarioId } from "../../store/my-terrario.js";
 import { TERRARIOS, getTerrario, codeOf } from "../../content/terrarios.js";
 import { QUOTES, nextQuoteIndex } from "../../content/citas.js";
-import { LAYERS } from "../../content/ayuda.js";
+import { LAYERS, INSIDE_TERRARIUM } from "../../content/ayuda.js";
+import { getPlanta, WAVE_NAMES } from "../../content/plantas.js";
 import { buildScore, seedFrom } from "../../audio/score.js";
 import { leafWaves, bindLeafWaves } from "../../components/leaf-waves/leaf-waves.js";
 import { formatDate } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
-
-// "+ info" de cada capa (pantalla 2): su página en filotaxia.com (capa01.html…)
-const LAYER_PAGES = "https://filotaxia.com/src/pages/capas/capa";
 
 export const title = "Manifiesto";
 // Sin barra en el primer escaneo (con id: es parte del onboarding);
@@ -68,18 +68,24 @@ const SLIDES = [
     ${layers()}
   `,
   // 3. Idioma: título arriba a la izquierda y las cuatro tarjetas grandes abajo,
-  //    en igualdad (todavía no es tu terrario): primero las ondas y, a los 3 s,
-  //    giran a sus hojas; los dos puntos de arriba a la derecha cambian la vista
+  //    en igualdad (todavía no es tu terrario): primero las hojas y, a los 3 s,
+  //    giran a sus ondas; los dos puntos de arriba a la derecha cambian la vista
   `
     <p class="manifiesto__title">Cada planta.<br />Su propia onda.</p>
     ${leafWaves({ flip: true })}
   `,
-  // 4. Mecanismo: paso a paso, cada uno con su gráfico (ver mechanism() más abajo)
+  // 4. Por dentro: la foto del terrario con sus puntos
+  //    (ver anatomy() más abajo)
+  `
+    <p class="manifiesto__title">Cada capa.<br />Cada planta.</p>
+    ${anatomy()}
+  `,
+  // 5. Mecanismo: paso a paso, cada uno con su gráfico (ver mechanism() más abajo)
   `
     <p class="eyebrow">Biosonificación</p>
     ${mechanism()}
   `,
-  // 5. Prueba: depende del terrario, por eso es una función (ver render)
+  // 6. Prueba: depende del terrario, por eso es una función (ver render)
   ({ terrario }) => `
     ${pieceGraphic(terrario)}
     <div class="manifiesto__quote">
@@ -87,7 +93,7 @@ const SLIDES = [
       <p class="eyebrow">${escapeHTML(codeOf(terrario))} · ${formatDate(terrario.recorded)}</p>
     </div>
   `,
-  // 6. Cierre: la frase al centro y el botón final abajo
+  // 7. Cierre: la frase al centro y el botón final abajo
   ({ exit, finishLabel }) => `
     <div class="manifiesto__quote manifiesto__quote--center">
       <p class="manifiesto__big">Esto es lo que estás por escuchar.</p>
@@ -101,7 +107,8 @@ const SLIDE_LAYOUT = {
   0: "manifiesto__slide--bottom",   // la cita, abajo a la izquierda
   1: "manifiesto__slide--layers",   // barras arriba, número y texto abajo
   2: "manifiesto__slide--split",    // título arriba, tarjetas abajo
-  5: "manifiesto__slide--end",      // frase al centro, botón abajo
+  3: "manifiesto__slide--anatomy",  // título arriba, terrario y su explicación abajo
+  6: "manifiesto__slide--end",      // frase al centro, botón abajo
 };
 
 export async function render(root, { params }) {
@@ -154,6 +161,7 @@ export async function render(root, { params }) {
   let current = 0;
   const waves = bindLeafWaves(root);   // los dos puntos de la pantalla 3
   const layerCycle = bindLayers(root);  // las barras de la pantalla 2
+  bindAnatomy(root);                    // los puntos de la pantalla 4
 
   function goTo(index) {
     const target = Math.max(0, Math.min(last, index));
@@ -168,7 +176,7 @@ export async function render(root, { params }) {
     slides.forEach((slide, i) => slide.toggleAttribute("aria-hidden", i !== index));
     count.textContent = `${String(index + 1).padStart(2, "0")} / ${String(SLIDES.length).padStart(2, "0")}`;
     next.hidden = index === last;
-    // Pantalla 3: a los 3 s de verla, las ondas giran a sus hojas
+    // Pantalla 3: a los 3 s de verla, las hojas giran a sus ondas
     if (slides[index].querySelector("[data-leaf-waves]")) waves.play();
     // Pantalla 2: las capas pasan solas solo mientras se ve
     if (slides[index].querySelector("[data-layers]")) layerCycle.play();
@@ -214,43 +222,94 @@ export async function render(root, { params }) {
 }
 
 /* ---------------------------------------- */
+/* Pantalla 4: el terrario por dentro */
+
+// La foto del TR01 y, encima, un punto de vidrio por capa y uno por planta,
+// en el lugar que dice INSIDE_TERRARIUM (content/ayuda.js). Debajo, qué es el
+// punto elegido: su nombre ("Sustrato", "Haworthia Attenuata") y su texto.
+function anatomy() {
+  const { image, alt, spots } = INSIDE_TERRARIUM;
+  return `
+    <div class="anatomy" data-anatomy>
+      <div class="anatomy__figure">
+        <img class="anatomy__image" src="${image}" alt="${alt}" decoding="async" />
+        ${spots.map((spot, i) => `
+          <button class="anatomy__dot" type="button" data-spot="${i}"
+            style="--x: ${spot.x}%; --y: ${spot.y}%" aria-pressed="${i === 0}" aria-label="${spotName(spot)}"></button>`).join("")}
+      </div>
+      <div class="anatomy__info" data-spot-info aria-live="polite">${spotInfo(spots[0])}</div>
+    </div>
+  `;
+}
+
+// "Capa 02: Sustrato" / "Planta: Haworthia Attenuata" (para el lector de pantalla)
+function spotName(spot) {
+  return spot.kind === "capa" ? `Capa ${pad(spot.layer + 1)}: ${LAYERS[spot.layer][0]}` : `Planta: ${spot.name}`;
+}
+
+function spotInfo(spot) {
+  if (spot.kind === "capa") {
+    const [name, , text] = LAYERS[spot.layer];
+    return `
+      <p class="anatomy__name">${name}</p>
+      <p class="anatomy__text">${text}</p>
+    `;
+  }
+  const planta = getPlanta(spot.name);
+  return `
+    <p class="anatomy__name">${escapeHTML(planta.name)}</p>
+    <p class="anatomy__text">${planta.wave
+      ? `Hoja ${planta.leafLabel.toLowerCase()}: suena con una onda ${WAVE_NAMES[planta.wave].toLowerCase()}.`
+      : "Una de las plantas del terrario."}</p>
+  `;
+}
+
+// Tocar un punto lo elige y cuenta qué es. Frena el click para no pasar de pantalla.
+function bindAnatomy(root) {
+  const box = root.querySelector("[data-anatomy]");
+  if (!box) return;
+  const dots = [...box.querySelectorAll("[data-spot]")];
+  const info = box.querySelector("[data-spot-info]");
+
+  dots.forEach((dot) => {
+    dot.addEventListener("click", (event) => {
+      event.stopPropagation();
+      dots.forEach((d) => d.setAttribute("aria-pressed", String(d === dot)));
+      info.innerHTML = spotInfo(INSIDE_TERRARIUM.spots[Number(dot.dataset.spot)]);
+    });
+  });
+}
+
+/* ---------------------------------------- */
 /* Pantalla 2: las cuatro capas */
 
 // Arriba, una franja horizontal por capa, apiladas como en el terrario
 // (plantas arriba, piedras abajo), con su imagen en movimiento: la capa
-// encendida se abre (más alta y a color) y muestra los detalles de las capas
-// de filotaxia.com/terrarios: "Capa01/" y "+ info" arriba, el nombre en el
-// centro, el material y un punto abajo. Debajo de las franjas, su número
-// en grande ("01") y el texto que la explica. Tocar una franja la abre.
+// encendida se abre (más alta y a color) y muestra su nombre centrado.
+// Debajo de las franjas, su número ("(Capa01)") y el texto que la
+// explica. Tocar una franja la abre.
 //
 // Cada franja es una caja con un botón que la cubre entera (para tocarla)
-// y, encima, los detalles; "+ info" es un link aparte (a la página de esa
-// capa en filotaxia.com, LAYER_PAGES arriba), porque un link no puede ir
-// dentro de un botón.
+// y, encima, el nombre.
 
 function layers() {
-  const [name, , text] = LAYERS[0];
+  const [, , text] = LAYERS[0];
   return `
     <div class="layers" data-layers>
       <div class="layers__bars" role="group" aria-label="Las cuatro capas">
-        ${LAYERS.map(([layerName, material, , media], i) => `
+        ${LAYERS.map(([layerName, , , media], i) => `
           <div class="layers__bar${i === 0 ? " is-open" : ""}" data-layer-bar>
             <img class="layers__media" src="${media}" alt="" decoding="async" />
             <button class="layers__hit" type="button" data-layer="${i}" aria-pressed="${i === 0}"
               aria-label="Capa ${pad(i + 1)}: ${layerName}"></button>
             <div class="layers__details" aria-hidden="true">
-              <span class="layers__corner">Capa${pad(i + 1)}/</span>
               <span class="layers__title">${layerName}</span>
-              <span class="layers__corner layers__corner--bottom">${material}</span>
-              <span class="layers__dot"></span>
             </div>
-            <a class="layers__more" href="${LAYER_PAGES}${pad(i + 1)}.html" target="_blank" rel="noopener"
-              aria-label="Más sobre la capa ${layerName.toLowerCase()} en filotaxia.com">+ info</a>
           </div>`).join("")}
       </div>
       <div class="layers__info">
-        <p class="layers__number" data-layer-number aria-hidden="true">01</p>
-        <p class="layers__text" data-layer-text><span class="layers__name">${name}.</span> ${text}</p>
+        <p class="layers__number" data-layer-number aria-hidden="true">Capa01/</p>
+        <p class="layers__text" data-layer-text>${text}</p>
       </div>
     </div>
   `;
@@ -274,11 +333,11 @@ function bindLayers(root) {
 
   function open(index) {
     current = index;
-    const [name, , text] = LAYERS[index];
+    const [, , text] = LAYERS[index];
     bars.forEach((bar, i) => bar.classList.toggle("is-open", i === index));
     hits.forEach((hit, i) => hit.setAttribute("aria-pressed", String(i === index)));
-    number.textContent = pad(index + 1);
-    copy.innerHTML = `<span class="layers__name">${name}.</span> ${text}`;
+    number.textContent = `Capa${pad(index + 1)}/`;
+    copy.textContent = text;
     if (!reduceMotion) {
       [number, copy].forEach((el) => el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, easing: "ease-out" }));
     }
@@ -292,10 +351,6 @@ function bindLayers(root) {
       timer = 0;
       open(Number(hit.dataset.layer));
     });
-  });
-
-  box.querySelectorAll(".layers__more").forEach((link) => {
-    link.addEventListener("click", (event) => event.stopPropagation());
   });
 
   return {
@@ -315,7 +370,7 @@ function pad(n) {
 }
 
 /* ---------------------------------------- */
-/* Pantalla 4: el mecanismo, paso a paso */
+/* Pantalla 5: el mecanismo, paso a paso */
 /* ---------------------------------------- */
 
 // Los tres gráficos cuentan la misma señal, cada vez más "música":
@@ -415,10 +470,10 @@ function notesGraphic() {
 }
 
 /* ---------------------------------------- */
-/* Pantalla 5: la huella de tu pieza */
+/* Pantalla 6: la huella de tu pieza */
 /* ---------------------------------------- */
 
-// El terrario de la pantalla 4: el recién escaneado (id en la ruta); si se
+// El terrario de la pantalla 6: el recién escaneado (id en la ruta); si se
 // abrió desde la barra, el propio o el primero de la colección; si no hay
 // ninguno, el primero del catálogo.
 async function pickTerrario(id) {

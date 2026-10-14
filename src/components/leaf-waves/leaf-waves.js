@@ -7,10 +7,10 @@
 //
 //   leafWaves()                           → las cuatro iguales, con la onda
 //   leafWaves({ flip: true })             → tarjetas de dos caras (Manifiesto): primero
-//                                           la onda, en negro ("onda / Triangular"), y
-//                                           al girar la hoja ("hoja / Puntiaguda").
+//                                           la hoja ("hoja / Puntiaguda") y, al girar,
+//                                           su onda en negro ("onda / Triangular").
 //                                           Arriba a la derecha, dos puntos para elegir
-//                                           la vista (ondas · hojas). Conectarlos con
+//                                           la vista (hojas · ondas). Conectarlos con
 //                                           bindLeafWaves(root) después de insertar el HTML.
 //   leafWaves({ active: ["puntiaguda"] }) → esas en negro sólido, el resto atenuado
 //                                           (para la ficha de un terrario)
@@ -33,12 +33,12 @@ export function leafWaves({ active = [], flip = false } = {}) {
   `;
   if (!flip) return grid;
 
-  // data-face dice qué cara se ve: "onda" (al principio) o "hoja"
+  // data-face dice qué cara se ve: "hoja" (al principio) u "onda"
   return `
-    <div class="leaf-waves-flip" data-leaf-waves data-face="onda">
+    <div class="leaf-waves-flip" data-leaf-waves data-face="hoja">
       <div class="leaf-waves__dots" role="group" aria-label="Vista">
-        <button class="leaf-waves__dot" type="button" data-face-to="onda" aria-pressed="true" aria-label="Ver las ondas"></button>
-        <button class="leaf-waves__dot" type="button" data-face-to="hoja" aria-pressed="false" aria-label="Ver las hojas"></button>
+        <button class="leaf-waves__dot" type="button" data-face-to="hoja" aria-pressed="true" aria-label="Ver las hojas"></button>
+        <button class="leaf-waves__dot" type="button" data-face-to="onda" aria-pressed="false" aria-label="Ver las ondas"></button>
       </div>
       ${grid}
     </div>
@@ -46,8 +46,8 @@ export function leafWaves({ active = [], flip = false } = {}) {
 }
 
 // Conecta los dos puntos. Devuelve:
-//   play(ms)  después de ms (3 s por defecto) pasa solo de las ondas a las
-//             hojas, una vez; no hace nada si la persona ya tocó un punto
+//   play(ms)  después de ms (3 s por defecto) pasa solo de las hojas a sus
+//             ondas, una vez; no hace nada si la persona ya tocó un punto
 //   stop()    cancela el cambio pendiente (al salir de la pantalla)
 // Los puntos frenan el click, así tocar uno no pasa de pantalla en el Manifiesto.
 export function bindLeafWaves(root) {
@@ -74,7 +74,7 @@ export function bindLeafWaves(root) {
   return {
     play(ms = 3000) {
       if (touched || timer) return;
-      timer = setTimeout(() => !touched && show("hoja"), ms);
+      timer = setTimeout(() => !touched && show("onda"), ms);
     },
     stop() {
       clearTimeout(timer);
@@ -93,23 +93,23 @@ function card(key, leaf, isActive) {
   `;
 }
 
-// Tarjeta que gira: al frente la onda (en negro), al dorso la hoja. Las dos
-// caras son visuales; el lector de pantalla lee el texto escondido, que dice
-// las dos cosas ("Hoja puntiaguda: onda triangular").
+// Tarjeta que gira: al frente la hoja (tarjeta clara), al dorso su onda (en
+// negro). Las dos caras son visuales; el lector de pantalla lee el texto
+// escondido, que dice las dos cosas ("Hoja puntiaguda: onda triangular").
 function flipCard(key, leaf, i) {
   return `
     <li class="leaf-wave leaf-wave--flip" style="--i: ${i}">
       <span class="visually-hidden">Hoja ${leaf.label.toLowerCase()}: onda ${WAVE_NAMES[leaf.wave].toLowerCase()}</span>
       <div class="leaf-wave__inner" aria-hidden="true">
-        <div class="leaf-wave__face leaf-wave__face--onda">
-          ${face({ caption: "onda", name: WAVE_NAMES[leaf.wave], art: waveIcon(leaf.wave) })}
-        </div>
-        <div class="leaf-wave__face leaf-wave__face--back">
+        <div class="leaf-wave__face">
           ${face({
             caption: "hoja",
             name: leaf.label,
             art: `<img class="leaf-wave__photo" src="${LEAF_DIR}${key}.webp" alt="" decoding="async" />`,
           })}
+        </div>
+        <div class="leaf-wave__face leaf-wave__face--onda leaf-wave__face--back">
+          ${face({ caption: "onda", name: WAVE_NAMES[leaf.wave], art: waveIcon(leaf.wave) })}
         </div>
       </div>
     </li>

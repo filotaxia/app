@@ -132,6 +132,25 @@ export const LAYERS = [
     "https://media0.giphy.com/media/55jWt7O2wPB5e/giphy.gif"],
 ];
 
+// El terrario de la pantalla 4 del Manifiesto: la foto del TR01 (la de
+// producto de filotaxia.com, la misma de la colección), con un punto por capa
+// (`layer`: su lugar en LAYERS) y uno por planta (`name`: el de
+// content/plantas.js). x / y son el lugar del punto, en % del ancho y del
+// alto de la foto (cambialos para moverlos).
+export const INSIDE_TERRARIUM = {
+  image: "src/assets/images/terrarios/tr01.jpg",
+  alt: "El terrario TR01: una pecera redonda de vidrio con suculentas, piedras y sustrato",
+  spots: [
+    { kind: "capa", layer: 0, x: 45, y: 37 },
+    { kind: "capa", layer: 1, x: 28, y: 72 },
+    { kind: "capa", layer: 2, x: 74, y: 73 },
+    { kind: "capa", layer: 3, x: 52, y: 78 },
+    { kind: "planta", name: "Haworthia Attenuata", x: 38, y: 60 },
+    { kind: "planta", name: "Haworthia Fasciata", x: 68, y: 48 },
+    { kind: "planta", name: "Haworthia Venosa", x: 57, y: 55 },
+  ],
+};
+
 // Preguntas sobre el sonido (página "Formas")
 export const SOUND_FAQ = [
   [

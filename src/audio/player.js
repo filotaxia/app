@@ -6,7 +6,8 @@
 // un drone grave constante + notas suaves con un eco largo.
 //
 //   const player = createPlayer({ seed: seedFrom("04"), duration: 222, waves: ["triangle", "sine"] });
-//   (waves: las formas de onda del terrario; las notas las van alternando)
+//   (waves: las formas de onda del terrario; las notas las van alternando;
+//    notes: opcional, otras notas { time, freq, length, gain } en vez de las generadas)
 //   player.on("tick", ({ time, duration }) => { ... });   // ~4 veces por segundo
 //   player.on("state", ({ playing }) => { ... });
 //   player.toggle();  player.skip(15);  player.seek(60);
@@ -30,8 +31,13 @@ const TICK_MS = 250;
 // (la triangular y la cuadrada tienen más armónicos y se oyen más fuertes)
 const WAVE_LEVEL = { sine: 1, triangle: 0.75, square: 0.25, sawtooth: 0.3 };
 
-export function createPlayer({ seed, duration, waves = ["sine"] }) {
-  const { root, notes } = buildScore({ seed, duration });
+export function createPlayer({ seed, duration, waves = ["sine"], notes: custom = null }) {
+  // notes: si el terrario tiene el MIDI real de sus plantas (audio/lanes.js),
+  // se tocan esas notas; si no, las de la partitura generada. El drone grave
+  // sale siempre de la partitura.
+  const score = buildScore({ seed, duration });
+  const root = score.root;
+  const notes = custom ?? score.notes;
   const listeners = { tick: new Set(), state: new Set(), ended: new Set() };
 
   let ctx = null;

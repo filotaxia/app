@@ -52,6 +52,11 @@
     --color-inverse-hover: light-dark(var(--color-gray-800), var(--color-gray-300));
     --color-focus: var(--color-text);
 
+    /* --- Tarjeta destacada (las ondas del Manifiesto, la Partitura del
+       reproductor): negra en claro y gris en oscuro, nunca blanca --- */
+    --color-feature-bg: light-dark(var(--color-gray-900), var(--color-gray-800));
+    --color-feature-text: var(--color-gray-50);
+
     /* --- Texto sobre fotos o videos (las capas del Manifiesto): blanco en
        los dos temas, con un velo oscuro suave debajo para que se lea --- */
     --color-on-media: var(--color-white);

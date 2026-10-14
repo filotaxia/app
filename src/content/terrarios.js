@@ -18,6 +18,14 @@
 //   specs    { ecosistema, recipiente, medidas }
 //   plants   nombres de las plantas (los de content/plantas.js, que suma foto, hoja y onda)
 //   waves    formas de onda de su pieza ("triangle", "sine"...); por defecto, seno
+//   video    video del terrario para el fondo del reproductor ("Cambiar a video"),
+//            en src/assets/videos/ (mp4, mudo, en loop); si no hay, el reproductor
+//            usa el GIF de la capa Plantas de filotaxia.com
+//   midi     las dos secuencias MIDI grabadas con los Biodata, .mid en src/assets/midi/:
+//            { plantas: "…/tr01-plantas.mid", sustrato: "…/tr01-sustrato.mid" }
+//            plantas = Biodata 02 (suculentas); sustrato = Biodata 01 (sustrato,
+//            gravas, piedra pómez y ambient). Se ven en la Partitura del reproductor
+//            (audio/lanes.js); si falta uno, esa secuencia se simula
 //
 // Cuando haya backend, este catálogo pasa a ser una tabla y cada terrario
 // suma su archivo de audio grabado; mientras tanto la pieza se genera con
