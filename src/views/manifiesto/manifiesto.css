@@ -2,14 +2,22 @@
    Views — Manifiesto
    ============================================ */
 
-/* Pantalla completa: arriba el progreso (una línea fina por pantalla) con el contador
-   y "Saltar" y debajo el carrusel (una pantalla por vez, se pasa tocando),
-   que ocupa todo el resto: no hay "Siguiente" a la vista, el
-   botón final está dentro de la pantalla 7. En el primer escaneo va
-   sin barra; abierto desde la barra, deja lugar abajo para ella. */
+/* Pantalla completa: el carrusel (una pantalla por vez, se pasa tocando)
+   ocupa todo el alto, desde arriba de todo, y encima flota la tira de
+   arriba: el progreso (una línea fina por pantalla), el contador y
+   "Saltar". Así la foto del reproductor (pantalla 7) llega hasta arriba,
+   como en Escuchar. Cada pantalla deja libre arriba --manifiesto-top, el
+   alto de esa tira, para que su contenido no quede debajo. En el primer
+   escaneo va sin barra; abierto desde la barra, deja lugar abajo para ella. */
 
 .manifiesto {
+    /* aire de arriba (+ el notch) + la tira: línea de 2px, el gap y
+       "Cerrar" (texto de 22px con 12px de aire arriba y abajo) */
+    --manifiesto-top: calc(env(safe-area-inset-top) + var(--spacing-xl)
+        + 2px + var(--gap-sm) + var(--spacing-md) * 2 + var(--font-base-line));
+    position: relative;
     height: 100dvh;
+    padding-top: 0;
     display: flex;
     flex-direction: column;
 }
@@ -30,8 +38,13 @@ html:has(.manifiesto) body {
     outline: none;
 }
 
-/* --- Arriba: progreso, contador y Saltar --- */
+/* --- Arriba: progreso, contador y Saltar (flota encima del carrusel) --- */
 .manifiesto__top {
+    position: absolute;
+    top: calc(env(safe-area-inset-top) + var(--spacing-xl));
+    left: 0;
+    right: 0;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     gap: var(--gap-sm);
@@ -85,6 +98,7 @@ html:has(.manifiesto) body {
     flex-direction: column;
     justify-content: center;
     gap: var(--gap-xl);
+    padding-top: var(--manifiesto-top);   /* debajo de la tira de arriba */
     padding-inline: var(--gutter);
     padding-bottom: var(--spacing-lg);
     scroll-snap-align: center;
@@ -175,7 +189,7 @@ html:has(.manifiesto) body {
 .manifiesto__slide--layers {
     justify-content: flex-start;
     gap: var(--gap-lg);
-    padding-top: var(--spacing-xl);
+    padding-top: calc(var(--manifiesto-top) + var(--spacing-xl));
 }
 
 .layers {
@@ -298,7 +312,7 @@ html:has(.manifiesto) body {
     position: relative;   /* para ubicar los dos puntos (ver abajo) */
     justify-content: flex-start;
     gap: var(--gap-lg);
-    padding-top: var(--spacing-xl);
+    padding-top: calc(var(--manifiesto-top) + var(--spacing-xl));
 }
 
 /* Los dos puntos (hojas · ondas) salen de su fila y van a la derecha,
@@ -310,7 +324,7 @@ html:has(.manifiesto) body {
    tocable que tiene a su derecha) */
 .manifiesto__slide--split .leaf-waves__dots {
     position: absolute;
-    top: calc(var(--spacing-xl) + var(--font-2xl-line) * 2 - var(--size-tap) / 2 - 10px);
+    top: calc(var(--manifiesto-top) + var(--spacing-xl) + var(--font-2xl-line) * 2 - var(--size-tap) / 2 - 10px);
     right: calc(var(--gutter) - var(--spacing-xs));
     margin: 0;
 }
@@ -360,7 +374,7 @@ html:has(.manifiesto) body {
 .manifiesto__slide--anatomy {
     justify-content: flex-start;
     gap: var(--gap-lg);
-    padding-top: var(--spacing-xl);
+    padding-top: calc(var(--manifiesto-top) + var(--spacing-xl));
 }
 
 .anatomy {
@@ -721,8 +735,9 @@ html:has(.manifiesto) body {
 /* Pantalla 7: el reproductor (views/escuchar, renderPlayer), solo la foto
    y los controles: sin los bloques de abajo, así que no scrollea. Es
    relative para que el fondo del reproductor (la foto, absolute) ocupe
-   todo su ancho y su alto, y un contenedor (container-type) para que el
-   reproductor mida su alto (cqh). */
+   todo su ancho y su alto, desde arriba de todo (debajo de la tira de
+   arriba, como en Escuchar), y un contenedor (container-type) para que el
+   reproductor mida su alto (cqh, sin contar la tira). */
 .manifiesto__slide--player {
     position: relative;
     container-type: size;
