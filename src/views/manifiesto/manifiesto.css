@@ -2,10 +2,10 @@
    Views — Manifiesto
    ============================================ */
 
-/* Pantalla completa: arriba el progreso (5 líneas finas) con el contador
+/* Pantalla completa: arriba el progreso (una línea fina por pantalla) con el contador
    y "Saltar" y debajo el carrusel (scroll-snap horizontal, una pantalla
    por vez), que ocupa todo el resto: no hay "Siguiente" a la vista, el
-   botón final está dentro de la pantalla 5. En el primer escaneo va
+   botón final está dentro de la pantalla 7. En el primer escaneo va
    sin barra; abierto desde la barra, deja lugar abajo para ella. */
 
 .manifiesto {
@@ -157,7 +157,7 @@
 
 .layers__bars {
     flex: 1;
-    min-height: 220px;   /* cuatro franjas cerradas de 44 + una que se ve abierta */
+    min-height: 280px;   /* tres franjas cerradas de 44 + una bien abierta */
     max-height: 440px;
     display: flex;
     flex-direction: column;
@@ -165,8 +165,8 @@
 }
 
 /* Cada franja: la imagen de su capa recortada a lo ancho. Se reparten el
-   alto con flex-grow: 1 cada una y 4 la abierta (.is-open); el cambio de
-   alto se anima (cambiá el 4 para abrirla más o menos). */
+   alto con flex-grow: 1 cada una y 7 la abierta (.is-open); el cambio de
+   alto se anima (cambiá el 7 para abrirla más o menos). */
 .layers__bar {
     position: relative;
     flex: 1 1 0;
@@ -178,7 +178,7 @@
 }
 
 .layers__bar.is-open {
-    flex-grow: 4;
+    flex-grow: 7;
 }
 
 .layers__media {
@@ -209,18 +209,15 @@
     outline-offset: -4px;
 }
 
-/* Detalles de la capa abierta, como en filotaxia.com/terrarios:
-   "Capa01/" arriba a la izquierda, el nombre en el centro, el material
-   abajo a la izquierda y el punto abajo a la derecha ("+ info" va arriba a
-   la derecha, aparte porque es un link). En blanco sobre un velo oscuro
-   suave. Aparecen cuando la franja ya se abrió y no tapan los toques. */
+/* Detalles de la capa abierta: solo su nombre, centrado, en blanco sobre
+   un velo oscuro suave ("+ info" va arriba a la derecha, aparte, porque es
+   un link). Aparecen cuando la franja ya se abrió y no tapan los toques. */
 .layers__details {
     position: absolute;
     inset: 0;
     z-index: 2;
     display: grid;
-    grid-template-rows: auto 1fr auto;
-    align-items: start;
+    place-items: center;
     padding: var(--spacing-md);
     background: var(--color-media-scrim);
     color: var(--color-on-media);
@@ -234,66 +231,10 @@
     transition: opacity var(--transition-normal) 0.3s;
 }
 
-.layers__corner {
-    font-size: var(--font-sm-size);
-    line-height: var(--font-sm-line);
-}
-
-.layers__corner--bottom {
-    grid-row: 3;
-    align-self: end;
-}
-
 .layers__title {
-    grid-row: 2;
-    align-self: center;
-    justify-self: center;
     font-size: var(--font-2xl-size);
     line-height: var(--font-2xl-line);
     letter-spacing: var(--font-2xl-tracking);
-}
-
-/* El punto blanco de 15px, como en la web (y el de Ajustes) */
-.layers__dot {
-    position: absolute;
-    right: var(--spacing-md);
-    bottom: var(--spacing-md);
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;   /* círculo a propósito, como el punto de Ajustes */
-    background: var(--color-on-media);
-}
-
-/* "+ info": botón chico con borde blanco, arriba a la derecha. Solo se ve
-   (y se puede tocar o enfocar) en la capa abierta */
-.layers__more {
-    position: absolute;
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
-    z-index: 3;
-    display: grid;
-    place-items: center;
-    min-height: 32px;
-    padding: 0 var(--spacing-md);
-    border: 1px solid var(--color-on-media);
-    font-size: var(--font-sm-size);
-    color: var(--color-on-media);
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity var(--transition-fast), visibility 0s var(--transition-fast);
-}
-
-/* Se ve de 32px pero se toca en 44 */
-.layers__more::after {
-    content: "";
-    position: absolute;
-    inset: -6px;
-}
-
-.layers__bar.is-open .layers__more {
-    visibility: visible;
-    opacity: 1;
-    transition: opacity var(--transition-normal) 0.3s;
 }
 
 .layers__info {
@@ -302,11 +243,12 @@
     gap: var(--gap-sm);
 }
 
-/* El número grande, como el "TR01" de Mi terrario */
+/* "Capa01/" de la capa abierta: grande, pero --font-2xl (no --num-md: tiene
+   letras, no es una cifra, así que no necesita el tracking tan cerrado) */
 .layers__number {
-    font-size: var(--num-xl-size);
-    line-height: var(--num-xl-line);
-    letter-spacing: var(--num-xl-tracking);
+    font-size: var(--font-2xl-size);
+    line-height: var(--font-2xl-line);
+    letter-spacing: var(--font-2xl-tracking);
 }
 
 /* El texto reserva cuatro líneas: así las barras no saltan al cambiar de capa */
@@ -316,10 +258,6 @@
     line-height: var(--font-lg-line);
     letter-spacing: var(--font-lg-tracking);
     color: var(--color-text-muted);
-}
-
-.layers__name {
-    color: var(--color-text);
 }
 
 /* Pantalla 3: título grande arriba a la izquierda y, debajo, las tarjetas
@@ -370,7 +308,115 @@
 }
 
 /* ---------------------------------------- */
-/* Pantalla 4: el mecanismo paso a paso */
+/* Pantalla 4: el terrario por dentro
+   Título arriba; debajo la foto del terrario (cuadrada, hasta 400px) con
+   los puntos encima y, al pie, qué es el punto elegido. */
+.manifiesto__slide--anatomy {
+    justify-content: flex-start;
+    gap: var(--gap-lg);
+    padding-top: var(--spacing-xl);
+}
+
+.anatomy {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+}
+
+/* La caja tiene la proporción de la foto (cuadrada): así los % de cada
+   punto caen siempre en el mismo lugar del terrario */
+.anatomy__figure {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin-inline: auto;
+    aspect-ratio: 1;
+}
+
+.anatomy__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Cada punto: 44px tocables y, al centro, un disco de vidrio esmerilado
+   (glassmorphism: blanco translúcido que desenfoca la foto de atrás, sin
+   borde) con un centro blanco sólido. Igual para capas y plantas; el
+   elegido, con el centro más grande. Redondos a propósito. */
+.anatomy__dot {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--size-tap);
+    height: var(--size-tap);
+    display: grid;
+    place-items: center;
+    transform: translate(-50%, -50%);
+}
+
+.anatomy__dot::before,
+.anatomy__dot::after {
+    content: "";
+    grid-area: 1 / 1;
+    border-radius: 50%;
+}
+
+/* El centro blanco, encima del vidrio */
+.anatomy__dot::before {
+    z-index: 1;
+    width: 8px;
+    height: 8px;
+    background: var(--color-on-media);
+    transition: transform var(--transition-fast);
+}
+
+/* El vidrio: respira despacio, para que se note que se tocan */
+.anatomy__dot::after {
+    width: 16px;
+    height: 16px;
+    background: color-mix(in srgb, var(--color-on-media) 35%, transparent);
+    -webkit-backdrop-filter: blur(6px) saturate(160%);
+    backdrop-filter: blur(6px) saturate(160%);
+    animation: anatomy-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes anatomy-breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.18); }
+}
+
+.anatomy__dot[aria-pressed="true"]::before {
+    transform: scale(1.6);
+}
+
+.anatomy__dot[aria-pressed="true"]::after {
+    background: color-mix(in srgb, var(--color-on-media) 55%, transparent);
+}
+
+/* Qué es el punto elegido */
+.anatomy__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xs);
+    min-height: calc(var(--font-2xl-line) + var(--font-base-line) * 3);
+}
+
+.anatomy__name {
+    font-size: var(--font-2xl-size);
+    line-height: var(--font-2xl-line);
+    letter-spacing: var(--font-2xl-tracking);
+}
+
+.anatomy__text {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    color: var(--color-text-muted);
+}
+
+/* ---------------------------------------- */
+/* Pantalla 5: el mecanismo paso a paso */
 /* ---------------------------------------- */
 
 /* Una línea de tiempo: número a la izquierda con una línea fina que baja
@@ -544,7 +590,7 @@
 }
 
 /* ---------------------------------------- */
-/* Pantalla 4: la huella de tu pieza */
+/* Pantalla 6: la huella de tu pieza */
 /* ---------------------------------------- */
 
 /* Piano roll de las notas reales: un cabezal lo recorre en --sweep y cada
@@ -579,8 +625,7 @@
 /* Menos movimiento: todo aparece de una, sin pulso */
 @media (prefers-reduced-motion: reduce) {
     .layers__bar,
-    .layers__bar .layers__details,
-    .layers__bar .layers__more {
+    .layers__bar .layers__details {
         transition: none;
     }
 
@@ -591,13 +636,13 @@
 
     .flow__pulse,
     .flow__playhead,
-    .print__playhead {
+    .print__playhead,
+    .anatomy__dot::after {
         animation: none;
     }
 }
 
-/* --- Abajo a la izquierda: "Siguiente" o el botón final, igual en las 5 --- */
-/* Pantalla 6: la frase al centro del alto y el botón final abajo */
+/* Pantalla 7: la frase al centro del alto y el botón final abajo */
 .manifiesto__slide--end .manifiesto__quote {
     margin-block: auto;
 }

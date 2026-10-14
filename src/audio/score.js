@@ -15,6 +15,7 @@
 //
 //   const { root, notes } = buildScore({ seed: seedFrom("04"), duration: 222 });
 //   notes → [{ time, freq, length, gain }, ...] ordenadas por time
+//   buildSubstrate({ seed, duration }) → la segunda secuencia (el sustrato), en notas MIDI
 
 const SCALE = [0, 3, 5, 7, 10];   // pentatónica menor (semitonos)
 
@@ -59,6 +60,30 @@ export function buildScore({ seed, duration }) {
   }
 
   return { root: round(midiToFreq(rootMidi)), notes };
+}
+
+// La secuencia del sustrato (el otro Biodata: sustrato, gravas, piedra
+// pómez y ambient), mientras no esté su MIDI grabado: pocas notas graves y
+// largas, que se superponen como un colchón. Mismo terrario, misma secuencia.
+// Formato de nota MIDI (como utils/midi.js): { time, length, midi, velocity }
+export function buildSubstrate({ seed, duration }) {
+  const rand = random(seed ^ 0x9e3779b9);   // otra secuencia de azar que la de las plantas
+  const rootMidi = 33 + Math.floor(rand() * 8);
+  const notes = [];
+  let time = rand() * 2;
+
+  while (time < duration) {
+    const degree = SCALE[Math.floor(rand() * SCALE.length)];
+    notes.push({
+      time: round(time),
+      length: round(4 + rand() * 9),
+      midi: rootMidi + 12 * Math.floor(rand() * 2) + degree,
+      velocity: 30 + Math.floor(rand() * 45),
+    });
+    time += 2.5 + rand() * 6;
+  }
+
+  return notes;
 }
 
 const round = (value) => Math.round(value * 1000) / 1000;

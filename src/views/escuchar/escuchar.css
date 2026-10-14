@@ -2,80 +2,158 @@
    Views — Escuchar
    ============================================ */
 
-/* Reproductor centrado: ilustración, info, barra fina y controles.
-   Sin scroll: la pantalla mide exactamente el alto disponible y, si no
-   entra todo (celulares bajos), la foto se achica; el resto no cambia. */
+/* Reproductor como la pantalla "reproduciendo" de Spotify: la primera
+   pantalla es el fondo (foto o video) con los controles abajo; al bajar
+   aparecen los bloques (escuchar-bloques.js) y una barra chica arriba. */
 
-html:has(.player) {
-    overflow-y: hidden;
+/* El fondo se ubica respecto de la vista entera (no de la columna de
+   720px), así ocupa todo el ancho */
+.app-view:has(.player__backdrop) {
+    position: relative;
 }
 
 .player {
-    height: calc(100dvh - var(--view-pad-bottom));
     display: flex;
     flex-direction: column;
 }
 
-/* "← Mi terrario" a la izquierda, el punto de Ajustes a la derecha */
+/* --- Fondo: la foto (vista audio) o el video (vista video) ---
+   Los dos están siempre; data-mode decide cuál se ve, con un fundido.
+   Un velo del color de la página arriba (para leer "← Mi terrario") y
+   abajo (donde van los controles) los funde con el resto. */
+.player__backdrop {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 100dvh;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.player__photo,
+.player__video {
+    position: absolute;
+    inset: 0 0 auto 0;
+    transition: opacity 0.6s var(--ease-standard);
+}
+
+/* La foto es cuadrada: a lo ancho, hasta el 80% del alto */
+.player__photo {
+    aspect-ratio: 1;
+    max-height: 80%;
+}
+
+.player__photo .terrarium-art {
+    height: 100%;
+    aspect-ratio: auto;
+    border-radius: 0;
+}
+
+.player__video {
+    height: 100%;
+    opacity: 0;
+}
+
+.player__video img,
+.player__video video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.player__photo::after,
+.player__video::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom,
+        color-mix(in srgb, var(--color-bg) 60%, transparent) 0%,
+        transparent 16%,
+        transparent 45%,
+        var(--color-bg) 100%);
+}
+
+/* En el video el velo de abajo empieza antes: los controles quedan sobre fondo liso */
+.player__video::after {
+    background: linear-gradient(to bottom,
+        color-mix(in srgb, var(--color-bg) 60%, transparent) 0%,
+        transparent 16%,
+        transparent 35%,
+        var(--color-bg) 78%);
+}
+
+.player[data-mode="video"] .player__photo {
+    opacity: 0;
+}
+
+.player[data-mode="video"] .player__video {
+    opacity: 1;
+}
+
+/* --- Arriba: "← Mi terrario" a la izquierda, el punto de Ajustes a la derecha --- */
 .player__top {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-top: calc(var(--spacing-md) * -1);
 }
 
+.player__top .back-link {
+    color: var(--color-text);
+}
+
+/* --- Abajo: botón de vista, tema, barra y controles --- */
 .player__body {
-    flex: 1;
-    width: 100%;
-    max-width: 340px;
-    margin-inline: auto;
+    position: relative;
+    margin-top: auto;
     display: flex;
     flex-direction: column;
+    gap: var(--gap-lg);
+    padding-top: var(--spacing-2xl);
+}
+
+/* "Cambiar a video": rectángulo de vidrio, como la barra de navegación */
+.player__view {
+    align-self: flex-start;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: var(--gap-xl);
-    min-height: 0;   /* deja que la foto se achique en vez de desbordar */
-    padding-block: var(--spacing-xl);
-    text-align: center;
+    gap: var(--gap-sm);
+    min-height: var(--size-tap);
+    padding: 0 var(--spacing-lg);
+    background: color-mix(in srgb, var(--color-block-bg) 80%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: var(--color-text);
+    transition: background-color var(--transition-fast);
 }
 
-/* La foto toma el alto que sobra (hasta el 76% del ancho) y sigue cuadrada */
-.player__art {
-    width: 76%;
-    min-height: 0;
+.player__view svg {
+    width: var(--icon-md);
+    height: var(--icon-md);
+}
+
+.player__view span {
+    display: inline-flex;
+}
+
+/* Miniatura + nombre + fecha, como la portada chica y el tema */
+.player__track {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    gap: var(--gap-md);
 }
 
-.player__art .terrarium-art {
-    width: auto;
-    max-width: 100%;
-    height: 100%;
+.player__thumb {
+    flex-shrink: 0;
+    width: 56px;
 }
 
 .player__info {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: var(--gap-xs);
-}
-
-/* Ondas de la pieza: chips con el ícono de cada onda */
-.player__waves {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--gap-xs);
-    margin-top: var(--spacing-sm);
-}
-
-.player__waves .chip {
-    gap: var(--gap-xs);
-}
-
-.player__waves svg {
-    width: var(--icon-sm);
-    height: var(--icon-sm);
+    min-width: 0;
 }
 
 .player__name {
@@ -86,6 +164,12 @@ html:has(.player) {
 
 .player__name:focus {
     outline: none;
+}
+
+.player__meta {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    color: var(--color-text-muted);
 }
 
 /* --- Barra de progreso: línea fina, la parte escuchada en negro --- */
@@ -183,9 +267,8 @@ html:has(.player) {
     letter-spacing: 0;
 }
 
-.player__play {
-    width: var(--size-play);
-    height: var(--size-play);
+.player__play,
+.player__mini-play {
     display: grid;
     place-items: center;
     border-radius: 50%;   /* círculo a propósito, como el punto de la barra */
@@ -194,7 +277,13 @@ html:has(.player) {
     transition: transform var(--transition-fast);
 }
 
-.player__play:active {
+.player__play {
+    width: var(--size-play);
+    height: var(--size-play);
+}
+
+.player__play:active,
+.player__mini-play:active {
     transform: scale(0.94);
 }
 
@@ -204,8 +293,518 @@ html:has(.player) {
 }
 
 /* El triángulo de play se ve corrido a la izquierda: se compensa */
-.player__play [data-icon-play] svg {
+.player__play [data-icon-play] svg,
+.player__mini-play [data-icon-play] svg {
     transform: translateX(1px);
+}
+
+/* --- Barra chica de arriba (aparece al bajar a los bloques) --- */
+.player__mini {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-nav);
+    padding-top: env(safe-area-inset-top);
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-line);
+    transform: translateY(-100%);
+    visibility: hidden;
+    transition: transform var(--transition-normal), visibility 0s var(--transition-normal);
+}
+
+.player__mini.is-visible {
+    transform: none;
+    visibility: visible;
+    transition: transform var(--transition-normal);
+}
+
+.player__mini-inner {
+    max-width: var(--width-app);
+    min-height: 64px;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-md);
+}
+
+.player__mini-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.player__mini-name {
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+    letter-spacing: var(--font-lg-tracking);
+}
+
+.player__mini-meta {
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    color: var(--color-text-muted);
+}
+
+.player__mini-play {
+    flex-shrink: 0;
+    width: var(--size-tap);
+    height: var(--size-tap);
+}
+
+.player__mini-play svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+/* Lo escuchado, como una línea al pie de la barra */
+.player__mini-progress {
+    --progress: 0%;
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: var(--progress);
+    height: 2px;
+    background: var(--color-text);
+}
+
+/* --- Los bloques de abajo --- */
+.player__sections {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+/* Cada bloque, con el borde fino y el redondeo de la barra de navegación */
+.player-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-nav-glass-border);
+    border-radius: 16px;
+    background: var(--color-block-bg);
+    overflow: hidden;
+}
+
+/* El bloque de plantas de Mi terrario (components/plants-block), con el
+   mismo borde, redondeo y aire que los demás bloques de acá */
+.player__sections .block {
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-nav-glass-border);
+    border-radius: 16px;
+}
+
+/* La partitura en negro (gris en tema oscuro), como la tarjeta de Letras */
+.player-card--inverse {
+    background: var(--color-feature-bg);
+    color: var(--color-feature-text);
+}
+
+.player-card__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--gap-md);
+}
+
+.player-card__title {
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+    letter-spacing: var(--font-lg-tracking);
+}
+
+.player-card__aside,
+.player-card__note {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: var(--color-text-muted);
+}
+
+.player-card--inverse .player-card__aside,
+.player-card--inverse .player-card__note {
+    color: color-mix(in srgb, var(--color-feature-text) 60%, transparent);
+}
+
+.player-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    min-height: var(--size-tap);
+    margin-block: calc(var(--spacing-md) * -1);
+    font-size: var(--font-sm-size);
+    color: var(--color-text-muted);
+}
+
+/* La historia en gris, para que se distinga del título */
+.player-card__story {
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+    letter-spacing: var(--font-lg-tracking);
+    color: var(--color-text-muted);
+}
+
+/* Datos en filas: etiqueta gris a la izquierda, dato a la derecha */
+.player-card__facts div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--gap-md);
+    padding-block: var(--spacing-md);
+    border-top: 1px solid var(--color-line);
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+}
+
+.player-card__facts dt {
+    color: var(--color-text-muted);
+}
+
+.player-card__facts dd {
+    text-align: right;
+}
+
+/* Partitura: una franja por Biodata; en cada una, la tira de notas pasa
+   debajo de un cabezal quieto (el alto lo pone el HTML: 56 o 160px) */
+.score-lanes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+}
+
+.score-lane {
+    position: relative;
+}
+
+/* "Plantas" / "Sustrato", chico arriba a la izquierda de su franja */
+.score-lane__label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    color: color-mix(in srgb, var(--color-feature-text) 60%, transparent);
+}
+
+.score {
+    position: relative;
+    margin-inline: calc(var(--spacing-lg) * -1);
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent, currentColor 6%, currentColor 94%, transparent);
+}
+
+.score__track {
+    position: absolute;
+    top: 0;
+    left: 25%;
+    max-width: none;   /* el reset limita los svg al 100%: esta tira es más ancha a propósito */
+    transform: translateX(var(--shift, 0px));
+    transition: transform 0.25s linear;
+}
+
+.score__note {
+    fill: currentColor;
+    opacity: 0.3;
+    transition: opacity var(--transition-fast);
+}
+
+.score__note.is-played {
+    opacity: 1;
+}
+
+.score__playhead {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 25%;
+    width: 1px;
+    background: currentColor;
+}
+
+/* Ampliar: círculo translúcido, como el de Letras (redondo a propósito) */
+.score-expand {
+    flex-shrink: 0;
+    width: var(--size-tap);
+    height: var(--size-tap);
+    margin: calc(var(--spacing-sm) * -1) calc(var(--spacing-sm) * -1) calc(var(--spacing-sm) * -1) 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-feature-text) 14%, transparent);
+    color: var(--color-feature-text);
+    transition: background-color var(--transition-fast);
+}
+
+.score-expand svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+@media (hover: hover) {
+    .score-expand:hover {
+        background: color-mix(in srgb, var(--color-feature-text) 24%, transparent);
+    }
+}
+
+/* --- Partitura a pantalla completa --- */
+.score-full {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: var(--color-feature-bg);
+    color: var(--color-feature-text);
+}
+
+.score-full::backdrop {
+    background: var(--color-feature-bg);
+}
+
+.score-full[open] {
+    animation: score-full-in 0.35s var(--ease-out);
+}
+
+@keyframes score-full-in {
+    from { opacity: 0; transform: translateY(24px); }
+}
+
+.score-full__inner {
+    height: 100%;
+    max-width: var(--width-app);
+    margin-inline: auto;
+    padding: calc(env(safe-area-inset-top) + var(--spacing-lg)) var(--gutter) calc(env(safe-area-inset-bottom) + var(--spacing-lg));
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xl);
+    overflow-y: auto;
+}
+
+.score-full__head,
+.score-full__lane-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--gap-md);
+}
+
+.score-full__title {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+.score-full__sub,
+.score-full__lane-detail,
+.score-full__sim {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: color-mix(in srgb, var(--color-feature-text) 60%, transparent);
+}
+
+.score-full__close {
+    margin-right: calc(var(--spacing-md) * -1);
+    color: var(--color-feature-text);
+}
+
+.score-full__lane {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+}
+
+.score-full__lane-name {
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+    letter-spacing: var(--font-lg-tracking);
+}
+
+/* La nota que suena ahora en esa franja: "A3" */
+.score-full__now {
+    min-height: var(--num-md-line);   /* en silencio queda vacía: el alto no salta */
+    font-size: var(--num-md-size);
+    line-height: var(--num-md-line);
+    letter-spacing: var(--num-md-tracking);
+    font-variant-numeric: tabular-nums;
+}
+
+.score-full .score {
+    margin-inline: calc(var(--gutter) * -1);
+}
+
+.score-full__foot {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+}
+
+.score-full__progress {
+    height: 2px;
+    background: color-mix(in srgb, var(--color-feature-text) 25%, transparent);
+}
+
+.score-full__progress span {
+    --progress: 0%;
+    display: block;
+    width: var(--progress);
+    height: 100%;
+    background: var(--color-feature-text);
+}
+
+.score-full__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.score-full__time {
+    min-width: 48px;
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    color: color-mix(in srgb, var(--color-feature-text) 60%, transparent);
+    font-variant-numeric: tabular-nums;
+}
+
+.score-full__time:last-child {
+    text-align: right;
+}
+
+/* El play de pantalla completa: claro sobre el fondo de la tarjeta */
+.score-full .player__play {
+    background: var(--color-feature-text);
+    color: var(--color-feature-bg);
+}
+
+/* Ondas (terrarios sin plantas cargadas): una columna por onda */
+.dna {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+    gap: var(--gap-md);
+    text-align: center;
+}
+
+.dna__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-2xs);
+}
+
+.dna__art {
+    width: 88px;
+    height: 88px;
+    display: grid;
+    place-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.dna__art svg {
+    width: 48px;
+    height: 48px;
+}
+
+.dna__name {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+}
+
+/* Fila que se desliza de costado (capas, más terrarios) */
+.rail {
+    display: flex;
+    gap: var(--gap-md);
+    margin-inline: calc(var(--spacing-lg) * -1);
+    padding-inline: var(--spacing-lg);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--spacing-lg);
+    scrollbar-width: none;
+}
+
+.rail::-webkit-scrollbar {
+    display: none;
+}
+
+.rail__item {
+    flex: 0 0 72%;
+    scroll-snap-align: start;
+}
+
+.rail--square .rail__item {
+    flex-basis: 40%;
+}
+
+.rail__item,
+.rail__link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xs);
+}
+
+.rail__media {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    margin-bottom: var(--spacing-sm);
+    overflow: hidden;
+    background: var(--color-bg);
+}
+
+.rail--square .rail__media {
+    aspect-ratio: 1;
+}
+
+.rail__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* "Capa01/" en blanco sobre la imagen, como en filotaxia.com/terrarios */
+.rail__badge {
+    position: absolute;
+    top: var(--spacing-sm);
+    left: var(--spacing-sm);
+    padding: var(--spacing-2xs) var(--spacing-sm);
+    background: var(--color-media-scrim);
+    color: var(--color-on-media);
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+}
+
+.rail__name {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+.rail__detail {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: var(--color-text-muted);
+}
+
+/* Créditos: nombre y, debajo en gris, qué hace en la pieza */
+.credits__row {
+    display: flex;
+    flex-direction: column;
+    padding-block: var(--spacing-md);
+    border-top: 1px solid var(--color-line);
+}
+
+.credits__name {
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+    letter-spacing: var(--font-lg-tracking);
+}
+
+.credits__role {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: var(--color-text-muted);
 }
 
 /* --- Sin terrarios --- */
@@ -215,7 +814,7 @@ html:has(.player) {
 }
 
 .player--empty .player__info {
-    align-items: flex-start;
+    gap: var(--gap-xs);
 }
 
 .player--empty .btn svg {
@@ -223,12 +822,36 @@ html:has(.player) {
     height: var(--icon-sm);
 }
 
+/* Menos movimiento: la partitura salta en vez de deslizarse */
+@media (prefers-reduced-motion: reduce) {
+    .score__track,
+    .player__photo,
+    .player__video {
+        transition: none;
+    }
+
+    .score-full[open] {
+        animation: none;
+    }
+}
+
 /* ============================================
 RESPONSIVE
 ============================================ */
 
-@media (min-width: 768px) {
-    .player__body {
-        max-width: 400px;
+@media (min-width: 640px) {
+    .rail__item {
+        flex-basis: 46%;
+    }
+
+    .rail--square .rail__item {
+        flex-basis: 28%;
+    }
+}
+
+@media (min-width: 1024px) {
+    /* El riel de navegación ocupa la izquierda */
+    .player__mini {
+        left: var(--size-rail);
     }
 }
