@@ -15,7 +15,7 @@
 // la card Pieza (Mi terrario) o, sin terrario todavía, desde "Conectar mi
 // terrario"; Ajustes queda arriba a la derecha.
 
-import { TERRARIO_IDS } from "../../content/terrarios.js";
+import { terrarioIds } from "../../content/terrarios.js";
 import { linkedIds } from "../../store/collection.js";
 import { startQrCamera } from "../../camera/qr-camera.js";
 import { parseTerrarioCode } from "../../utils/qr.js";
@@ -76,7 +76,7 @@ export async function render(root) {
         retry.hidden = state !== "denied";
       },
       onCode(text) {
-        const id = parseTerrarioCode(text, TERRARIO_IDS);
+        const id = parseTerrarioCode(text, terrarioIds());
         if (id) {
           stop();
           navigator.vibrate?.(30);
@@ -100,7 +100,7 @@ export async function render(root) {
 // escanearon (así la demo siempre suma uno nuevo); si ya están todos, cualquiera.
 async function simulatedId() {
   const linked = await linkedIds();
-  const missing = TERRARIO_IDS.filter((id) => !linked.includes(id));
-  const pool = missing.length ? missing : TERRARIO_IDS;
+  const missing = terrarioIds().filter((id) => !linked.includes(id));
+  const pool = missing.length ? missing : terrarioIds();
   return pool[Math.floor(Math.random() * pool.length)];
 }

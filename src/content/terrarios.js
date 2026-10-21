@@ -2,101 +2,55 @@
    Content — Terrarios
    ============================================ */
 
-// Catálogo de terrarios. Cada terrario tiene un QR pegado en la base
-// con su número (ver utils/qr.js). Su nombre es su código: "TR01"
-// (codeOf(), abajo); no tienen otro nombre. `recorded` es el día en que la planta
-// empezó a sonar ("YYYY-MM-DD") y `duration` el largo de la pieza en segundos.
+// Catálogo de terrarios. Ya no está escrito acá: vive en Supabase (tabla
+// `terrarios`) y lo carga store/catalog.js al arrancar la app (main.js),
+// antes de pintar la primera pantalla. Este archivo lo guarda y lo sirve a
+// las vistas igual que siempre: TERRARIOS, getTerrario(id), codeOf(terrario).
+//
+// Cada terrario tiene un QR pegado en la base con el link
+// https://app.filotaxia.com/t/<qr_code> (ver utils/qr.js). Su nombre es su
+// código: "TR01" (codeOf(), abajo); no tienen otro nombre. `recorded` es el
+// día en que la planta empezó a sonar ("YYYY-MM-DD") y `duration` el largo
+// de la pieza en segundos.
 //
 // `care`: sus cuidados (ver utils/care.js) — cada cuántos días regar y
 // ventilar (null = ecosistema abierto, no se ventila), rangos ideales de
 // humedad y temperatura, tipo y horas de luz.
 //
-// Opcionales (el 01 es el ejemplo completo; del 02 al 06 por ahora solo
-// tienen modelo y foto, las de producto de filotaxia.com):
+// Otros campos (la forma la arma utils/catalog.js a partir de la fila):
+//   qr_code  el código del QR impreso: "k7f2q9" (no cambia nunca)
+//   status   "publicado" o "retirado" (los borradores no llegan a la app)
 //   model    código del modelo ("TR01")
-//   photo    foto del terrario, en src/assets/images/terrarios/ (si no hay, se dibuja el brote)
+//   photo    foto del terrario (src/assets/… o Supabase Storage; si no hay, se dibuja el brote)
 //   specs    { ecosistema, recipiente, medidas }
 //   plants   nombres de las plantas (los de content/plantas.js, que suma foto, hoja y onda)
 //   waves    formas de onda de su pieza ("triangle", "sine"...); por defecto, seno
-//   video    video del terrario para el fondo del reproductor ("Cambiar a video"),
-//            en src/assets/videos/ (mp4, mudo, en loop); si no hay, el reproductor
-//            usa el GIF de la capa Plantas de filotaxia.com
-//   midi     las dos secuencias MIDI grabadas con los Biodata, .mid en src/assets/midi/:
-//            { plantas: "…/tr01-plantas.mid", sustrato: "…/tr01-sustrato.mid" }
+//   video    video del terrario para el fondo del reproductor ("Cambiar a video");
+//            si no hay, el reproductor usa el GIF de la capa Plantas de filotaxia.com
+//   midi     las dos secuencias MIDI grabadas con los Biodata: { plantas, sustrato }
 //            plantas = Biodata 02 (suculentas); sustrato = Biodata 01 (sustrato,
 //            gravas, piedra pómez y ambient). Se ven en la Partitura del reproductor
 //            (audio/lanes.js); si falta uno, esa secuencia se simula
-//
-// Cuando haya backend, este catálogo pasa a ser una tabla y cada terrario
-// suma su archivo de audio grabado; mientras tanto la pieza se genera con
-// audio/score.js a partir del id.
 
-export const TERRARIOS = [
-  {
-    // Ejemplo con contenido real: el TR01 de filotaxia.com
-    // (https://filotaxia.com/src/pages/terrarios/terrario01.html)
-    id: "01",
-    model: "TR01",
-    recorded: "2026-06-14",
-    duration: 251,
-    story: "Este terrario reúne tres suculentas con formas triangulares y sinusoidales. La combinación de estas ondas genera una pieza musical marcada por contrastes: sonidos definidos y rítmicos de las ondas triangulares junto a matices suaves y continuos de las ondas sinusoidales.",
-    photo: "src/assets/images/terrarios/tr01.jpg",   // la de producto de filotaxia.com, como las demás
-    specs: { ecosistema: "Abierto", recipiente: "Vidrio", medidas: "25 × 20 × 17 cm" },
-    plants: ["Haworthia Attenuata", "Haworthia Fasciata", "Haworthia Venosa"],
-    waves: ["triangle", "sine"],
-    care: { riego_days: 30, ventilacion_days: null, humidity: [35, 60], temp: [15, 26], light: "Indirecta", light_hours: [5, 8] },
-  },
-  {
-    id: "02",
-    model: "TR02",
-    photo: "src/assets/images/terrarios/tr02.jpg",
-    recorded: "2026-07-22",
-    duration: 198,
-    story: "La condensación del vidrio vuelve a la tierra en gotas. Cada una dejó una nota corta y brillante.",
-    care: { riego_days: 30, ventilacion_days: 2, humidity: [80, 95], temp: [18, 24], light: "Indirecta", light_hours: [4, 7] },
-  },
-  {
-    id: "03",
-    model: "TR03",
-    photo: "src/assets/images/terrarios/tr03.jpg",
-    recorded: "2026-08-30",
-    duration: 236,
-    story: "Cuatro piedras y un helecho que crece entre ellas. Un ritmo quieto, con silencios largos.",
-    care: { riego_days: 30, ventilacion_days: 3, humidity: [70, 90], temp: [18, 24], light: "Indirecta", light_hours: [4, 8] },
-  },
-  {
-    id: "04",
-    model: "TR04",
-    photo: "src/assets/images/terrarios/tr04.jpg",
-    recorded: "2026-10-09",
-    duration: 222,
-    story: "Cada microfluctuación de esta planta se convirtió en una pieza sonora única.",
-    care: { riego_days: 30, ventilacion_days: 3, humidity: [70, 90], temp: [18, 25], light: "Indirecta", light_hours: [5, 8] },
-  },
-  {
-    id: "05",
-    model: "TR05",
-    photo: "src/assets/images/terrarios/tr05.jpg",
-    recorded: "2026-09-12",
-    duration: 264,
-    story: "Una suculenta que casi no se mueve. Su pieza avanza como sus raíces: de a poco y hacia abajo.",
-    care: { riego_days: 30, ventilacion_days: 7, humidity: [40, 60], temp: [18, 28], light: "Sol suave", light_hours: [6, 10] },
-  },
-  {
-    id: "06",
-    model: "TR06",
-    photo: "src/assets/images/terrarios/tr06.jpg",
-    recorded: "2026-09-27",
-    duration: 210,
-    story: "Un terrario cerrado que amanece empañado. Suena más claro a medida que el vidrio se despeja.",
-    care: { riego_days: 30, ventilacion_days: 5, humidity: [85, 98], temp: [16, 23], light: "Indirecta", light_hours: [3, 6] },
-  },
-];
+// El array es siempre el mismo (las vistas lo importan una vez);
+// setCatalog() le cambia el contenido.
+export const TERRARIOS = [];
 
-export const TERRARIO_IDS = TERRARIOS.map((terrario) => terrario.id);
+export function setCatalog(terrarios) {
+  const sorted = [...terrarios].sort((a, b) => a.id.localeCompare(b.id));
+  TERRARIOS.splice(0, TERRARIOS.length, ...sorted);
+}
+
+export function terrarioIds() {
+  return TERRARIOS.map((terrario) => terrario.id);
+}
 
 export function getTerrario(id) {
   return TERRARIOS.find((terrario) => terrario.id === id) ?? null;
+}
+
+export function getTerrarioByQr(code) {
+  return TERRARIOS.find((terrario) => terrario.qr_code === code) ?? null;
 }
 
 // El código corto del terrario, como en filotaxia.com: "TR01"
