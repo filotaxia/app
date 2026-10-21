@@ -21,8 +21,9 @@
 //                  (el mismo de views/escuchar: renderPlayer), solo la foto
 //                  y los controles, sin scroll
 //
-// Se abre solo una vez: la ficha (views/terrario) manda acá en el primer
-// escaneo, con el id del terrario (#/manifiesto/04). "Saltar" guarda
+// Con id (#/manifiesto/04) era la introducción del primer escaneo; hoy el
+// QR lleva directo a la pieza y nada manda acá con id, pero la ruta sigue
+// andando por si se vuelve a usar. "Saltar" guarda
 // `manifiesto_seen` y sigue al reproductor de ese terrario; llegar a la 7
 // también lo guarda (ya lo vio todo).
 // También es una sección de la barra, sin id (#/manifiesto): ahí "Saltar"
