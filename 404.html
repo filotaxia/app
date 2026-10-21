@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!-- ============================================
+     App — 404
+     ============================================
+
+     La puerta de entrada del QR impreso.
+
+     Cada QR lleva https://app.filotaxia.com/t/<código>. GitHub Pages no tiene
+     reglas de redirección, así que esa dirección no existe como archivo y
+     Pages muestra esta página. Acá se pasa la dirección al router de la app:
+     /t/k7f2q9 → /#/t/k7f2q9 (views/qr busca el terrario y lo conecta).
+     Cualquier otra dirección que no exista también termina en la app
+     (el router la manda a inicio), nunca en el error de GitHub.
+     replace(): esta página no queda en el historial. -->
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Filotaxia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
+    <style>
+        body { margin: 0; background: #ffffff; }
+        @media (prefers-color-scheme: dark) { body { background: #0a0a0a; } }
+    </style>
+    <script>
+        location.replace("/#" + location.pathname.replace(/\/+$/, ""));
+    </script>
+</head>
+
+<body>
+    <noscript><a href="/">Abrir Filotaxia</a></noscript>
+</body>
+
+</html>
