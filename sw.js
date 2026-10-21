@@ -10,10 +10,15 @@
 //
 // Vive en la raíz (no en src/) para que controle toda la app.
 
-const CACHE = "filotaxia-v2";
+const CACHE = "filotaxia-v3";
 
-// Lo mínimo para abrir la app offline; el resto se guarda a medida que se usa
-const SHELL = ["./", "./index.html", "./src/styles.css", "./src/main.js", "./manifest.webmanifest"];
+// Lo mínimo para abrir la app offline; el resto se guarda a medida que se usa.
+// 404.html y catalogo.json: para que un QR escaneado sin red igual abra su
+// terrario (ver abajo y store/catalog.js).
+const SHELL = [
+  "./", "./index.html", "./src/styles.css", "./src/main.js", "./manifest.webmanifest",
+  "./404.html", "./catalogo.json",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));
@@ -43,6 +48,14 @@ self.addEventListener("fetch", (event) => {
         caches.open(CACHE).then((cache) => cache.put(request, copy));
         return response;
       })
-      .catch(() => caches.match(request, { ignoreSearch: true })),
+      .catch(async () => {
+        const cached = await caches.match(request, { ignoreSearch: true });
+        if (cached) return cached;
+        // Sin red, abrir una dirección que nunca se visitó (el link de un QR,
+        // /t/k7f2q9): 404.html la pasa a la app, que busca el terrario en la
+        // copia del catálogo guardada en el teléfono.
+        if (request.mode === "navigate") return caches.match("./404.html");
+        return Response.error();
+      }),
   );
 });
