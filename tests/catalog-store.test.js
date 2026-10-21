@@ -56,3 +56,16 @@ test("findByQr devuelve null si nadie lo conoce", async () => {
   const found = await findByQr("zzzzzz", { fetchImpl: fakeFetch({ supabase: [ROW_01], backup: [ROW_01] }) });
   assert.equal(found, null);
 });
+
+// Solo Supabase puede confirmar que un código no existe: catalogo.json puede
+// estar atrasado. Si no se pudo preguntar, findByQr avisa (no dice "no existe").
+test("findByQr sin Supabase avisa que no pudo buscar, aunque haya catalogo.json", async () => {
+  await assert.rejects(
+    findByQr("q2w3e4", { fetchImpl: fakeFetch({ backup: [ROW_01] }) }),
+    { name: "CatalogOfflineError" },
+  );
+});
+
+test("findByQr sin Supabase ni catalogo.json avisa que no pudo buscar", async () => {
+  await assert.rejects(findByQr("q2w3e4", { fetchImpl: fakeFetch({}) }), { name: "CatalogOfflineError" });
+});

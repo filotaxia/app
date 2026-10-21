@@ -6,7 +6,8 @@
 // que habla con Supabase.
 //
 //   await loadCatalog()        → llena content/terrarios.js (al arrancar, en main.js)
-//   await findByQr("k7f2q9")   → el terrario de ese QR, o null
+//   await findByQr("k7f2q9")   → el terrario de ese QR, o null si Supabase dice que no existe;
+//                                si no se pudo preguntar (sin red), lanza CatalogOfflineError
 //
 // De dónde sale el catálogo, en orden:
 //   1. la copia guardada en el teléfono (clave `catalog` del store): se usa
@@ -52,22 +53,31 @@ export async function loadCatalog({ fetchImpl = fetch } = {}) {
   }
 }
 
+// No se pudo preguntar a Supabase: el QR puede ser válido, falta red
+export class CatalogOfflineError extends Error {
+  name = "CatalogOfflineError";
+}
+
 // Si el código no está en lo que ya hay (un terrario recién publicado),
-// se vuelve a preguntar antes de decir que no existe
+// se vuelve a preguntar antes de decir que no existe. Solo Supabase puede
+// confirmar que no existe: catalogo.json puede estar atrasado un par de días.
 export async function findByQr(code, { fetchImpl = fetch } = {}) {
   const known = getTerrarioByQr(code);
   if (known) return known;
 
   try {
     await useFresh(await fetchRows(fetchImpl));
+    return getTerrarioByQr(code);
   } catch {
     try {
       use(merge(currentRows, await fetchBackup(fetchImpl)));
     } catch {
       // sin Supabase ni copia del repo: queda lo que había
     }
+    const found = getTerrarioByQr(code);
+    if (found) return found;
+    throw new CatalogOfflineError("No se pudo consultar el catálogo");
   }
-  return getTerrarioByQr(code);
 }
 
 async function fetchRows(fetchImpl) {
