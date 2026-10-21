@@ -3,9 +3,12 @@
    ============================================ */
 
 // Ficha del terrario: ilustración, número, nombre e historia.
-// Se llega escaneando su QR (desde la app o con la cámara del teléfono),
-// así que abrirla ya suma el terrario a la colección: no hace falta cuenta.
+// Se llega escaneando su QR (con la cámara del teléfono o desde Conectar):
+// el link /t/<código> (views/qr) marca que llegó escaneando y abre la ficha,
+// que entonces suma el terrario a la colección: no hace falta cuenta.
 // El primero que se escanea pasa a ser "Mi terrario".
+// Sin escanear (por ejemplo, escribiendo #/terrario/03), un terrario que este
+// teléfono no tiene conectado muestra "Sin conectar" y no se suma.
 // Si el terrario trae ficha técnica (modelo, ecosistema, plantas…), se lista
 // debajo de la historia, como en filotaxia.com.
 // El primer escaneo de todos pasa antes por el Manifiesto (views/manifiesto),
@@ -14,7 +17,8 @@
 // Bitácora (views/bitacora). Ajustes queda arriba a la derecha.
 
 import { getTerrario, codeOf } from "../../content/terrarios.js";
-import { link, markScanned } from "../../store/collection.js";
+import { isLinked, link, markScanned } from "../../store/collection.js";
+import { takeScanIntent } from "../../utils/scan-intent.js";
 import { claimIfFirst, myTerrarioId } from "../../store/my-terrario.js";
 import { get } from "../../store/store.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
@@ -28,7 +32,7 @@ export const title = ({ params }) => {
   return terrario ? codeOf(terrario) : "Terrario";
 };
 
-export async function render(root, { params, from }) {
+export async function render(root, { params }) {
   const terrario = getTerrario(params.id);
 
   if (!terrario) {
@@ -36,13 +40,18 @@ export async function render(root, { params, from }) {
     return;
   }
 
-  const isNew = await link(terrario.id);
+  // ¿Llegó escaneando su QR? Solo así se conecta y cuenta como
+  // "Última conexión". Abrirla desde otra pantalla no cuenta.
+  const scanned = takeScanIntent(terrario.id);
 
-  // ¿Llegó escaneando? Con la cámara del teléfono el QR abre la app directo
-  // en la ficha (sin pantalla anterior); con la de la app, desde Conectar.
-  // Abrir la ficha desde Mi terrario u otra pantalla no cuenta como conexión.
-  if (!from || from === "escanear") await markScanned(terrario.id);
-  const claimed = await claimIfFirst(terrario.id);
+  if (!scanned && !(await isLinked(terrario.id))) {
+    root.innerHTML = notConnected(terrario);
+    return;
+  }
+
+  const isNew = scanned && (await link(terrario.id));
+  if (scanned) await markScanned(terrario.id);
+  const claimed = scanned && (await claimIfFirst(terrario.id));
   const isMine = (await myTerrarioId()) === terrario.id;
 
   // Primer escaneo: la introducción a la biosonificación, antes de escuchar
@@ -105,6 +114,22 @@ function specs(terrario) {
           </div>`)
           .join("")}
       </dl>
+    </section>
+  `;
+}
+
+// Un terrario que existe pero este teléfono no escaneó
+function notConnected(terrario) {
+  return `
+    <section class="screen terrario terrario--empty">
+      <div class="terrario__info reveal-stagger">
+        <p class="eyebrow">Terrario</p>
+        <h1 class="title" tabindex="-1">${escapeHTML(codeOf(terrario))}</h1>
+        <p class="lead">Escaneá el QR de su base para conectarlo y escuchar su pieza.</p>
+      </div>
+      <div class="screen__actions">
+        <a class="btn btn--primary" href="#/escanear">Conectar</a>
+      </div>
     </section>
   `;
 }
