@@ -4,21 +4,23 @@
 
 // Escaneo del QR del terrario, con la cámara del celular.
 //
-// - La cámara se ve dentro del visor; al leer un QR de Filotaxia se abre
-//   la ficha (camera/qr-camera.js: anda en iPhone y en Android).
+// - La cámara se ve dentro del visor; al leer un QR de Filotaxia
+//   (https://app.filotaxia.com/t/<código>, utils/qr.js) va a #/t/<código>,
+//   que conecta el terrario (camera/qr-camera.js: anda en iPhone y en Android).
 // - Si la persona no da permiso, se explica cómo darlo y se puede reintentar.
 // - También se puede escanear con la app de cámara del teléfono: el QR es
-//   un link a la ficha (…/#/terrario/04) y abre la app directo ahí.
-// - "Simular conexión" abre la ficha de un terrario de prueba.
+//   ese mismo link y abre la app directo en el terrario.
+// - "Simular conexión" (herramienta de desarrollo) conecta un terrario de prueba
+//   pasando por su link, como si se hubiera escaneado.
 // Para la persona esto es "Conectar" (tono de la marca: escanear es solo el
 // cómo). Se llega desde "Conectar" en el centro de la barra, el QR chico de
 // la card Pieza (Mi terrario) o, sin terrario todavía, desde "Conectar mi
 // terrario"; Ajustes queda arriba a la derecha.
 
-import { TERRARIO_IDS } from "../../content/terrarios.js";
+import { terrarioIds, getTerrario } from "../../content/terrarios.js";
 import { linkedIds } from "../../store/collection.js";
 import { startQrCamera } from "../../camera/qr-camera.js";
-import { parseTerrarioCode } from "../../utils/qr.js";
+import { parseQrLink } from "../../utils/qr.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
 import { arrow } from "../../utils/icons.js";
 
@@ -61,7 +63,7 @@ export async function render(root) {
   const video = root.querySelector("[data-video]");
 
   root.querySelector("[data-simulate]").addEventListener("click", async () => {
-    location.hash = `#/terrario/${await simulatedId()}`;
+    location.hash = `#/t/${getTerrario(await simulatedId()).qr_code}`;
   });
 
   let lastUnknown = "";
@@ -76,11 +78,11 @@ export async function render(root) {
         retry.hidden = state !== "denied";
       },
       onCode(text) {
-        const id = parseTerrarioCode(text, TERRARIO_IDS);
-        if (id) {
+        const code = parseQrLink(text);
+        if (code) {
           stop();
           navigator.vibrate?.(30);
-          location.hash = `#/terrario/${id}`;
+          location.hash = `#/t/${code}`;
         } else if (text !== lastUnknown) {
           // Un QR que no es nuestro: se avisa una vez, sin cortar la cámara
           lastUnknown = text;
@@ -96,11 +98,11 @@ export async function render(root) {
   return () => stop();
 }
 
-// El terrario de prueba: uno de los 6 al azar, entre los que todavía no se
+// El terrario de prueba: uno del catálogo al azar, entre los que todavía no se
 // escanearon (así la demo siempre suma uno nuevo); si ya están todos, cualquiera.
 async function simulatedId() {
   const linked = await linkedIds();
-  const missing = TERRARIO_IDS.filter((id) => !linked.includes(id));
-  const pool = missing.length ? missing : TERRARIO_IDS;
+  const missing = terrarioIds().filter((id) => !linked.includes(id));
+  const pool = missing.length ? missing : terrarioIds();
   return pool[Math.floor(Math.random() * pool.length)];
 }

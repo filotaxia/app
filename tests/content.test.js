@@ -2,20 +2,32 @@
    Tests — Content
    ============================================ */
 
-// Que los catálogos (terrarios, plantas, citas y los puntos del terrario del
+// Que los catálogos (terrarios — la copia catalogo.json —, plantas, citas y los puntos del terrario del
 // Manifiesto) estén completos y coincidan entre sí,
 // y que cada foto que nombran exista.
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
-import { TERRARIOS } from "../src/content/terrarios.js";
+import { existsSync, readFileSync } from "node:fs";
+import { TERRARIOS, setCatalog } from "../src/content/terrarios.js";
+import { rowToTerrario } from "../src/utils/catalog.js";
 import { PLANTAS, LEAVES, WAVE_NAMES, getPlanta } from "../src/content/plantas.js";
 import { QUOTES, nextQuoteIndex } from "../src/content/citas.js";
 import { INSIDE_TERRARIUM, LAYERS } from "../src/content/ayuda.js";
 
 const root = new URL("../", import.meta.url);
 const exists = (path) => existsSync(new URL(path, root));
+
+// El catálogo de terrarios vive en Supabase; acá se prueba la copia del repo
+const { rows } = JSON.parse(readFileSync(new URL("catalogo.json", root), "utf8"));
+setCatalog(rows.map((row) => rowToTerrario(row, "")));
+
+test("catalogo.json: qr_code con formato válido y sin repetir", () => {
+  assert.ok(TERRARIOS.length > 0, "catalogo.json sin terrarios");
+  const codes = TERRARIOS.map((terrario) => terrario.qr_code);
+  for (const code of codes) assert.match(code, /^[a-hjkmnp-z2-9]{6}$/);
+  assert.equal(new Set(codes).size, codes.length, "hay códigos repetidos");
+});
 
 test("getPlanta: suma hoja, onda y foto; sin catálogo, solo el nombre", () => {
   assert.deepEqual(getPlanta("haworthia venosa"), {

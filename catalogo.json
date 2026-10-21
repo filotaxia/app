@@ -1,0 +1,191 @@
+{
+  "checked_on": "2026-10",
+  "rows": [
+    {
+      "id": "01",
+      "qr_code": "97vqye",
+      "model": "TR01",
+      "status": "publicado",
+      "recorded": "2026-06-14",
+      "duration": 251,
+      "story": "Este terrario reúne tres suculentas con formas triangulares y sinusoidales. La combinación de estas ondas genera una pieza musical marcada por contrastes: sonidos definidos y rítmicos de las ondas triangulares junto a matices suaves y continuos de las ondas sinusoidales.",
+      "photo": "src/assets/images/terrarios/tr01.jpg",
+      "video": null,
+      "midi_plantas": null,
+      "midi_sustrato": null,
+      "specs": {
+        "medidas": "25 × 20 × 17 cm",
+        "ecosistema": "Abierto",
+        "recipiente": "Vidrio"
+      },
+      "plants": [
+        "Haworthia Attenuata",
+        "Haworthia Fasciata",
+        "Haworthia Venosa"
+      ],
+      "waves": [
+        "triangle",
+        "sine"
+      ],
+      "care": {
+        "temp": [
+          15,
+          26
+        ],
+        "light": "Indirecta",
+        "humidity": [
+          35,
+          60
+        ],
+        "riego_days": 30,
+        "light_hours": [
+          5,
+          8
+        ],
+        "ventilacion_days": null
+      },
+      "created_at": "2026-10-21T00:52:40.300242+00:00",
+      "updated_at": "2026-10-21T00:52:40.300242+00:00"
+    },
+    {
+      "id": "02",
+      "qr_code": "e3nfze",
+      "model": "TR02",
+      "status": "publicado",
+      "recorded": "2026-07-22",
+      "duration": 198,
+      "story": "La condensación del vidrio vuelve a la tierra en gotas. Cada una dejó una nota corta y brillante.",
+      "photo": "src/assets/images/terrarios/tr02.jpg",
+      "video": null,
+      "midi_plantas": null,
+      "midi_sustrato": null,
+      "specs": null,
+      "plants": null,
+      "waves": null,
+      "care": {
+        "temp": [
+          18,
+          24
+        ],
+        "light": "Indirecta",
+        "humidity": [
+          80,
+          95
+        ],
+        "riego_days": 30,
+        "light_hours": [
+          4,
+          7
+        ],
+        "ventilacion_days": 2
+      },
+      "created_at": "2026-10-21T00:52:40.300242+00:00",
+      "updated_at": "2026-10-21T00:52:40.300242+00:00"
+    },
+    {
+      "id": "03",
+      "qr_code": "t3tfqa",
+      "model": "TR03",
+      "status": "publicado",
+      "recorded": "2026-08-30",
+      "duration": 236,
+      "story": "Cuatro piedras y un helecho que crece entre ellas. Un ritmo quieto, con silencios largos.",
+      "photo": "src/assets/images/terrarios/tr03.jpg",
+      "video": null,
+      "midi_plantas": null,
+      "midi_sustrato": null,
+      "specs": null,
+      "plants": null,
+      "waves": null,
+      "care": {
+        "temp": [
+          18,
+          24
+        ],
+        "light": "Indirecta",
+        "humidity": [
+          70,
+          90
+        ],
+        "riego_days": 30,
+        "light_hours": [
+          4,
+          8
+        ],
+        "ventilacion_days": 3
+      },
+      "created_at": "2026-10-21T00:52:40.300242+00:00",
+      "updated_at": "2026-10-21T00:52:40.300242+00:00"
+    },
+    {
+      "id": "04",
+      "qr_code": "c4kn39",
+      "model": "TR04",
+      "status": "publicado",
+      "recorded": "2026-10-09",
+      "duration": 222,
+      "story": "Cada microfluctuación de esta planta se convirtió en una pieza sonora única.",
+      "photo": "src/assets/images/terrarios/tr04.jpg",
+      "video": null,
+      "midi_plantas": null,
+      "midi_sustrato": null,
+      "specs": null,
+      "plants": null,
+      "waves": null,
+      "care": {
+        "temp": [
+          18,
+          25
+        ],
+        "light": "Indirecta",
+        "humidity": [
+          70,
+          90
+        ],
+        "riego_days": 30,
+        "light_hours": [
+          5,
+          8
+        ],
+        "ventilacion_days": 3
+      },
+      "created_at": "2026-10-21T00:52:40.300242+00:00",
+      "updated_at": "2026-10-21T00:52:40.300242+00:00"
+    },
+    {
+      "id": "05",
+      "qr_code": "nwkbr2",
+      "model": "TR05",
+      "status": "publicado",
+      "recorded": "2026-09-12",
+      "duration": 264,
+      "story": "Una suculenta que casi no se mueve. Su pieza avanza como sus raíces: de a poco y hacia abajo.",
+      "photo": "src/assets/images/terrarios/tr05.jpg",
+      "video": null,
+      "midi_plantas": null,
+      "midi_sustrato": null,
+      "specs": null,
+      "plants": null,
+      "waves": null,
+      "care": {
+        "temp": [
+          18,
+          28
+        ],
+        "light": "Sol suave",
+        "humidity": [
+          40,
+          60
+        ],
+        "riego_days": 30,
+        "light_hours": [
+          6,
+          10
+        ],
+        "ventilacion_days": 7
+      },
+      "created_at": "2026-10-21T00:52:40.300242+00:00",
+      "updated_at": "2026-10-21T00:52:40.300242+00:00"
+    }
+  ]
+}

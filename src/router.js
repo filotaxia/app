@@ -7,7 +7,9 @@
 //   #/mi-terrario            el terrario propio y sus cuidados
 //   #/mi-terrario/cuidados   riego, ventilación, plantas y la guía general
 //   #/escanear               escaneo del QR (desde el bloque Pieza)
-//   #/terrario/04            ficha de un terrario (abrirla lo suma a la colección)
+//   #/t/k7f2q9               adonde llega el QR impreso (/t/k7f2q9, vía 404.html):
+//                            busca el terrario de ese código y abre su ficha conectándolo
+//   #/terrario/04            ficha de un terrario (solo conecta si se llega escaneando)
 //   #/escuchar/04            reproductor (#/escuchar solo → el terrario propio)
 //   #/bitacora/04            bitácora de un terrario
 //   #/coleccion              mi colección
@@ -39,6 +41,7 @@ import * as inicio from "./views/inicio/inicio.js";
 import * as miTerrario from "./views/mi-terrario/mi-terrario.js";
 import * as escanear from "./views/escanear/escanear.js";
 import * as terrario from "./views/terrario/terrario.js";
+import * as qr from "./views/qr/qr.js";
 import * as coleccion from "./views/coleccion/coleccion.js";
 import * as escuchar from "./views/escuchar/escuchar.js";
 import * as bitacora from "./views/bitacora/bitacora.js";
@@ -54,6 +57,7 @@ const ROUTES = [
   ["mi-terrario", miTerrario],
   ["mi-terrario/cuidados", cuidados],
   ["escanear", escanear],
+  ["t/:code", qr],
   ["terrario/:id", terrario],
   ["escuchar/:id?", escuchar],
   ["bitacora/:id", bitacora],

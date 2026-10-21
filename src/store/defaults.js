@@ -18,6 +18,8 @@
 //                    { ubicado, escuchado, cuidado } (ver store/journey.js)
 //   manifiesto_seen  true cuando ya vio (o salteó) el Manifiesto del primer escaneo
 //   manifiesto_quote índice de la última cita que mostró el Manifiesto (content/citas.js)
+//   catalog          la última copia del catálogo bajada de Supabase: { rows, fetched_at }
+//                    (store/catalog.js; así la app abre sin red)
 
 export const DEFAULTS = {
   links: [],
@@ -28,4 +30,5 @@ export const DEFAULTS = {
   journey: {},
   manifiesto_seen: false,
   manifiesto_quote: null,
+  catalog: null,
 };

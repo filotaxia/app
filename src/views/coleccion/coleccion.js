@@ -3,7 +3,8 @@
    ============================================ */
 
 // Colección (#/coleccion): todos los terrarios de
-// Filotaxia, como la página "Terrarios" de filotaxia.com (TR01 a TR06).
+// Filotaxia, como la página "Terrarios" de filotaxia.com (los del catálogo de Supabase).
+// Un terrario retirado solo aparece si este teléfono ya lo tenía conectado.
 // Solo están habilitados los que se conectaron (escanearon) en este
 // teléfono: abren su reproductor y dicen "Conectado". Los demás se ven atenuados, dicen "Sin conectar"
 // y no se pueden abrir: para escucharlos hay que escanear su QR.
@@ -24,7 +25,10 @@ export async function render(root) {
 
   root.innerHTML = `
     <ul class="collection reveal-stagger">
-      ${TERRARIOS.map((terrario) => tile(terrario, status(terrario.id, linked))).join("")}
+      ${TERRARIOS
+        .filter((terrario) => terrario.status !== "retirado" || linked.includes(terrario.id))
+        .map((terrario) => tile(terrario, status(terrario.id, linked)))
+        .join("")}
     </ul>
   `;
 }

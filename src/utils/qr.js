@@ -2,28 +2,20 @@
    Utils — QR
    ============================================ */
 
-// Lee lo que trae el QR pegado en la base de cada terrario y devuelve
-// el id del terrario ("04"), o null si no es uno conocido.
+// Lee lo que trae el QR pegado en la base de cada terrario y devuelve su
+// código ("k7f2q9"), o null si no es un QR de Filotaxia.
 //
-// Formatos aceptados (el QR impreso puede ser cualquiera de estos):
-//   "04" · "4" · "filotaxia:04"
-//   "https://filotaxia.com/t/04" · ".../terrario/04" · ".../#/terrario/04"
+// El QR impreso es siempre el link https://app.filotaxia.com/t/<código>
+// (también vale el de la app: …/#/t/<código>). El código son 6 caracteres
+// sin los que se confunden (sin 0 o 1 l i); lo genera Supabase y no cambia
+// nunca. Los formatos viejos por número ("04", "filotaxia:04",
+// …/#/terrario/04) ya no conectan: un terrario se conecta solo escaneándolo.
 
-const PATTERNS = [
-  /^(\d{1,3})$/,                       // el número solo
-  /^filotaxia:(\d{1,3})$/i,            // esquema propio
-  /\/(?:t|terrario)\/(\d{1,3})(?:\b|$)/i, // link a la ficha
-];
+const CODE = /^[a-hjkmnp-z2-9]{6}$/;
 
-export function parseTerrarioCode(raw, knownIds) {
-  const text = String(raw ?? "").trim();
-  if (!text) return null;
-
-  for (const pattern of PATTERNS) {
-    const match = text.match(pattern);
-    if (!match) continue;
-    const id = match[1].padStart(2, "0");
-    return knownIds.includes(id) ? id : null;
-  }
-  return null;
+export function parseQrLink(raw) {
+  const match = String(raw ?? "").match(/\/t\/([a-z0-9]+)/i);
+  if (!match) return null;
+  const code = match[1].toLowerCase();
+  return CODE.test(code) ? code : null;
 }
