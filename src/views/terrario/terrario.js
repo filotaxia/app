@@ -5,14 +5,13 @@
 // Ficha del terrario: ilustración, número, nombre e historia.
 // Se llega escaneando su QR (con la cámara del teléfono o desde Conectar):
 // el link /t/<código> (views/qr) marca que llegó escaneando y abre la ficha,
-// que entonces suma el terrario a la colección: no hace falta cuenta.
+// que entonces suma el terrario a la colección (no hace falta cuenta) y sigue
+// directo a su pieza, el reproductor (views/escuchar).
 // El primero que se escanea pasa a ser "Mi terrario".
 // Sin escanear (por ejemplo, escribiendo #/terrario/03), un terrario que este
 // teléfono no tiene conectado muestra "Sin conectar" y no se suma.
 // Si el terrario trae ficha técnica (modelo, ecosistema, plantas…), se lista
 // debajo de la historia, como en filotaxia.com.
-// El primer escaneo de todos pasa antes por el Manifiesto (views/manifiesto),
-// que termina en el reproductor de este terrario.
 // Al pie: "Escuchar" (el reproductor), sus cuidados o la colección, y su
 // Bitácora (views/bitacora). Ajustes queda arriba a la derecha.
 
@@ -20,7 +19,6 @@ import { getTerrario, codeOf } from "../../content/terrarios.js";
 import { isLinked, link, markScanned } from "../../store/collection.js";
 import { takeScanIntent } from "../../utils/scan-intent.js";
 import { claimIfFirst, myTerrarioId } from "../../store/my-terrario.js";
-import { get } from "../../store/store.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
 import { toast } from "../../components/toast/toast.js";
@@ -49,16 +47,19 @@ export async function render(root, { params }) {
     return;
   }
 
-  const isNew = scanned && (await link(terrario.id));
-  if (scanned) await markScanned(terrario.id);
-  const claimed = scanned && (await claimIfFirst(terrario.id));
-  const isMine = (await myTerrarioId()) === terrario.id;
-
-  // Primer escaneo: la introducción a la biosonificación, antes de escuchar
-  if (isNew && !(await get("manifiesto_seen"))) {
-    location.replace(`#/manifiesto/${terrario.id}`);
+  // Escaneo: se conecta y el QR lleva directo a la pieza (el reproductor).
+  // replace(): la ficha no queda en el historial antes del reproductor.
+  if (scanned) {
+    const isNew = await link(terrario.id);
+    await markScanned(terrario.id);
+    const claimed = await claimIfFirst(terrario.id);
+    if (claimed) toast(`${codeOf(terrario)} es tu terrario`);
+    else if (isNew) toast(`${codeOf(terrario)} se sumó a tus terrarios`);
+    location.replace(`#/escuchar/${terrario.id}`);
     return;
   }
+
+  const isMine = (await myTerrarioId()) === terrario.id;
 
   root.innerHTML = `
     <article class="screen terrario">
@@ -86,8 +87,6 @@ export async function render(root, { params }) {
     </article>
   `;
 
-  if (claimed) toast(`${codeOf(terrario)} es tu terrario`);
-  else if (isNew) toast(`${codeOf(terrario)} se sumó a tus terrarios`);
 }
 
 // "Especificaciones": filas con la etiqueta chica a la izquierda y el dato a la derecha
