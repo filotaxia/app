@@ -1,0 +1,67 @@
+# ============================================
+#    App — Catálogo (tarea programada)
+#    ============================================
+#
+# Corre cada 2 días (y a mano desde Actions → Catálogo → Run workflow). Hace dos cosas:
+#
+# 1. Despierta Supabase. El plan gratis pausa el proyecto después de 7 días
+#    sin uso; pausado, un QR recién escaneado no encontraría su terrario.
+#    Con esta consulta el proyecto nunca llega a dormirse.
+#
+# 2. Guarda en el repo una copia del catálogo publicado (catalogo.json), que se
+#    publica con la app. Si Supabase falla, la app la usa para saber a qué
+#    terrario lleva cada QR (store/catalog.js).
+#
+# `checked_on` (año-mes) cambia una vez por mes: así hay un commit al menos
+# mensual y GitHub no apaga esta tarea (la apaga si el repo pasa 60 días sin
+# actividad).
+#
+# La clave es la publishable de Supabase: pública a propósito (la misma que
+# src/store/supabase-config.js). La clave secreta nunca va acá.
+
+name: Catálogo
+
+on:
+  schedule:
+    - cron: "17 9 */2 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  catalogo:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: https://hsokwxemfnhrmtpuwhxd.supabase.co
+      SUPABASE_KEY: sb_publishable_yKske4Irpcbs-kaRiQh3fA_t7Z0_Ev6
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Consultar Supabase
+        # Al despertar, Supabase puede responder un error por un rato:
+        # se reintenta hasta 5 veces. Si nunca devuelve una lista, la tarea
+        # falla (GitHub avisa por mail) y catalogo.json no se toca.
+        run: |
+          for attempt in 1 2 3 4 5; do
+            curl -sS "$SUPABASE_URL/rest/v1/terrarios?select=*&status=in.(publicado,retirado)&order=id" \
+              -H "apikey: $SUPABASE_KEY" > rows.json || true
+            if jq -e 'type == "array" and length > 0' rows.json > /dev/null; then exit 0; fi
+            echo "Intento $attempt: $(head -c 200 rows.json)"
+            sleep 30
+          done
+          exit 1
+
+      - name: Actualizar catalogo.json
+        run: |
+          jq '{ checked_on: (now | strftime("%Y-%m")), rows: . }' rows.json > catalogo.json
+          rm rows.json
+          if git diff --quiet catalogo.json; then
+            echo "Sin cambios"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add catalogo.json
+          git commit -m "Catálogo: copia de Supabase"
+          git push
