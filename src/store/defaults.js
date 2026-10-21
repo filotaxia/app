@@ -20,6 +20,8 @@
 //   manifiesto_quote índice de la última cita que mostró el Manifiesto (content/citas.js)
 //   catalog          la última copia del catálogo bajada de Supabase: { rows, fetched_at }
 //                    (store/catalog.js; así la app abre sin red)
+//   admin_session    solo en el panel (/admin/): la sesión del admin que entró
+//                    { access_token, refresh_token, expires_at, email } (store/admin.js)
 
 export const DEFAULTS = {
   links: [],
@@ -31,4 +33,5 @@ export const DEFAULTS = {
   manifiesto_seen: false,
   manifiesto_quote: null,
   catalog: null,
+  admin_session: null,
 };

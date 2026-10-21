@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Panel · Filotaxia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- Página interna: sin link desde la app y fuera de los buscadores -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/png" href="../src/assets/icons/favicon-48.png" />
+    <link rel="preload" href="../src/assets/fonts/ppneuemontreal-medium.otf" as="font" type="font/otf" crossorigin>
+    <link rel="stylesheet" href="../src/styles.css" />
+</head>
+
+<body>
+    <!-- El panel de carga de terrarios (src/views/admin/): entrar, lista,
+         alta y edición, QR. Pinta cada pantalla adentro de <main>. -->
+    <main class="admin container" data-admin tabindex="-1"></main>
+
+    <!-- Avisos breves (components/toast) -->
+    <div class="toast-region" data-toast-region aria-live="polite"></div>
+
+    <script type="module" src="../src/views/admin/admin.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,477 @@
+/* ============================================
+   Views — Admin
+   ============================================ */
+
+/* El panel de carga (/admin/): una columna con mucho aire, como el resto
+   de la app. Campos de línea (components/field), listas con líneas finas,
+   botones rectangulares. Sin barra de navegación ni header de la app. */
+
+.admin {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xl);
+    min-height: 100dvh;
+    padding-block: var(--spacing-3xl) var(--spacing-5xl);
+}
+
+/* Sin el recuadro que el navegador le pone a los <fieldset>
+   (:where no suma peso: .admin-section igual le pone su línea arriba) */
+.admin :where(fieldset) {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.admin code {
+    font-size: var(--font-sm-size);
+    color: var(--color-text);
+}
+
+.admin-hint {
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    color: var(--color-text-muted);
+}
+
+/* ---------------------------------------- */
+/* Entrar */
+/* ---------------------------------------- */
+
+.admin-login {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+    width: 100%;
+    max-width: 400px;
+    margin-block: auto;
+    margin-inline: auto;
+}
+
+.admin-login__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xl);
+    margin-top: var(--spacing-xl);
+}
+
+/* ---------------------------------------- */
+/* Lista */
+/* ---------------------------------------- */
+
+.admin-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--gap-lg);
+}
+
+.admin-head .title {
+    margin-block: var(--spacing-xs);
+}
+
+.admin-head__out {
+    min-height: var(--size-tap);
+    font-size: var(--font-sm-size);
+    color: var(--color-text-muted);
+    transition: color var(--transition-fast);
+}
+
+.admin-head__out:hover {
+    color: var(--color-text);
+}
+
+.admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-sm);
+}
+
+.admin-actions .btn {
+    flex: 1;
+    white-space: nowrap;
+}
+
+.admin-actions__icon {
+    width: var(--icon-md);
+    height: var(--icon-md);
+}
+
+.admin-list {
+    border-top: 1px solid var(--color-line);
+}
+
+.admin-row {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+    min-height: 80px;
+    padding-block: var(--spacing-md);
+    border-bottom: 1px solid var(--color-line);
+}
+
+.admin-row__photo {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    overflow: hidden;
+}
+
+.admin-row__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-row__name {
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+}
+
+.admin-row__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gap-sm);
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    color: var(--color-text-muted);
+}
+
+/* Borrador y retirado: el chip sin fondo, con borde */
+.admin-chip--quiet {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--color-line);
+    color: var(--color-text-muted);
+}
+
+.admin-row__qr {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+}
+
+.admin-row__qr svg,
+.admin-qr__code svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.admin-row .arrow {
+    color: var(--color-text-muted);
+    transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+@media (hover: hover) {
+    .admin-row:hover .arrow {
+        color: var(--color-text);
+        transform: translateX(3px);
+    }
+}
+
+/* ---------------------------------------- */
+/* Formulario */
+/* ---------------------------------------- */
+
+.admin-form__head .title {
+    margin-top: var(--spacing-xs);
+}
+
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xl);
+}
+
+/* Cada grupo: eyebrow arriba y una línea fina que lo separa del anterior */
+.admin-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+    padding-top: var(--spacing-xl);
+    border-top: 1px solid var(--color-line);
+}
+
+/* <legend> no respeta el flex del fieldset: lo saca del borde y lo pone arriba */
+.admin-section > legend {
+    float: left;
+    width: 100%;
+    margin-bottom: var(--spacing-lg);
+}
+
+.admin-section > legend + * {
+    clear: both;
+}
+
+.admin-pair {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap-lg);
+    align-items: start;
+}
+
+.admin-range > legend {
+    margin-bottom: var(--spacing-sm);
+}
+
+.field__input--area {
+    height: auto;
+    min-height: 120px;
+    padding-block: var(--spacing-sm);
+    resize: vertical;
+    line-height: var(--font-base-line);
+}
+
+.field__input[readonly] {
+    color: var(--color-text-muted);
+}
+
+/* Casillas: nativas, en negro */
+.admin-checks {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--color-line);
+}
+
+.admin-check {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+    min-height: var(--size-tap);
+    border-bottom: 1px solid var(--color-line);
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    cursor: pointer;
+}
+
+.admin-check input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--color-text);
+}
+
+.admin-check__note {
+    margin-left: auto;
+    font-size: var(--font-xs-size);
+    color: var(--color-text-muted);
+}
+
+.admin-checks--row {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--gap-lg);
+}
+
+/* Archivos */
+.admin-files {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap-xl) var(--gap-lg);
+}
+
+.admin-file {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    min-width: 0;
+}
+
+.admin-file__current {
+    min-height: 22px;
+    font-size: var(--font-sm-size);
+    overflow-wrap: anywhere;
+}
+
+.admin-file__current a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.admin-file__current--photo {
+    aspect-ratio: 1;
+    background: var(--color-block-bg);
+    display: grid;
+    place-items: center;
+}
+
+.admin-file__current img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-file__pick {
+    cursor: pointer;
+}
+
+.admin-file__pick:focus-within {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+.admin-file__chosen {
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    overflow-wrap: anywhere;
+}
+
+.admin-file__chosen:empty {
+    display: none;
+}
+
+/* QR del terrario */
+.admin-qr__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+}
+
+.admin-qr__code {
+    width: 180px;
+    height: 180px;
+    font-size: var(--font-sm-size);
+    color: var(--color-text-muted);
+}
+
+.admin-qr__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+}
+
+.admin-qr__link {
+    font-size: var(--font-base-size);
+    overflow-wrap: anywhere;
+}
+
+.admin-qr__link a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.admin-qr__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-sm);
+    margin-top: var(--spacing-sm);
+}
+
+.admin-qr__actions .btn {
+    min-height: var(--size-tap);
+    font-size: var(--font-sm-size);
+}
+
+/* Pie: errores, progreso y botones */
+.admin-form__footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+    padding-top: var(--spacing-xl);
+    border-top: 1px solid var(--color-line);
+}
+
+.admin-form__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+}
+
+/* ---------------------------------------- */
+/* Imprimir */
+/* ---------------------------------------- */
+
+.admin-print__controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+}
+
+.admin-print__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap-xl);
+}
+
+.admin-print__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-sm);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--color-line);
+    text-align: center;
+    break-inside: avoid;
+}
+
+.admin-print__card svg {
+    width: 100%;
+    max-width: 160px;
+    height: auto;
+}
+
+.admin-print__name {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+}
+
+.admin-print__link {
+    font-size: var(--font-2xs-size);
+    line-height: var(--font-2xs-line);
+    color: var(--color-text-muted);
+    word-break: break-all;
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+
+@media (min-width: 640px) {
+    .admin-checks:not(.admin-checks--row) {
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: var(--gap-lg);
+    }
+
+    .admin-checks--row {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .admin-files {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .admin-qr__body {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .admin-form__actions {
+        flex-direction: row;
+    }
+
+    .admin-form__actions .btn {
+        flex: 1;
+    }
+
+    .admin-print__grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* La hoja impresa: solo las tarjetas con los QR */
+@media print {
+    .admin-print__controls,
+    .toast-region {
+        display: none;
+    }
+
+    .admin {
+        padding: 0;
+    }
+
+    .admin-print__grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
