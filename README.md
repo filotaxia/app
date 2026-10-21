@@ -15,5 +15,12 @@ Tests de la lógica (formato, QR, partitura del sonido), sin dependencias:
 node --test 'tests/**/*.test.js'
 ```
 
+## Datos y publicación
+
+- Los terrarios viven en **Supabase** (tabla `terrarios`). Los cambios de estructura son migraciones SQL en `supabase/migrations/`.
+- La app se publica en **GitHub Pages** desde `main`, en **https://app.filotaxia.com** (archivo `CNAME`; en el DNS de Hostinger, `CNAME app → filotaxia.github.io`). Cada push a `main` publica.
+- Cada terrario tiene un QR definitivo: `https://app.filotaxia.com/t/<código>`. El código lo genera Supabase y no cambia nunca. Se imprimen desde `https://app.filotaxia.com/imprimir-qr.html`.
+- `.github/workflows/catalogo.yml` corre cada 2 días: mantiene despierto Supabase (plan gratis) y guarda una copia del catálogo en `catalogo.json`, que la app usa si Supabase no responde.
+
 - `CLAUDE.md`: arquitectura y convenciones de código.
 - `DESIGN.md`: design system.
