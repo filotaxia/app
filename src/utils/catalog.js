@@ -41,3 +41,19 @@ export function rowToTerrario(row, storageBase) {
   }
   return terrario;
 }
+
+// El número que sigue para un terrario nuevo (el panel lo sugiere):
+// ["01", "02", "05"] → "06". Siempre con al menos dos cifras.
+export function nextTerrarioId(ids) {
+  const highest = Math.max(0, ...ids.map(Number).filter(Number.isFinite));
+  return String(highest + 1).padStart(2, "0");
+}
+
+// Dónde se guarda un archivo en Storage: una carpeta por terrario y la hora
+// en el nombre, así un archivo nuevo nunca pisa al anterior (y el navegador
+// no muestra la copia vieja que tenía guardada):
+//   storagePath("07", "foto", "jpg") → "07/foto-20261021201507.jpg"
+export function storagePath(id, kind, extension, date = new Date()) {
+  const stamp = date.toISOString().replace(/\D/g, "").slice(0, 14);
+  return `${id}/${kind}-${stamp}.${extension.toLowerCase()}`;
+}

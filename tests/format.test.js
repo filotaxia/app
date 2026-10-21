@@ -4,7 +4,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { formatTime, formatDate, pluralTerrarios } from "../src/utils/format.js";
+import { formatTime, formatDate, pluralTerrarios, parseDuration } from "../src/utils/format.js";
 
 test("formatTime: segundos a m:ss", () => {
   assert.equal(formatTime(0), "0:00");
@@ -24,4 +24,14 @@ test("pluralTerrarios", () => {
   assert.equal(pluralTerrarios(0), "Todavía no conectaste terrarios");
   assert.equal(pluralTerrarios(1), "1 terrario conectado");
   assert.equal(pluralTerrarios(4), "4 terrarios conectados");
+});
+
+test("parseDuration lee m:ss (o solo segundos) y devuelve segundos", () => {
+  assert.equal(parseDuration("4:11"), 251);
+  assert.equal(parseDuration(" 0:59 "), 59);
+  assert.equal(parseDuration("251"), 251);
+  assert.equal(parseDuration(""), null);
+  assert.equal(parseDuration("4:75"), null);
+  assert.equal(parseDuration("cuatro"), null);
+  assert.equal(parseDuration(formatTime(222)), 222);
 });

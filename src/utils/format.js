@@ -26,3 +26,14 @@ export function pluralTerrarios(count) {
   if (count === 1) return "1 terrario conectado";
   return `${count} terrarios conectados`;
 }
+
+// "4:11" → 251 (lo que se escribe en el panel); también acepta solo segundos ("251").
+// Lo que no se entiende devuelve null.
+export function parseDuration(text) {
+  const value = String(text ?? "").trim();
+  const match = value.match(/^(?:(\d+):)?(\d+)$/);
+  if (!match) return null;
+  const [, minutes, seconds] = match;
+  if (minutes != null && (Number(seconds) > 59 || seconds.length !== 2)) return null;
+  return Number(minutes ?? 0) * 60 + Number(seconds);
+}

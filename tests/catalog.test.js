@@ -4,7 +4,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { rowToTerrario } from "../src/utils/catalog.js";
+import { rowToTerrario, nextTerrarioId, storagePath } from "../src/utils/catalog.js";
 
 const STORAGE = "https://x.supabase.co/storage/v1/object/public/terrarios/";
 
@@ -28,4 +28,17 @@ test("rowToTerrario deja igual las rutas locales y los links", () => {
 
 test("rowToTerrario sin MIDI no tiene midi", () => {
   assert.equal(rowToTerrario({ id: "01", model: "TR01", care: {} }, "B/").midi, undefined);
+});
+
+test("nextTerrarioId sugiere el número que sigue, con dos cifras", () => {
+  assert.equal(nextTerrarioId(["01", "02", "05"]), "06");
+  assert.equal(nextTerrarioId(["09"]), "10");
+  assert.equal(nextTerrarioId(["99"]), "100");
+  assert.equal(nextTerrarioId([]), "01");
+});
+
+test("storagePath arma la ruta del archivo en su carpeta, con la hora en el nombre", () => {
+  const date = new Date("2026-10-21T20:15:07Z");
+  assert.equal(storagePath("07", "foto", "jpg", date), "07/foto-20261021201507.jpg");
+  assert.equal(storagePath("07", "midi-plantas", "MID", date), "07/midi-plantas-20261021201507.mid");
 });
