@@ -53,15 +53,15 @@
       "model": "TR02",
       "status": "publicado",
       "recorded": "2026-07-22",
-      "duration": 198,
+      "duration": 210,
       "story": "La condensación del vidrio vuelve a la tierra en gotas. Cada una dejó una nota corta y brillante.",
       "photo": "src/assets/images/terrarios/tr02.jpg",
       "video": null,
       "midi_plantas": null,
       "midi_sustrato": null,
       "specs": null,
-      "plants": null,
-      "waves": null,
+      "plants": [],
+      "waves": [],
       "care": {
         "temp": [
           18,
@@ -80,7 +80,7 @@
         "ventilacion_days": 2
       },
       "created_at": "2026-10-21T00:52:40.300242+00:00",
-      "updated_at": "2026-10-21T00:52:40.300242+00:00"
+      "updated_at": "2026-10-21T21:29:59.856929+00:00"
     },
     {
       "id": "03",
