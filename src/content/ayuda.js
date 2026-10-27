@@ -118,18 +118,21 @@ export const PROCESS = [
 ];
 
 // Las cuatro capas de un terrario, de arriba hacia abajo (páginas "Capa01…04"):
-// [nombre, material, texto, imagen en movimiento]. Las imágenes son los GIF
-// que usa filotaxia.com/terrarios (enlazados desde giphy, como en la web);
-// cuando haya videos propios van en src/assets/videos/ y se cambian acá.
+// [nombre, material, texto, video]. Los videos son los GIF de
+// filotaxia.com/terrarios pasados a MP4 livianos (src/assets/videos/capas/,
+// 400px, sin sonido, en loop): los GIF de giphy pesaban 49 MB entre los
+// cuatro y hacían lento al Manifiesto en el celular; los MP4, 1,3 MB.
+// Se muestran con <video muted loop playsinline autoplay>. Cuando haya
+// videos propios, se reemplazan esos archivos.
 export const LAYERS = [
   ["Plantas", "Suculentas", "La vida visible del terrario. Sus impulsos eléctricos se convierten en melodías que reflejan su actividad.",
-    "https://media3.giphy.com/media/txCo7WXCwZpmM/giphy.gif"],
+    "src/assets/videos/capas/capa01-plantas.mp4"],
   ["Sustrato", "Tierra, perlita, arena gruesa", "La base oculta: regula el agua, el aire y los nutrientes que necesitan las raíces para expandirse.",
-    "https://media0.giphy.com/media/l9md6q8WS4pwJrO4qc/giphy.gif"],
+    "src/assets/videos/capas/capa02-sustrato.mp4"],
   ["Metal", "Rejilla metálica", "Un límite protector que impide que las raíces lleguen al fondo y se pudran por exceso de humedad.",
-    "https://media3.giphy.com/media/OhBO5rAr1G0VhxM8X4/giphy.gif"],
+    "src/assets/videos/capas/capa03-metal.mp4"],
   ["Piedras", "Piedra pómez", "El drenaje natural: evita el exceso de agua y deja circular el aire para que las raíces estén sanas.",
-    "https://media0.giphy.com/media/55jWt7O2wPB5e/giphy.gif"],
+    "src/assets/videos/capas/capa04-piedras.mp4"],
 ];
 
 // El terrario de la pantalla 4 del Manifiesto: la foto del TR01 (la de

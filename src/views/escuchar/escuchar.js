@@ -8,7 +8,7 @@
 //   Fondo            la foto del terrario a todo el ancho, que se funde con
 //                    el fondo de la página; "Cambiar a video" la cambia por el
 //                    video del terrario (terrario.video; mientras no haya
-//                    videos propios, el GIF de la capa Plantas de filotaxia.com)
+//                    videos propios, el de la capa Plantas de filotaxia.com)
 //   Abajo            miniatura + nombre + "Filotaxia" (como el artista), barra de progreso y
 //                    −15 s · play/pausa · +15 s
 //   Al bajar         bloques con todo lo de la pieza (escuchar-bloques.js) y,
@@ -18,9 +18,9 @@
 //                    botón de ampliar abre la partitura a pantalla completa
 //
 // Se llega desde Mi terrario (bloque Pieza o "Escuchar"), Colección, la ficha o
-// "Saltar" en el Manifiesto (que además muestra solo la primera vista, sin los
-// bloques de abajo, como su pantalla 7: renderPlayer con embedded). "← Mi terrario" / "← Colección" vuelve a
-// donde se estaba; Ajustes queda arriba a la derecha.
+// el Manifiesto ("Escuchar la pieza" en su última pantalla, o "Saltar").
+// "← Mi terrario" / "← Colección" vuelve a donde se estaba; Ajustes queda
+// arriba a la derecha.
 // #/escuchar sin id abre el terrario propio o, si no hay, el primero de la colección.
 //
 // Teclado: espacio = play/pausa · ← / → = −15 / +15 s (fuera de la barra).
@@ -45,6 +45,10 @@ export const title = ({ params }) => {
   const terrario = getTerrario(params.id);
   return terrario ? codeOf(terrario) : "Escuchar";
 };
+
+// Sin la barra de abajo, como en Spotify: la pantalla es toda de la pieza
+// (la barra tapaba los bloques). Se vuelve con "← Mi terrario" de arriba.
+export const nav = false;
 
 const SKIP = 15;
 
@@ -78,30 +82,24 @@ export async function render(root, { params, from }) {
   return renderPlayer(root, terrario, { back });
 }
 
-// Arma el reproductor de un terrario en root y devuelve la función que lo
-// apaga. La usa esta pantalla y también la última del Manifiesto, que lo
-// pone adentro (embedded): solo la primera vista (foto y controles), sin
-// "← Mi terrario" ni Ajustes (arriba ya están el progreso y "Cerrar"), sin
-// los bloques de abajo ni la barra chica; el nombre es h2 (el h1 es "Manifiesto").
-export async function renderPlayer(root, terrario, { back = null, embedded = false } = {}) {
+// Arma el reproductor de un terrario en root y devuelve la función que lo apaga
+async function renderPlayer(root, terrario, { back }) {
   const linked = await linkedIds();
   const others = linked.filter((id) => id !== terrario.id).map(getTerrario).filter(Boolean);
   const name = escapeHTML(codeOf(terrario));
   const lanes = await loadLanes(terrario);   // las dos secuencias MIDI (plantas y sustrato)
-  const heading = embedded ? "h2" : "h1";
 
   root.innerHTML = `
-    <section class="${embedded ? "player--embedded" : "screen"} player" data-mode="audio" data-player>
+    <section class="screen player" data-mode="audio" data-player>
       <div class="player__backdrop" aria-hidden="true">
         <div class="player__photo">${terrariumArt({ photo: terrario.photo })}</div>
         <div class="player__video" data-video></div>
       </div>
 
-      ${embedded ? "" : `
       <div class="player__top">
         <a class="back-link" href="${back.href}">${arrow("left")} ${back.label}</a>
         ${settingsLink()}
-      </div>`}
+      </div>
 
       <div class="player__body">
         <button class="player__view reveal" type="button" data-view aria-pressed="false">
@@ -112,7 +110,7 @@ export async function renderPlayer(root, terrario, { back = null, embedded = fal
         <div class="player__track reveal-stagger">
           <div class="player__thumb" data-art>${terrariumArt({ photo: terrario.photo, size: "sm" })}</div>
           <div class="player__info">
-            <${heading} class="player__name" tabindex="-1">${name}</${heading}>
+            <h1 class="player__name" tabindex="-1">${name}</h1>
             <p class="player__meta">Filotaxia</p>
           </div>
         </div>
@@ -140,7 +138,6 @@ export async function renderPlayer(root, terrario, { back = null, embedded = fal
         </div>
       </div>
     </section>
-    ${embedded ? "" : `
 
     <div class="player__mini" data-mini aria-hidden="true">
       <div class="player__mini-inner">
@@ -160,7 +157,7 @@ export async function renderPlayer(root, terrario, { back = null, embedded = fal
       ${sections({ terrario, lanes, others })}
     </div>
 
-    ${scoreFull(terrario, lanes)}`}
+    ${scoreFull(terrario, lanes)}
   `;
 
   return mountPlayer(root, terrario, lanes);
@@ -239,7 +236,7 @@ function mountPlayer(root, terrario, lanes) {
   bindView(root, terrario);
   bindScoreFull(root);
   bindPlants(root);   // el botón Ondas / Plantas del bloque de plantas
-  const stopMini = bindMini(root);   // (en el Manifiesto no hay bloques ni barra chica: no hacen nada)
+  const stopMini = bindMini(root);
 
   function onKey(event) {
     if (event.target.closest("input, textarea, select, dialog")) return;
@@ -274,9 +271,7 @@ function bindView(root, terrario) {
   button.addEventListener("click", () => {
     const toVideo = screen.dataset.mode === "audio";
     if (toVideo && !box.firstChild) {
-      box.innerHTML = terrario.video
-        ? `<video src="${terrario.video}" muted loop playsinline autoplay></video>`
-        : `<img src="${FALLBACK_VIDEO}" alt="" decoding="async" />`;
+      box.innerHTML = `<video src="${terrario.video || FALLBACK_VIDEO}" muted loop playsinline autoplay></video>`;
     }
     box.querySelector("video")?.[toVideo ? "play" : "pause"]();
     screen.dataset.mode = toVideo ? "video" : "audio";
@@ -290,7 +285,6 @@ function bindView(root, terrario) {
 // se cierra con la X o con Escape)
 function bindScoreFull(root) {
   const dialog = root.querySelector("[data-score-full]");
-  if (!dialog) return;
   root.querySelector("[data-score-open]").addEventListener("click", () => dialog.showModal());
   dialog.querySelector("[data-score-close]").addEventListener("click", () => dialog.close());
 }
@@ -300,7 +294,6 @@ function bindScoreFull(root) {
 // Devuelve la función que la apaga al salir de la pantalla.
 function bindMini(root) {
   const mini = root.querySelector("[data-mini]");
-  if (!mini) return () => {};
   const controls = root.querySelector("[data-controls]");
   const miniPlay = mini.querySelector("[data-toggle]");
 

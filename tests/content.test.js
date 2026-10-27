@@ -4,7 +4,7 @@
 
 // Que los catálogos (terrarios — la copia catalogo.json —, plantas, citas y los puntos del terrario del
 // Manifiesto) estén completos y coincidan entre sí,
-// y que cada foto que nombran exista.
+// y que cada foto (y cada video de las capas) que nombran exista.
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -56,6 +56,14 @@ test("los terrarios usan plantas del catálogo, ondas con nombre y fotos que exi
       assert.ok(WAVE_NAMES[wave], `${terrario.id}: onda "${wave}"`);
     }
     if (terrario.photo) assert.ok(exists(terrario.photo), `${terrario.id}: falta ${terrario.photo}`);
+  }
+});
+
+test("las cuatro capas tienen su video local (MP4 liviano, no un GIF enlazado)", () => {
+  assert.equal(LAYERS.length, 4);
+  for (const [name, , , video] of LAYERS) {
+    assert.match(video, /^src\/assets\/videos\/capas\/.+\.mp4$/, `${name}: ${video}`);
+    assert.ok(exists(video), `${name}: falta ${video}`);
   }
 });
 

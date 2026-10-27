@@ -46,8 +46,12 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(request, { cache: "no-cache" })
       .then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE).then((cache) => cache.put(request, copy));
+        // Solo respuestas completas: los videos (las capas) suelen llegar de a
+        // pedazos ("206") y esos no se pueden guardar en la caché
+        if (response.status === 200) {
+          const copy = response.clone();
+          caches.open(CACHE).then((cache) => cache.put(request, copy));
+        }
         return response;
       })
       .catch(async () => {

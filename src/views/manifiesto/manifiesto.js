@@ -2,7 +2,7 @@
    Views — Manifiesto
    ============================================ */
 
-// Introducción a la biosonificación en siete pantallas, para que la pieza
+// Introducción a la biosonificación en seis pantallas, para que la pieza
 // se escuche como lo que es (y no como ruido al azar):
 //
 //   1. Gancho      una cita de filotaxia.com, distinta cada vez que se abre
@@ -16,19 +16,19 @@
 //   5. Mecanismo   01 / 02 / 03, de la planta a la nota, con un gráfico por paso
 //                  que entra uno después del otro (señal → sensor → notas)
 //   6. Prueba      la huella de TU pieza: sus notas reales (audio/score.js)
-//                  en un piano roll que un cabezal recorre, con nombre y fecha
-//   7. Escuchar    el reproductor de ese terrario, adentro del Manifiesto
-//                  (el mismo de views/escuchar: renderPlayer), solo la foto
-//                  y los controles, sin scroll
+//                  en un piano roll que un cabezal recorre, con nombre y fecha;
+//                  abajo, "Escuchar la pieza" lleva a su reproductor (#/escuchar).
+//                  (Antes había una 7 con el reproductor adentro: en el
+//                  celular hacía lento al Manifiesto, así que se sacó.)
 //
 // Con id (#/manifiesto/04) era la introducción del primer escaneo; hoy el
 // QR lleva directo a la pieza y nada manda acá con id, pero la ruta sigue
 // andando por si se vuelve a usar. "Saltar" guarda
-// `manifiesto_seen` y sigue al reproductor de ese terrario; llegar a la 7
+// `manifiesto_seen` y sigue al reproductor de ese terrario; llegar a la 6
 // también lo guarda (ya lo vio todo).
 // También es una sección de la barra, sin id (#/manifiesto): ahí "Saltar"
-// es "Cerrar" (vuelve a Mi terrario). En la 7 siempre dice "Cerrar".
-// El terrario de las pantallas 6 y 7 lo elige pickTerrario.
+// es "Cerrar" (vuelve a Mi terrario). En la 6 siempre dice "Cerrar".
+// El terrario de la pantalla 6 lo elige pickTerrario.
 //
 // La pantalla 1 apoya la cita abajo a la izquierda (como las cards de citas
 // de filotaxia.com); la 2, la 3 y la 4 llenan el alto (título arriba,
@@ -38,9 +38,7 @@
 // resto = adelante) o con las flechas del teclado: deslizar o hacer scroll
 // no la mueve (overflow hidden en el CSS; el JS la corre con scrollTo).
 // No hay botón "Siguiente" a la vista (así las pantallas tienen más lugar):
-// queda uno escondido para lectores de pantalla. En la 7 los toques ya no
-// pasan de pantalla (son del reproductor) y las flechas adelantan o
-// atrasan la pieza.
+// queda uno escondido para lectores de pantalla.
 
 import { get, set } from "../../store/store.js";
 import { linkedIds } from "../../store/collection.js";
@@ -51,9 +49,9 @@ import { LAYERS, INSIDE_TERRARIUM } from "../../content/ayuda.js";
 import { getPlanta, WAVE_NAMES } from "../../content/plantas.js";
 import { buildScore, seedFrom } from "../../audio/score.js";
 import { leafWaves, bindLeafWaves } from "../../components/leaf-waves/leaf-waves.js";
-import { renderPlayer } from "../escuchar/escuchar.js";
 import { formatDate } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
+import { icon } from "../../utils/icons.js";
 
 export const title = "Manifiesto";
 // Sin barra en el primer escaneo (con id: es parte del onboarding);
@@ -94,7 +92,8 @@ const SLIDES = [
     <p class="manifiesto__kicker">(Biosonificación)</p>
     ${mechanism()}
   `,
-  // 6. Prueba: depende del terrario, por eso es una función (ver render)
+  // 6. Prueba: depende del terrario, por eso es una función (ver render).
+  //    Abajo, el botón negro que lleva a escuchar su pieza
   ({ terrario }) => `
     ${pieceGraphic(terrario)}
     <div class="manifiesto__quote">
@@ -104,12 +103,9 @@ const SLIDES = [
         <span>Grabada el ${formatDate(terrario.recorded)}</span>
       </p>
     </div>
-  `,
-  // 7. Escuchar: el reproductor (solo su primera vista) se arma acá la primera
-  //    vez que se llega (ver mountPlayer en render), así no se cargan los MIDI
-  //    si nadie llega
-  `
-    <div class="manifiesto__player" data-player-slot></div>
+    <a class="btn btn--primary manifiesto__listen" href="#/escuchar/${terrario.id}" data-listen data-done>
+      ${icon("play")} Escuchar la pieza
+    </a>
   `,
 ];
 
@@ -119,7 +115,7 @@ const SLIDE_LAYOUT = {
   1: "manifiesto__slide--anatomy",  // título arriba, terrario y su explicación abajo
   2: "manifiesto__slide--layers",   // barras arriba, número y texto abajo
   3: "manifiesto__slide--split",    // título arriba, tarjetas abajo
-  6: "manifiesto__slide--player",   // el reproductor, que scrollea hacia abajo
+  5: "manifiesto__slide--piece",    // la huella y el texto al centro, el botón abajo
 };
 
 export async function render(root, { params }) {
@@ -173,21 +169,14 @@ export async function render(root, { params }) {
   const layerCycle = bindLayers(root);  // las barras de la pantalla 3
   bindAnatomy(root);                    // los puntos de la pantalla 2
   const skip = root.querySelector("[data-skip-link]");
-  let stopPlayer = null;   // apaga el reproductor de la 7 (si ya se armó)
-  let left = false;        // ya se salió del Manifiesto
 
-  // Pantalla 7: arma el reproductor la primera vez que se llega. Llegar
-  // hasta acá cuenta como haberlo visto todo; arriba, "Cerrar" vuelve a
-  // Mi terrario (también en el primer escaneo: "Saltar" ya no tiene sentido)
-  async function mountPlayer() {
-    if (stopPlayer) return;
-    stopPlayer = () => {};   // marca que ya arrancó, mientras carga
+  // Última pantalla: llegar hasta acá cuenta como haberlo visto todo; arriba,
+  // "Cerrar" vuelve a Mi terrario (también en el primer escaneo: "Saltar" ya
+  // no tiene sentido, para escuchar está el botón de abajo)
+  async function finish() {
     skip.textContent = "Cerrar";
     skip.setAttribute("href", "#/mi-terrario");
     await set("manifiesto_seen", true);
-    const stop = await renderPlayer(slides[last].querySelector("[data-player-slot]"), terrario, { embedded: true });
-    if (left) stop();   // se fue mientras cargaba
-    else stopPlayer = stop;
   }
 
   function goTo(index) {
@@ -210,7 +199,7 @@ export async function render(root, { params }) {
     // Pantalla 3: las capas pasan solas solo mientras se ve
     if (slides[index].querySelector("[data-layers]")) layerCycle.play();
     else layerCycle.stop();
-    if (index === last) mountPlayer();
+    if (index === last) finish();
   }
 
   // La pantalla que más se ve es la actual (sirve igual para tap, click o teclado)
@@ -220,16 +209,16 @@ export async function render(root, { params }) {
   );
   slides.forEach((slide) => observer.observe(slide));
 
-  // Tocar: el tercio izquierdo vuelve, el resto avanza (en la 7 no: ahí los
-  // toques son del reproductor)
+  // Tocar: el tercio izquierdo vuelve, el resto avanza (salvo el botón
+  // "Escuchar la pieza", que es un link)
   track.addEventListener("click", (event) => {
-    if (current === last) return;
+    if (event.target.closest("[data-listen]")) return;
     const { left, width } = track.getBoundingClientRect();
     goTo(event.clientX - left < width / 3 ? current - 1 : current + 1);
   });
   next.addEventListener("click", () => goTo(current + 1));
 
-  // Saltar / Cerrar: ya lo vio
+  // Saltar / Cerrar / Escuchar la pieza: ya lo vio
   root.querySelectorAll("[data-done]").forEach((link) => {
     link.addEventListener("click", async (event) => {
       event.preventDefault();
@@ -239,17 +228,13 @@ export async function render(root, { params }) {
     });
   });
 
-  // En la 7 las flechas son del reproductor (−15 / +15 s)
   function onKey(event) {
-    if (current === last) return;
     if (event.key === "ArrowRight") goTo(current + 1);
     if (event.key === "ArrowLeft") goTo(current - 1);
   }
   document.addEventListener("keydown", onKey);
 
   return () => {
-    left = true;
-    stopPlayer?.();
     observer.disconnect();
     waves.stop();
     layerCycle.stop();
@@ -337,7 +322,7 @@ function layers() {
       <div class="layers__bars" role="group" aria-label="Las cuatro capas">
         ${LAYERS.map(([layerName, , , media], i) => `
           <div class="layers__bar${i === 0 ? " is-open" : ""}" data-layer-bar>
-            <img class="layers__media" src="${media}" alt="" decoding="async" />
+            <video class="layers__media" src="${media}" muted loop playsinline autoplay aria-hidden="true"></video>
             <button class="layers__hit" type="button" data-layer="${i}" aria-pressed="${i === 0}"
               aria-label="Capa ${pad(i + 1)}: ${layerName}"></button>
             <div class="layers__details" aria-hidden="true">
@@ -511,7 +496,7 @@ function notesGraphic() {
 /* Pantalla 6: la huella de tu pieza */
 /* ---------------------------------------- */
 
-// El terrario de las pantallas 6 y 7 (su pieza y su reproductor): el recién escaneado (id en la ruta); si se
+// El terrario de la pantalla 6 (su pieza y el botón para escucharla): el recién escaneado (id en la ruta); si se
 // abrió desde la barra, el propio o el primero de la colección; si no hay
 // ninguno, el primero del catálogo.
 async function pickTerrario(id) {

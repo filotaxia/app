@@ -82,9 +82,10 @@
     font-weight: var(--font-weight-medium);
 }
 
-/* Filotaxia: el isotipo de la marca (las dos hojas, src/assets/images/marca/)
+/* Conectar: el isotipo de la marca (las dos hojas, src/assets/images/marca/)
    en lugar de un ícono de Lucide. Es un PNG usado como máscara, así toma
-   el color del texto como los demás íconos. Es más ancho que alto. */
+   el color del texto como los demás íconos (blanco sobre el negro de
+   Conectar). Es más ancho que alto. */
 .bottom-nav__logo {
     display: block;
     width: 26px;

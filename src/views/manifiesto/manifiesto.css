@@ -5,8 +5,7 @@
 /* Pantalla completa: el carrusel (una pantalla por vez, se pasa tocando)
    ocupa todo el alto, desde arriba de todo, y encima flota la tira de
    arriba: el progreso (una línea fina por pantalla), el contador y
-   "Saltar". Así la foto del reproductor (pantalla 7) llega hasta arriba,
-   como en Escuchar. Cada pantalla deja libre arriba --manifiesto-top, el
+   "Saltar". Cada pantalla deja libre arriba --manifiesto-top, el
    alto de esa tira, para que su contenido no quede debajo. En el primer
    escaneo va sin barra; abierto desde la barra, deja lugar abajo para ella. */
 
@@ -128,7 +127,7 @@ html:has(.manifiesto) body {
     animation-play-state: running;
 }
 
-/* Frase grande + atribución chica (pantallas 1, 6 y 7) */
+/* Frase grande + atribución chica (pantallas 1 y 6) */
 .manifiesto__quote {
     display: flex;
     flex-direction: column;
@@ -732,34 +731,21 @@ html:has(.manifiesto) body {
 }
 
 /* ---------------------------------------- */
-/* Pantalla 7: el reproductor (views/escuchar, renderPlayer), solo la foto
-   y los controles: sin los bloques de abajo, así que no scrollea. Es
-   relative para que el fondo del reproductor (la foto, absolute) ocupe
-   todo su ancho y su alto, desde arriba de todo (debajo de la tira de
-   arriba, como en Escuchar), y un contenedor (container-type) para que el
-   reproductor mida su alto (cqh, sin contar la tira). */
-.manifiesto__slide--player {
-    position: relative;
-    container-type: size;
-    justify-content: flex-start;
-    gap: 0;
-    padding-bottom: 0;
+/* Pantalla 6: la huella y el texto al centro y, al pie, el botón negro
+   "Escuchar la pieza" a todo el ancho (como .screen__actions): los dos
+   margin-top: auto reparten el aire que sobra arriba y abajo del texto */
+.manifiesto__slide--piece > :first-child,
+.manifiesto__listen {
+    margin-top: auto;
 }
 
-/* Sin la entrada con fade de las otras pantallas: el reproductor ya
-   tiene la suya, y un transform acá rompería el fondo */
-.manifiesto__slide--player > * {
-    animation: none;
+.manifiesto__listen {
+    width: 100%;
 }
 
-/* La foto y los controles ocupan justo el alto de la pantalla */
-.manifiesto__player .player--embedded {
-    height: 100cqh;
-    padding-bottom: var(--spacing-xl);
-}
-
-.manifiesto__slide--player .player__backdrop {
-    height: 100%;
+.manifiesto__listen svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
 }
 
 /* "Saltar" / "Cerrar": link de texto sin la línea de abajo */
@@ -785,10 +771,5 @@ RESPONSIVE
     /* Los puntos siguen el borde derecho de la columna de 480px */
     .manifiesto__slide--split .leaf-waves__dots {
         right: calc(max(var(--gutter), (100% - 480px) / 2) - var(--spacing-xs));
-    }
-
-    /* El reproductor usa todo el ancho de la pantalla 7 (sin la columna de 480) */
-    .manifiesto__slide--player > * {
-        max-width: none;
     }
 }

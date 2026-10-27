@@ -27,6 +27,7 @@ import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { block, digits } from "../../components/block/block.js";
 import { plantsBlock, bindPlants } from "../../components/plants-block/plants-block.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
+import { connectLoop } from "../../components/connect-loop/connect-loop.js";
 import { toast } from "../../components/toast/toast.js";
 import { nextCare, dueLabel } from "../../utils/care.js";
 import { todayKey, daysBetween } from "../../utils/dates.js";
@@ -164,6 +165,7 @@ function empty() {
   return `
     <section class="screen mine mine--empty">
       ${head("Filotaxia.", "Conectá tu terrario.")}
+      <div class="mine__connect reveal">${connectLoop()}</div>
       <div class="screen__actions">
         <p class="lead">Conectalo con el QR de su base para ver sus cuidados.</p>
         <a class="btn btn--primary" href="#/escanear">${icon("scan-line")} Conectar mi terrario</a>
