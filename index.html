@@ -10,10 +10,13 @@
     <!-- Color de la barra del navegador, uno por esquema (utils/theme.js los pisa si se fuerza un tema) -->
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" data-scheme="light" />
     <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" data-scheme="dark" />
-    <!-- App instalable (PWA): ícono y nombre en la pantalla de inicio -->
+    <!-- App instalable (PWA): ícono y nombre en la pantalla de inicio.
+         Android usa los íconos del manifest; el iPhone no: usa apple-touch-icon
+         (PNG de 180×180 sin transparencia). Vive en la raíz porque es donde iOS
+         lo busca si no encuentra este link. -->
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" type="image/png" href="./src/assets/icons/favicon-48.png" />
-    <link rel="apple-touch-icon" href="./src/assets/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Filotaxia" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
