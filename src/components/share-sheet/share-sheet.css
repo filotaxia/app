@@ -1,0 +1,161 @@
+/* ============================================
+   Components — Share Sheet
+   ============================================ */
+
+/* La hoja de compartir (ver share-sheet.js), como la de Spotify: la vista
+   previa de la historia, los fondos para elegir y la fila de opciones.
+   La vista previa es la misma imagen que dibuja utils/share-card.js
+   (1080 × 1920), en chico: las medidas van en cqw (% del ancho de la
+   historia), calculadas desde esos píxeles (800 / 1080 = 74cqw…). */
+
+.share {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-lg);
+}
+
+/* --- La historia: 9:16, con el fondo elegido --- */
+.share__story {
+    container-type: inline-size;
+    width: 56%;
+    aspect-ratio: 9 / 16;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition-normal);
+}
+
+.share__story[data-bg="gris"] {
+    background: var(--color-share-gray);
+}
+
+.share__story[data-bg="degradado"] {
+    background: linear-gradient(var(--color-share-gradient-top), var(--color-share-black));
+}
+
+.share__story[data-bg="negro"] {
+    background: var(--color-share-black);
+}
+
+/* La tarjeta oscura: foto, nombre, "Filotaxia" y el logotipo */
+.share__card {
+    width: 74cqw;
+    padding: 4.44cqw;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-share-card);
+}
+
+.share__photo {
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--color-share-photo);
+}
+
+.share__photo .terrarium-art {
+    height: 100%;
+    aspect-ratio: auto;
+    border-radius: 0;
+}
+
+.share__name {
+    margin-top: 5.2cqw;
+    font-size: 7.4cqw;
+    line-height: 1;
+    color: var(--color-share-text);
+}
+
+.share__meta {
+    margin-top: 0.74cqw;
+    font-size: 4.8cqw;
+    line-height: 1;
+    color: var(--color-share-muted);
+}
+
+/* El logotipo (FILOTAXIA) como máscara, del color del nombre */
+.share__logo {
+    margin-top: 5.9cqw;
+    height: 3.33cqw;
+    aspect-ratio: 960 / 123;
+    background: var(--color-share-text);
+    mask: url("../../assets/images/marca/logotipo.png") left center / contain no-repeat;
+}
+
+/* --- Los fondos: tres círculos; el elegido, con un anillo --- */
+.share__backgrounds {
+    display: flex;
+    gap: var(--gap-md);
+}
+
+.share__background {
+    width: var(--size-tap);
+    height: var(--size-tap);
+    border-radius: 50%;   /* círculos a propósito, como en Spotify */
+    outline: 1px solid var(--color-line);
+    outline-offset: -1px;
+}
+
+.share__background[aria-checked="true"] {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
+}
+
+.share__background--gris {
+    background: var(--color-share-gray);
+}
+
+.share__background--degradado {
+    background: linear-gradient(var(--color-share-gradient-top), var(--color-share-black));
+}
+
+.share__background--negro {
+    background: var(--color-share-black);
+}
+
+/* --- Las opciones: círculo con ícono y el nombre debajo, en una fila
+   que se desliza de costado si no entra --- */
+.share__apps {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: var(--gap-md);
+    overflow-x: auto;
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-line);
+}
+
+.share__app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-sm);
+    width: 64px;
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.share__app-icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-block-bg);
+    transition: transform var(--transition-fast);
+}
+
+.share__app:active .share__app-icon {
+    transform: scale(0.94);
+}
+
+.share__app-icon svg {
+    width: var(--icon-md);
+    height: var(--icon-md);
+}
+
+.share__app-label {
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    text-align: center;
+}

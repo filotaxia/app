@@ -5,12 +5,15 @@
 // Reproductor de un terrario, como la pantalla "reproduciendo" de Spotify:
 //
 //   Arriba de todo   "← Mi terrario" / "← Colección" y el punto de Ajustes
-//   Fondo            la foto del terrario a todo el ancho, que se funde con
-//                    el fondo de la página; "Cambiar a video" la cambia por el
-//                    video del terrario (terrario.video; mientras no haya
-//                    videos propios, el de la capa Plantas de filotaxia.com)
-//   Abajo            miniatura + nombre + "Filotaxia" (como el artista), barra de progreso y
-//                    −15 s · play/pausa · +15 s
+//   Portada          la foto del terrario, cuadrada y a todo el ancho de la
+//                    columna (como la portada del disco en Spotify, sin
+//                    degradados); "Cambiar a video" la cambia, en el mismo
+//                    cuadrado, por el video del terrario (terrario.video;
+//                    mientras no haya videos propios, el de la capa Plantas
+//                    de filotaxia.com)
+//   Abajo            nombre + "Filotaxia" (como el artista) y, a la derecha,
+//                    compartir (components/share-sheet, como en Spotify);
+//                    barra de progreso y −15 s · play/pausa · +15 s
 //   Al bajar         bloques con todo lo de la pieza (escuchar-bloques.js) y,
 //                    pegada arriba, una barra chica con el nombre y play/pausa
 //                    para no perder los controles
@@ -40,6 +43,7 @@ import { escapeHTML } from "../../utils/html.js";
 import { icon, arrow } from "../../utils/icons.js";
 import { sections, scoreFull, bindScore } from "./escuchar-bloques.js";
 import { bindPlants } from "../../components/plants-block/plants-block.js";
+import { openShareSheet } from "../../components/share-sheet/share-sheet.js";
 
 export const title = ({ params }) => {
   const terrario = getTerrario(params.id);
@@ -91,14 +95,16 @@ async function renderPlayer(root, terrario, { back }) {
 
   root.innerHTML = `
     <section class="screen player" data-mode="audio" data-player>
-      <div class="player__backdrop" aria-hidden="true">
-        <div class="player__photo">${terrariumArt({ photo: terrario.photo })}</div>
-        <div class="player__video" data-video></div>
-      </div>
-
       <div class="player__top">
         <a class="back-link" href="${back.href}">${arrow("left")} ${back.label}</a>
         ${settingsLink()}
+      </div>
+
+      <div class="player__art reveal" aria-hidden="true">
+        <div class="player__cover">
+          <div class="player__photo" data-art>${terrariumArt({ photo: terrario.photo })}</div>
+          <div class="player__video" data-video></div>
+        </div>
       </div>
 
       <div class="player__body">
@@ -108,11 +114,13 @@ async function renderPlayer(root, terrario, { back }) {
         </button>
 
         <div class="player__track reveal-stagger">
-          <div class="player__thumb" data-art>${terrariumArt({ photo: terrario.photo, size: "sm" })}</div>
           <div class="player__info">
             <h1 class="player__name" tabindex="-1">${name}</h1>
             <p class="player__meta">Filotaxia</p>
           </div>
+          <button class="btn btn--icon player__share" type="button" data-share aria-label="Compartir ${name}">
+            ${icon("share")}
+          </button>
         </div>
 
         <div class="player__progress reveal">
@@ -234,6 +242,7 @@ function mountPlayer(root, terrario, lanes) {
   });
 
   bindView(root, terrario);
+  root.querySelector("[data-share]").addEventListener("click", () => openShareSheet(terrario));
   bindScoreFull(root);
   bindPlants(root);   // el botón Ondas / Plantas del bloque de plantas
   const stopMini = bindMini(root);
