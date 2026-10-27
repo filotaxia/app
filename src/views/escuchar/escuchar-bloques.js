@@ -231,7 +231,7 @@ function wavesCard(terrario) {
 /* ---------------------------------------- */
 /* Las cuatro capas (como Videos relacionados) */
 
-// Fila que se desliza de costado. Las imágenes son los GIF de filotaxia.com
+// Fila que se desliza de costado. Los videos son los de las capas de filotaxia.com
 // (content/ayuda.js); loading="lazy" para no bajarlos hasta que se ven.
 function layersCard() {
   return `
@@ -241,7 +241,7 @@ function layersCard() {
         ${LAYERS.map(([name, material, , media], i) => `
           <li class="rail__item">
             <span class="rail__media">
-              <img src="${media}" alt="" loading="lazy" decoding="async" />
+              <video src="${media}" muted loop playsinline autoplay aria-hidden="true"></video>
               <span class="rail__badge">Capa${String(i + 1).padStart(2, "0")}/</span>
             </span>
             <span class="rail__name">${name}</span>

@@ -26,7 +26,7 @@
 //   plants   nombres de las plantas (los de content/plantas.js, que suma foto, hoja y onda)
 //   waves    formas de onda de su pieza ("triangle", "sine"...); por defecto, seno
 //   video    video del terrario para el fondo del reproductor ("Cambiar a video");
-//            si no hay, el reproductor usa el GIF de la capa Plantas de filotaxia.com
+//            si no hay, el reproductor usa el video de la capa Plantas de filotaxia.com
 //   midi     las dos secuencias MIDI grabadas con los Biodata: { plantas, sustrato }
 //            plantas = Biodata 02 (suculentas); sustrato = Biodata 01 (sustrato,
 //            gravas, piedra pómez y ambient). Se ven en la Partitura del reproductor

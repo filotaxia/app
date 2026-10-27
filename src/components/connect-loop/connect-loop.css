@@ -1,0 +1,197 @@
+/* ============================================
+   Components — Connect Loop
+   ============================================ */
+
+/* Cómo se conecta un terrario (ver connect-loop.js). Todo se mueve con una
+   sola vuelta de --loop (12 s): cada paso dura un tercio (4 s) y los
+   cambios de un paso al otro son lentos (más o menos 1,4 s).
+   Para hacerlo todo más rápido o más lento, cambiá --loop.
+     0–33 %   01  el terrario solo; su QR late
+    33–66 %   02  el terrario se corre a la izquierda, entra el teléfono y lee el QR
+    66–100 %  03  el terrario se va, el teléfono pasa al centro y muestra la app
+   Sin animación (menos movimiento), queda quieto en el paso 02. */
+
+/* El cuadro gris: el dibujo arriba y, debajo, el paso que se está viendo */
+.connect-loop {
+    --loop: 12s;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: var(--color-block-bg);
+}
+
+/* --- El dibujo: trazo de 1.5 en currentColor, como los del Manifiesto --- */
+.connect-loop__stage {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* La pecera está agrandada 7,5 veces: el trazo no tiene que engordar */
+.connect-loop__stage * {
+    vector-effect: non-scaling-stroke;
+}
+
+/* El QR y las barras escalan desde su propio centro/base (solo ellos: en
+   la pecera correría el punto desde donde se agranda) */
+.connect-loop__qr,
+.connect-loop__bar {
+    transform-box: fill-box;
+}
+
+.connect-loop__fill,
+.connect-loop__play {
+    fill: currentColor;
+    stroke: none;
+}
+
+/* El cuerpo del teléfono tapa lo que quede detrás cuando pasa al centro */
+.connect-loop__body {
+    fill: var(--color-block-bg);
+}
+
+/* Posición quieta (paso 02): terrario a la izquierda, teléfono a la derecha */
+.connect-loop__terrarium {
+    transform: translateX(-56px);
+    animation: connect-terrarium var(--loop) var(--ease-standard) infinite;
+}
+
+.connect-loop__phone {
+    animation: connect-phone var(--loop) var(--ease-standard) infinite;
+}
+
+/* El QR de la base late mientras está solo */
+.connect-loop__qr {
+    transform-origin: center;
+    animation: connect-qr var(--loop) var(--ease-out) infinite;
+}
+
+/* La línea punteada que va del teléfono al QR mientras lo lee */
+.connect-loop__beam {
+    stroke: var(--color-text-muted);
+    stroke-dasharray: 2 4;
+    animation: connect-beam var(--loop) linear infinite;
+}
+
+/* La línea que recorre el QR en la pantalla, de arriba abajo, dos veces */
+.connect-loop__scan {
+    animation: connect-scan var(--loop) linear infinite;
+}
+
+.connect-loop__camera {
+    animation: connect-camera var(--loop) linear infinite;
+}
+
+/* La app: aparece en el paso 03, con las barras de la pieza sonando */
+.connect-loop__app {
+    opacity: 0;
+    animation: connect-app var(--loop) linear infinite;
+}
+
+.connect-loop__bar {
+    transform-origin: center bottom;
+    animation: connect-bar 0.9s var(--ease-standard) calc(var(--i) * -0.18s) infinite alternate;
+}
+
+/* --- Los pasos: uno por vez, el que se está viendo en el dibujo.
+   Los tres ocupan el mismo lugar (la misma celda de la grilla) y se
+   turnan con un fade; texto chico del Manifiesto: "/Paso01" en el color
+   del texto principal y debajo su texto en gris, los dos de 15px --- */
+.connect-loop__steps {
+    display: grid;
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+.connect-loop__step {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    animation: connect-step var(--loop) linear calc(var(--step) * var(--loop) / 3) infinite;
+}
+
+.connect-loop__index {
+    color: var(--color-text);
+}
+
+.connect-loop__text {
+    color: var(--color-text-muted);
+}
+
+@keyframes connect-terrarium {
+    0%, 26% { transform: translateX(0); opacity: 1; }
+    38%, 60% { transform: translateX(-56px); opacity: 1; }
+    72%, 90% { transform: translateX(-56px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes connect-phone {
+    0%, 26% { transform: translateX(120px); opacity: 0; }
+    38%, 60% { transform: translateX(0); opacity: 1; }
+    72%, 90% { transform: translateX(-68px); opacity: 1; }
+    100% { transform: translateX(-68px); opacity: 0; }
+}
+
+@keyframes connect-qr {
+    0%, 5%, 13%, 21%, 100% { transform: scale(1); }
+    9%, 17% { transform: scale(1.25); }
+}
+
+@keyframes connect-beam {
+    0%, 38% { opacity: 0; }
+    43%, 56% { opacity: 1; }
+    61%, 100% { opacity: 0; }
+}
+
+@keyframes connect-scan {
+    0%, 40% { transform: translateY(0); }
+    48% { transform: translateY(32px); }
+    49% { transform: translateY(0); }
+    57%, 100% { transform: translateY(32px); }
+}
+
+@keyframes connect-camera {
+    0%, 60% { opacity: 1; }
+    68%, 100% { opacity: 0; }
+}
+
+@keyframes connect-app {
+    0%, 64% { opacity: 0; }
+    74%, 90% { opacity: 1; }
+    98%, 100% { opacity: 0; }
+}
+
+@keyframes connect-bar {
+    to { transform: scaleY(0.35); }
+}
+
+/* A la vista el primer tercio de la vuelta; cada paso arranca un tercio después */
+@keyframes connect-step {
+    0% { opacity: 0; }
+    6%, 27% { opacity: 1; }
+    33%, 100% { opacity: 0; }
+}
+
+/* Menos movimiento: quieto en el paso 02 y los tres pasos uno debajo del otro */
+@media (prefers-reduced-motion: reduce) {
+    .connect-loop * {
+        animation: none !important;
+    }
+
+    .connect-loop__steps {
+        gap: var(--spacing-md);
+    }
+
+    .connect-loop__step {
+        grid-area: auto;
+        opacity: 1;
+    }
+}

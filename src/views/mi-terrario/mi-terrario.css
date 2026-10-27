@@ -157,6 +157,13 @@
     transform: scale(0.9);
 }
 
+/* Sin terrario: la animación de cómo conectarlo (components/connect-loop),
+   centrada en el alto que queda entre el título y el botón */
+.mine__connect {
+    margin-top: auto;
+    padding-top: var(--spacing-2xl);
+}
+
 .mine--empty .screen__actions {
     align-items: flex-start;
 }
