@@ -46,13 +46,17 @@
     letter-spacing: var(--font-lg-tracking);
 }
 
-/* El dibujo: la onda o la foto de la hoja, centrado en el espacio que queda */
+/* El dibujo: la onda o la foto de la hoja, centrado en el espacio que queda.
+   Flex y no grid: en Safari (iPhone) un ícono con ancho en % dentro de una
+   grilla centrada quedaba corrido a la izquierda; en flex el % se mide
+   siempre contra el ancho de esta caja */
 .leaf-wave__art {
     position: relative;
     flex: 1;
     min-height: 0;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .leaf-wave__icon {
@@ -136,7 +140,7 @@
     color: var(--color-feature-text);
 }
 
-/* La onda, centrada por el grid del padre. Es apaisada (la hoja es alta),
+/* La onda, centrada por el flex del padre. Es apaisada (la hoja es alta),
    así que se mide por el ancho: el alto sale solo del aspect-ratio
    (cambiá el ancho para agrandarla o achicarla) */
 .leaf-wave__face--onda .leaf-wave__icon {
