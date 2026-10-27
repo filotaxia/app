@@ -10,7 +10,9 @@
 //
 // Vive en la raíz (no en src/) para que controle toda la app.
 
-const CACHE = "filotaxia-v3";
+// Cambiar el número borra las copias guardadas de la versión anterior
+// (v4: el ícono del iPhone pasó a /apple-touch-icon.png).
+const CACHE = "filotaxia-v4";
 
 // Lo mínimo para abrir la app offline; el resto se guarda a medida que se usa.
 // 404.html y catalogo.json: para que un QR escaneado sin red igual abra su

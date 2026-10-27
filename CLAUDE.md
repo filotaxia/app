@@ -51,6 +51,7 @@ admin/index.html        the private panel (/admin/, no link from the app): Supab
                         upload photo/video/MIDI, publish/retire, QR download (SVG/PNG), print sheet and backups (src/views/admin/)
 404.html                GitHub Pages fallback: /t/<qr_code> → /#/t/<qr_code> (any other path → the app)
 CNAME                   app.filotaxia.com (GitHub Pages custom domain)
+apple-touch-icon.png    the iPhone home-screen icon (180×180, opaque; iOS ignores the manifest icons), linked from every page
 catalogo.json           copy of the published catalog (written by .github/workflows/catalogo.yml)
 supabase/migrations/    SQL migrations of the Supabase database
 DESIGN.md               design system
