@@ -16,6 +16,9 @@
 //   await updateTerrario(id, cambios) → la fila actualizada
 //   await uploadFile(path, blob, type) → sube a Storage ("07/foto-….jpg") y devuelve la ruta
 //   publicFileURL(path)               → el link para mostrar un archivo guardado en la fila
+//   await listBackups()               → los backups, el más nuevo primero (sin los datos, que pesan)
+//   await getBackup(id)               → un backup con sus datos ({ terrarios, admins })
+//   await makeBackup()                → hace uno en el momento y lo devuelve (sin los datos)
 //
 // Cómo funciona el login: Supabase Auth devuelve un "access token" (vale una
 // hora) y un "refresh token" (para pedir otro sin volver a escribir la
@@ -166,6 +169,27 @@ export function publicFileURL(path) {
   if (path.startsWith("http")) return path;
   if (path.startsWith("src/")) return new URL(path, APP_ROOT).href;
   return STORAGE_PUBLIC + path;
+}
+
+/* ---------------------------------------- */
+/* Backups */
+/* ---------------------------------------- */
+
+// Los hace la base sola cada lunes (supabase/migrations/20261027133539_backups.sql);
+// el panel los lista, los descarga y puede pedir uno en el momento.
+
+export async function listBackups() {
+  return request("GET", `${REST}/backups?select=id,created_at,kind,row_count&order=created_at.desc`);
+}
+
+export async function getBackup(id) {
+  const [backup] = await request("GET", `${REST}/backups?select=*&id=eq.${encodeURIComponent(id)}`);
+  if (!backup) throw new AdminError("Ese backup no existe.");
+  return backup;
+}
+
+export async function makeBackup() {
+  return request("POST", `${REST}/rpc/make_backup`, {});
 }
 
 /* ---------------------------------------- */

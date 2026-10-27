@@ -173,6 +173,29 @@
 }
 
 /* ---------------------------------------- */
+/* Backups */
+/* ---------------------------------------- */
+
+/* Como una fila de la lista, pero no es un link: el botón "Descargar" a la derecha */
+.admin-backup {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+    min-height: 80px;
+    padding-block: var(--spacing-md);
+    border-bottom: 1px solid var(--color-line);
+}
+
+.admin-backup__when {
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+}
+
+.admin-backup .btn {
+    flex-shrink: 0;
+}
+
+/* ---------------------------------------- */
 /* Formulario */
 /* ---------------------------------------- */
 

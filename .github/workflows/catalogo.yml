@@ -2,11 +2,14 @@
 #    App — Catálogo (tarea programada)
 #    ============================================
 #
-# Corre cada 2 días (y a mano desde Actions → Catálogo → Run workflow). Hace dos cosas:
+# Corre dos veces por día (y a mano desde Actions → Catálogo → Run workflow).
+# Hace dos cosas:
 #
-# 1. Despierta Supabase. El plan gratis pausa el proyecto después de 7 días
-#    sin uso; pausado, un QR recién escaneado no encontraría su terrario.
-#    Con esta consulta el proyecto nunca llega a dormirse.
+# 1. Mantiene despierto Supabase. El plan gratis pausa el proyecto si en 7
+#    días recibe poca actividad; pausado, un QR recién escaneado no
+#    encontraría su terrario. Supabase pide "unas pocas consultas por día":
+#    una cada 2 días no alcanzó (se pausó igual en octubre de 2026), por eso son
+#    dos por día.
 #
 # 2. Guarda en el repo una copia del catálogo publicado (catalogo.json), que se
 #    publica con la app. Si Supabase falla, la app la usa para saber a qué
@@ -23,7 +26,7 @@ name: Catálogo
 
 on:
   schedule:
-    - cron: "17 9 */2 * *"
+    - cron: "17 9,21 * * *"
   workflow_dispatch:
 
 permissions:
