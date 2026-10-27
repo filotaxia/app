@@ -82,4 +82,15 @@
     /* --- Fondo detrás de las hojas modales --- */
     --color-backdrop: light-dark(rgba(10, 10, 10, 0.35), rgba(0, 0, 0, 0.6));
 
+    /* --- Compartir (components/share-sheet): la imagen para historias, como
+       la de Spotify. Fijos, no siguen al tema: la imagen sale igual en claro
+       y en oscuro. Tres fondos (gris, degradado, negro) y la tarjeta oscura --- */
+    --color-share-gray: var(--color-gray-400);
+    --color-share-gradient-top: var(--color-gray-500);
+    --color-share-black: var(--color-gray-900);
+    --color-share-card: var(--color-gray-800);
+    --color-share-photo: var(--color-gray-700);   /* mientras carga la foto */
+    --color-share-text: var(--color-gray-50);
+    --color-share-muted: var(--color-gray-400);
+
 }
