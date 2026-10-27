@@ -11,6 +11,7 @@
 //   #/nuevo         terrario nuevo
 //   #/editar/07     editar uno (con su QR)
 //   #/imprimir      hoja con los QR elegidos, lista para imprimir
+//   #/backups       las copias semanales de la base (admin-backups.js)
 // Sin sesión, cualquiera de ellas muestra "Entrar".
 
 import { escapeHTML } from "../../utils/html.js";
@@ -20,6 +21,7 @@ import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { signIn, signOut, currentUser, isAdmin, listTerrarios, publicFileURL, AdminError } from "../../store/admin.js";
 import { renderForm } from "./admin-form.js";
 import { qrFor } from "./admin-qr.js";
+import { renderBackups } from "./admin-backups.js";
 
 const root = document.querySelector("[data-admin]");
 const STATUS_LABEL = { borrador: "Borrador", publicado: "Publicado", retirado: "Retirado" };
@@ -57,6 +59,11 @@ async function route() {
     return row ? showForm(row) : renderList(user);
   }
   if (screen === "imprimir") return renderPrint();
+  if (screen === "backups") {
+    await renderBackups(root);
+    if (!stale()) done();
+    return;
+  }
   return renderList(user);
 }
 
@@ -167,6 +174,7 @@ function renderList(user) {
     <div class="admin-actions">
       <a class="btn btn--primary" href="#/nuevo">${icon("plus", "admin-actions__icon")} Nuevo terrario</a>
       <a class="btn btn--ghost" href="#/imprimir">Imprimir QR</a>
+      <a class="btn btn--ghost" href="#/backups">Backups</a>
     </div>
 
     <ul class="admin-list">
