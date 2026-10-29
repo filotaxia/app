@@ -12,7 +12,7 @@
 //   Preguntas      las preguntas frecuentes de cuidados de filotaxia.com
 //
 // Sin terrario propio todavía, solo se ven la guía y las preguntas.
-// (Ventilación y Plantas están en Mi terrario.)
+// (Plantas está en Mi terrario.)
 
 import { CARE_GUIDE, CARE_FAQ } from "../../content/ayuda.js";
 import { getTerrario, codeOf } from "../../content/terrarios.js";

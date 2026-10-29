@@ -5,10 +5,10 @@
 // Compartir una pieza, como en Spotify: una hoja (components/sheet) con
 //
 //   la vista previa   la historia: el fondo elegido y, al centro, la tarjeta
-//                     oscura con la foto, el nombre ("TR03"), "Filotaxia" y
-//                     el logotipo
+//                     oscura con la foto, el nombre ("TR03") y la marca
+//                     (el isotipo y "Filotaxia" al lado)
 //   los fondos        tres círculos para elegirlo: gris, degradado, negro
-//   las opciones      Copiar enlace · WhatsApp · Historias · Mensajes · Más
+//   las opciones      Copiar enlace · WhatsApp · Historias · Más
 //
 // El enlace lleva al reproductor de ese terrario (#/escuchar/03), no al link
 // del QR (/t/…): ese conecta el terrario, y compartir no tiene que conectar.
@@ -45,8 +45,7 @@ export function openShareSheet(terrario) {
           <div class="share__card" data-card>
             <div class="share__photo" data-photo>${terrariumArt({ photo: terrario.photo })}</div>
             <p class="share__name" data-name>${escapeHTML(name)}</p>
-            <p class="share__meta" data-meta>Filotaxia</p>
-            <span class="share__logo" aria-hidden="true"></span>
+            <p class="share__brand"><span class="share__isotipo" aria-hidden="true"></span>Filotaxia</p>
           </div>
         </div>
 
@@ -60,7 +59,6 @@ export function openShareSheet(terrario) {
           ${app("button", `data-copy`, "link", "Copiar enlace")}
           ${app("a", `href="https://wa.me/?text=${encodeURIComponent(message)}" target="_blank" rel="noopener"`, "message-circle", "WhatsApp")}
           ${app("button", `data-story-share`, "instagram", "Historias")}
-          ${app("a", `href="sms:?&body=${encodeURIComponent(message)}"`, "message-square", "Mensajes")}
           ${navigator.share ? app("button", `data-more`, "share", "Más") : ""}
         </ul>
       </div>
@@ -69,7 +67,7 @@ export function openShareSheet(terrario) {
 
   const root = sheet.element;
   const story = root.querySelector("[data-story]");
-  const card = { photo: terrario.photo, name, meta: "Filotaxia" };
+  const card = { photo: terrario.photo, name };
 
   // La imagen se arma de antemano (al abrir y al cambiar el fondo): el
   // iPhone solo deja abrir su menú de compartir apenas se toca el botón,

@@ -91,6 +91,5 @@
     --color-share-card: var(--color-gray-800);
     --color-share-photo: var(--color-gray-700);   /* mientras carga la foto */
     --color-share-text: var(--color-gray-50);
-    --color-share-muted: var(--color-gray-400);
 
 }

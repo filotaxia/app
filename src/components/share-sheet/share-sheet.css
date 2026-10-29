@@ -38,7 +38,7 @@
     background: var(--color-share-black);
 }
 
-/* La tarjeta oscura: foto, nombre, "Filotaxia" y el logotipo */
+/* La tarjeta oscura: foto, nombre y la marca (isotipo + "Filotaxia") */
 .share__card {
     width: 74cqw;
     padding: 4.44cqw;
@@ -66,20 +66,23 @@
     color: var(--color-share-text);
 }
 
-.share__meta {
-    margin-top: 0.74cqw;
-    font-size: 4.8cqw;
+/* La marca, como el "Spotify" de sus tarjetas: el isotipo (las dos hojas)
+   y "Filotaxia" al lado, del color del nombre */
+.share__brand {
+    margin-top: 6.67cqw;
+    display: flex;
+    align-items: center;
+    gap: 1.48cqw;
+    font-size: 4.07cqw;
     line-height: 1;
-    color: var(--color-share-muted);
+    color: var(--color-share-text);
 }
 
-/* El logotipo (FILOTAXIA) como máscara, del color del nombre */
-.share__logo {
-    margin-top: 5.9cqw;
-    height: 3.33cqw;
-    aspect-ratio: 960 / 123;
-    background: var(--color-share-text);
-    mask: url("../../assets/images/marca/logotipo.png") left center / contain no-repeat;
+.share__isotipo {
+    height: 3.7cqw;
+    aspect-ratio: 512 / 324;
+    background: currentColor;
+    mask: url("../../assets/images/marca/isotipo.png") center / contain no-repeat;
 }
 
 /* --- Los fondos: tres círculos; el elegido, con un anillo --- */
@@ -114,12 +117,12 @@
 }
 
 /* --- Las opciones: círculo con ícono y el nombre debajo, en una fila
-   que se desliza de costado si no entra --- */
+   centrada y juntas (con 3 o 4 opciones entran en 375px) --- */
 .share__apps {
     width: 100%;
     display: flex;
-    justify-content: space-between;
-    gap: var(--gap-md);
+    justify-content: center;
+    gap: var(--gap-lg);
     overflow-x: auto;
     padding-top: var(--spacing-md);
     border-top: 1px solid var(--color-line);

@@ -71,8 +71,8 @@ export const STEPS = [
   {
     key: "cuidado",
     title: "Cuidalo",
-    short: "Riego, ventilación y la guía.",
-    text: "Regá de a poco, más o menos cada 30 días, y ventilalo si es cerrado. En Mi terrario ves cuándo toca y en Cuidados, todo lo que necesita.",
+    short: "Riego y la guía de cuidados.",
+    text: "Regá de a poco, más o menos cada 30 días, y ventilalo si es cerrado. En Cuidados ves cuándo toca regar y todo lo que necesita.",
     video: null,
   },
   {

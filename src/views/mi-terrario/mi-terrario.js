@@ -11,25 +11,19 @@
 //   Bitácora. | Pieza.  la bitácora lleva a su pantalla (views/bitacora); Pieza
 //                       (la duración) lleva al reproductor y tiene el QR chico
 //                       arriba a la derecha, que abre el escaneo
-//   Ventilación.        (medidor suave; no aparece en ecosistemas abiertos)
 //   Plantas.            (si el terrario las tiene cargadas; el botón "Ondas" muestra sus ondas)
 //   Cuidados.           (lleva a la subpágina: riego, guía y preguntas frecuentes)
-//
-// La ventilación se registra acá ("Ventilé hoy"). Las lecturas son simuladas
-// hasta que haya sensores (ver utils/care.js).
 
 import { getTerrario, codeOf } from "../../content/terrarios.js";
 import { CARE_FAQ } from "../../content/ayuda.js";
-import { myTerrarioId, lastCare, logCare, loggedToday } from "../../store/my-terrario.js";
+import { myTerrarioId } from "../../store/my-terrario.js";
 import { entries } from "../../store/bitacora.js";
-import { lastScanOn } from "../../store/collection.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { block, digits } from "../../components/block/block.js";
 import { plantsBlock, bindPlants } from "../../components/plants-block/plants-block.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
 import { connectLoop } from "../../components/connect-loop/connect-loop.js";
-import { toast } from "../../components/toast/toast.js";
-import { nextCare, dueLabel } from "../../utils/care.js";
+import { dueLabel } from "../../utils/care.js";
 import { todayKey, daysBetween } from "../../utils/dates.js";
 import { formatDate, formatTime } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
@@ -46,19 +40,13 @@ export async function render(root) {
   }
 
   const today = todayKey();
-  const { care } = terrario;
-  // Ecosistema abierto: no se ventila (ventilacion_days es null)
-  const vent = care.ventilacion_days
-    ? nextCare({ last: await lastCare(terrario.id, "ventilacion"), every: care.ventilacion_days, today })
-    : null;
   const notes = await entries(terrario.id);
-  const lastScan = await lastScanOn(terrario.id);
 
   root.innerHTML = `
     <section class="screen mine">
       ${head("Filotaxia.", "Armonía en plantas.")}
 
-      ${pieceHero(terrario, lastScan)}
+      ${pieceHero(terrario)}
 
       <div class="blocks reveal-stagger">
         <a class="block block--full block--photo" href="#/terrario/${terrario.id}" aria-label="Ver la ficha de ${escapeHTML(codeOf(terrario))}">
@@ -71,16 +59,6 @@ export async function render(root) {
           href: `#/bitacora/${terrario.id}`,
         })}
         ${pieceBlock(terrario)}
-        ${vent
-          ? block({
-              title: "Ventilación",
-              badge: `Cada ${care.ventilacion_days} días`,
-              value: dueLabel(vent.daysLeft),
-              meter: { fraction: vent.fraction, tone: "soft" },
-              action: careAction("ventilacion", "Ventilé hoy", await loggedToday(terrario.id, "ventilacion")),
-              full: true,
-            })
-          : ""}
         ${plantsBlock(terrario)}
         ${block({
           title: "Cuidados",
@@ -93,14 +71,6 @@ export async function render(root) {
       </div>
     </section>
   `;
-
-  root.querySelectorAll("[data-care]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      await logCare(terrario.id, button.dataset.care);
-      toast("Ventilación registrada");
-      window.dispatchEvent(new Event("filotaxia:refresh"));
-    });
-  });
 
   bindPlants(root);
 }
@@ -119,9 +89,9 @@ function head(title, status) {
 }
 
 // El protagonista: el nombre del terrario en gigante ("TR01").
-// Debajo, un chip con la última conexión (la última vez que se escaneó
-// su QR) y "Escuchar".
-function pieceHero(terrario, lastScan) {
+// Debajo, un chip con el día en que se creó (`recorded`: el día que empezó
+// a sonar, el mismo que el panel llama "Empezó a sonar") y "Escuchar".
+function pieceHero(terrario) {
   return `
     <div class="mine__hero reveal">
       <p class="mine__big" aria-hidden="true">${escapeHTML(codeOf(terrario))}</p>
@@ -130,7 +100,7 @@ function pieceHero(terrario, lastScan) {
 
     <div class="mine__pieza reveal">
       <ul class="mine__chips" aria-label="Tu terrario">
-        <li class="chip">Última conexión ${formatDate(lastScan)}</li>
+        ${terrario.recorded ? `<li class="chip">Creado ${formatDate(terrario.recorded)}</li>` : ""}
       </ul>
       <a class="block__action" href="#/escuchar/${terrario.id}">${icon("play")} Escuchar</a>
     </div>
@@ -152,13 +122,6 @@ function pieceBlock(terrario) {
       <p class="block__value">${digits(duration)}</p>
     </article>
   `;
-}
-
-function careAction(type, label, doneToday) {
-  if (doneToday) {
-    return `<span class="block__action block__action--done">${icon("check")} Hecho hoy</span>`;
-  }
-  return `<button class="block__action" type="button" data-care="${type}">${label}</button>`;
 }
 
 function empty() {
