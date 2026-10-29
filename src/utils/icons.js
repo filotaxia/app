@@ -22,7 +22,6 @@ const PATHS = {
   "link": `<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>`,
   "maximize-2": `<path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/>`,
   "message-circle": `<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>`,
-  "message-square": `<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>`,
   "pause": `<rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/><rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none"/>`,
   "play": `<path d="M6 4.8a1 1 0 0 1 1.5-.86l11.4 7.2a1 1 0 0 1 0 1.72L7.5 20.06A1 1 0 0 1 6 19.2z" fill="currentColor" stroke="none"/>`,
   "plus": `<path d="M5 12h14"/><path d="M12 5v14"/>`,

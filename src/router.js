@@ -5,7 +5,7 @@
 // Router por hash. Las rutas de la app:
 //   #/inicio                 splash
 //   #/mi-terrario            el terrario propio y sus cuidados
-//   #/mi-terrario/cuidados   riego, ventilación, plantas y la guía general
+//   #/mi-terrario/cuidados   riego, la guía general y las preguntas frecuentes
 //   #/escanear               escaneo del QR (desde el bloque Pieza)
 //   #/t/k7f2q9               adonde llega el QR impreso (/t/k7f2q9, vía 404.html):
 //                            busca el terrario de ese código y abre su ficha conectándolo
