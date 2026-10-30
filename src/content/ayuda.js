@@ -174,13 +174,15 @@ export const LAYERS = [
     "src/assets/videos/capas/capa04-piedras.mp4"],
 ];
 
-// El terrario de la pantalla 4 del Manifiesto: la foto del TR01 (la de
-// producto de filotaxia.com, la misma de la colección), con un punto por capa
-// (`layer`: su lugar en LAYERS) y uno por planta (`name`: el de
-// content/plantas.js). x / y son el lugar del punto, en % del ancho y del
-// alto de la foto (cambialos para moverlos).
+// El terrario de la pantalla 2 del Manifiesto: la foto del TR01 (la de
+// producto de filotaxia.com), con un punto por capa (`layer`: su lugar en
+// LAYERS) y uno por planta (`name`: el de content/plantas.js). x / y son el
+// lugar del punto, en % del ancho y del alto de la foto (cambialos para
+// moverlos). Tiene su propio archivo, tr01-por-dentro.jpg (el recorte viejo):
+// los puntos están medidos sobre ese recorte, así que tr01.jpg (la de la
+// colección, centrada en el terrario) puede cambiar sin moverlos.
 export const INSIDE_TERRARIUM = {
-  image: "src/assets/images/terrarios/tr01.jpg",
+  image: "src/assets/images/terrarios/tr01-por-dentro.jpg",
   alt: "El terrario TR01: una pecera redonda de vidrio con suculentas, piedras y sustrato",
   spots: [
     { kind: "capa", layer: 0, x: 45, y: 37 },

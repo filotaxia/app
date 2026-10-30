@@ -79,7 +79,7 @@ html:has(.manifiesto) body {
 }
 
 /* Lo lleno de la línea: vacío, lleno (.is-full) o llenándose en lo que dura
-   la pantalla (.is-playing; --autoplay lo pone el JS). Al terminar, el JS
+   la pantalla (.is-playing; --duration lo pone el JS: slideDuration). Al terminar, el JS
    pasa a la próxima */
 .manifiesto__fill {
     position: absolute;
@@ -100,7 +100,7 @@ html:has(.manifiesto) body {
 }
 
 .manifiesto__fill.is-playing {
-    animation: manifiesto-fill var(--autoplay) linear forwards;
+    animation: manifiesto-fill var(--duration) linear forwards;
 }
 
 /* Apretando la pantalla, o con la app en segundo plano: se frena */
@@ -211,15 +211,6 @@ html:has(.manifiesto) body {
 
 .manifiesto__cite {
     font-style: normal;
-    color: var(--color-text);
-}
-
-/* Bajada de arriba de la pantalla, entre paréntesis: "(Un terrario, cuatro
-   capas)", "(Biosonificación)". Del tamaño de "Cerrar", sin mayúsculas y en el
-   color del texto principal (blanco en oscuro, negro en claro) */
-.manifiesto__kicker {
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
     color: var(--color-text);
 }
 
@@ -796,52 +787,43 @@ html:has(.manifiesto) body {
     border-bottom: none;
 }
 
-/* --- Barras laterales: al tocar un costado, en ese borde se ve un instante
-   una franja que se desvanece hacia adentro, con la flecha (el JS anima la
-   opacidad). No reciben toques: el toque es del carrusel --- */
-.manifiesto__side {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    z-index: 1;
-    width: 72px;
+/* --- Abajo: dos botones redondos ‹ › para pasar de pantalla, uno en cada
+   borde (borde fino, el chevron en el color del texto) --- */
+.manifiesto__nav {
     display: flex;
-    align-items: center;
-    padding-inline: var(--spacing-md);
-    font-size: var(--font-xl-size);
+    justify-content: space-between;
+    padding-bottom: var(--spacing-sm);
+}
+
+/* Con la barra de abajo: más cerca de ella (bajan sobre el aire que la
+   pantalla le deja a la barra; las pantallas ganan ese alto) */
+.app-shell[data-nav] .manifiesto__nav {
+    margin-bottom: calc(var(--spacing-2xl) * -1);
+}
+
+.manifiesto__arrow {
+    display: grid;
+    place-items: center;
+    width: var(--size-tap);
+    height: var(--size-tap);
+    border: 1px solid var(--color-line);
+    border-radius: 50%;
     color: var(--color-text);
-    opacity: 0;
-    pointer-events: none;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
 
-.manifiesto__side--prev {
-    left: calc(var(--gutter) * -1);
+.manifiesto__arrow:active:not(:disabled) {
+    transform: scale(0.92);
 }
 
-.manifiesto__side--next {
-    right: calc(var(--gutter) * -1);
-    justify-content: flex-end;
+.manifiesto__arrow svg {
+    width: 20px;
+    height: 20px;
 }
 
-/* La franja: el color del texto, suave, que se va a transparente */
-.manifiesto__side::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    opacity: 0.12;
-}
-
-.manifiesto__side--prev::before {
-    background: linear-gradient(to right, var(--color-text), transparent);
-}
-
-.manifiesto__side--next::before {
-    background: linear-gradient(to left, var(--color-text), transparent);
-}
-
-/* La flecha, encima de la franja */
-.manifiesto__side > span {
-    position: relative;
+/* En la primera no hay "atrás" y en la última no hay "adelante" */
+.manifiesto__arrow:disabled {
+    opacity: 0.2;
 }
 
 /* ============================================
