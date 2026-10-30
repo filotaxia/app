@@ -4,7 +4,7 @@
 
 /* Layout de la referencia "Status.": "Filotaxia." + "Armonía en plantas."
    arriba (Ajustes a la derecha), aire, el número gigante (el nombre del
-   terrario, "TR01"), un chip y "Escuchar", y la grilla de bloques de 2
+   terrario, "TR01"), "+ info" y "Escuchar", y la grilla de bloques de 2
    columnas (components/block) que arranca con la foto a todo el ancho. */
 
 .mine {
@@ -50,7 +50,7 @@
     margin-left: -4px;
 }
 
-/* Chips a la izquierda, "Escuchar" a la derecha */
+/* "+ info" a la izquierda, "Escuchar" a la derecha */
 .mine__pieza {
     display: flex;
     align-items: center;
@@ -59,14 +59,16 @@
     margin-top: var(--spacing-lg);
 }
 
-/* "Escuchar", del mismo tamaño que los chips de al lado (28px de alto).
+/* "Escuchar", del mismo tamaño que "+ info" (28px de alto).
    El área tocable sigue siendo de 44px, por encima y por debajo. */
-.mine__pieza .block__action {
+.mine__pieza .block__action,
+.mine__info {
     position: relative;
     min-height: 28px;
 }
 
-.mine__pieza .block__action::before {
+.mine__pieza .block__action::before,
+.mine__info::before {
     content: "";
     position: absolute;
     inset: 50% 0 auto;
@@ -79,11 +81,13 @@
     height: 10px;
 }
 
-/* --- Chips --- */
-.mine__chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--gap-sm);
+/* --- "+ info": un chip que es link a la ficha --- */
+.mine__info {
+    transition: transform var(--transition-fast);
+}
+
+.mine__info:active {
+    transform: scale(0.96);
 }
 
 /* --- Bloques --- */
@@ -91,15 +95,12 @@
     margin-top: var(--spacing-lg);
 }
 
-/* La foto del terrario a todo el ancho, sin relleno: lleva a su ficha */
+/* La foto del terrario a todo el ancho, sin relleno: lleva a su ficha.
+   Cuadrada como la foto (800×800), entera: no se recorta arriba ni abajo */
 .block--photo {
     display: block;
     min-height: 0;
     padding: 0;
-}
-
-.block--photo .terrarium-art {
-    aspect-ratio: 4 / 3;
 }
 
 /* --- Pieza: todo el bloque es un link, salvo el QR de la esquina --- */

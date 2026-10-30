@@ -22,7 +22,7 @@ body:has(.app-shell[data-nav]) .toast-region {
 .toast {
     padding: var(--spacing-md) var(--spacing-lg);
     border-radius: 0;
-    background: var(--color-inverse-bg);
+    background: var(--color-inverse-surface);
     color: var(--color-inverse-text);
     font-size: var(--font-sm-size);
     line-height: var(--font-sm-line);

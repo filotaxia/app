@@ -171,7 +171,7 @@
 
 .leaf-waves--highlight .leaf-wave.is-active {
     opacity: 1;
-    background: var(--color-inverse-bg);
+    background: var(--color-inverse-surface);
     color: var(--color-inverse-text);
 }
 

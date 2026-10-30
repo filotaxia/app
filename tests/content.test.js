@@ -13,7 +13,7 @@ import { TERRARIOS, setCatalog } from "../src/content/terrarios.js";
 import { rowToTerrario } from "../src/utils/catalog.js";
 import { PLANTAS, LEAVES, WAVE_NAMES, getPlanta } from "../src/content/plantas.js";
 import { QUOTES, nextQuoteIndex } from "../src/content/citas.js";
-import { INSIDE_TERRARIUM, LAYERS } from "../src/content/ayuda.js";
+import { INSIDE_TERRARIUM, LAYERS, FEATURES, HOW_IT_WORKS, PROCESS, PROCESS_PHOTOS, STEPS } from "../src/content/ayuda.js";
 
 const root = new URL("../", import.meta.url);
 const exists = (path) => existsSync(new URL(path, root));
@@ -56,6 +56,38 @@ test("los terrarios usan plantas del catálogo, ondas con nombre y fotos que exi
       assert.ok(WAVE_NAMES[wave], `${terrario.id}: onda "${wave}"`);
     }
     if (terrario.photo) assert.ok(exists(terrario.photo), `${terrario.id}: falta ${terrario.photo}`);
+  }
+});
+
+test("la ficha: cada característica y cada paso de ¿Cómo funciona? tiene su foto", () => {
+  for (const { title, text, image, alt } of FEATURES) {
+    assert.ok(title && text && alt, title);
+    assert.ok(exists(image), `${title}: falta ${image}`);
+  }
+  assert.equal(HOW_IT_WORKS.length, 3);
+  for (const { text, image, alt } of HOW_IT_WORKS) {
+    assert.ok(text && alt);
+    assert.ok(exists(image), `falta ${image}`);
+  }
+});
+
+test("la Guía: cada paso tiene título, línea corta y texto (todos texto, no objetos)", () => {
+  assert.equal(STEPS.length, 5);
+  for (const step of STEPS) {
+    for (const field of ["key", "title", "short", "text"]) {
+      assert.equal(typeof step[field], "string", `${step.key}: ${field}`);
+      assert.ok(step[field].length > 0, `${step.key}: ${field} vacío`);
+    }
+  }
+});
+
+test("la Guía: el proceso tiene sus tres etapas y cada foto del slider existe", () => {
+  assert.equal(PROCESS.length, 3);
+  for (const [name, text] of PROCESS) assert.ok(name && text);
+  assert.ok(PROCESS_PHOTOS.length > 0);
+  for (const { image, alt } of PROCESS_PHOTOS) {
+    assert.ok(alt, image);
+    assert.ok(exists(image), `falta ${image}`);
   }
 });
 

@@ -12,15 +12,20 @@
 // viendo, con el texto chico del Manifiesto: "/Paso01" en el color del texto
 // y su texto en gris (como "/Capa02").
 // Es un dibujo de línea en currentColor (sigue al tema), como los gráficos
-// del Manifiesto. Lo usa Mi terrario cuando todavía no hay terrario.
+// del Manifiesto. Lo usan Mi terrario cuando todavía no hay terrario y la
+// Guía, en "Tu recorrido".
 //
-//   connectLoop() → el cuadro gris con el dibujo y los pasos
+//   connectLoop()                  → el cuadro gris con el dibujo y los pasos
+//   connectLoop({ inverse: true }) → el cuadro al revés del tema, para que
+//                                    resalte (negro con el dibujo blanco en
+//                                    el tema claro; blanco y negro en el
+//                                    oscuro). Lo usa la Guía.
 
 const STEPS = ["El QR de su base", "Conectalo con la cámara", "Escuchá su pieza"];
 
-export function connectLoop() {
+export function connectLoop({ inverse = false } = {}) {
   return `
-    <figure class="connect-loop">
+    <figure class="connect-loop${inverse ? " connect-loop--inverse" : ""}">
       <svg class="connect-loop__stage" viewBox="0 0 320 200" aria-hidden="true">
         ${terrarium()}
         <line class="connect-loop__beam" x1="196" y1="122" x2="114" y2="141" />

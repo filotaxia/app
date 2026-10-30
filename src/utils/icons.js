@@ -4,7 +4,8 @@
 
 // Íconos de Lucide (https://lucide.dev, licencia ISC), copiados como SVG inline.
 // Las flechas NO son íconos: como en filotaxia.com, son el carácter "→" de la
-// tipografía (ver arrow() más abajo).
+// tipografía (ver arrow() más abajo). La excepción son los chevrons de los
+// botones redondos del Manifiesto (pasar de pantalla).
 // Sin dependencia: si hace falta uno nuevo, se agrega su contenido acá.
 // Las cuatro ondas ("wave-sine"…) son propias, dibujadas como los íconos de
 // los osciladores de filotaxia.com; el nombre sigue al tipo de onda de Web Audio.
@@ -17,6 +18,8 @@ const PATHS = {
   "book-open": `<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>`,
   "calendar": `<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>`,
   "check": `<path d="M20 6 9 17l-5-5"/>`,
+  "chevron-left": `<path d="m15 18-6-6 6-6"/>`,
+  "chevron-right": `<path d="m9 18 6-6-6-6"/>`,
   "image-plus": `<path d="M16 5h6"/><path d="M19 2v6"/><path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/>`,
   "instagram": `<rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><path d="M17.5 6.5h.01"/>`,
   "link": `<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>`,

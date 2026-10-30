@@ -5,7 +5,7 @@
 // Mi terrario (#/mi-terrario; la primera de la barra): el terrario propio
 // (referencia: pantalla "Status." de una app de energía):
 // "Filotaxia." + "Armonía en plantas." en gris, Ajustes arriba a la derecha,
-// el nombre del terrario en gigante ("TR01", con un chip y "Escuchar") y bloques:
+// el nombre del terrario en gigante ("TR01", con "+ info" y "Escuchar") y bloques:
 //
 //   (foto)              la foto del terrario a todo el ancho; lleva a su ficha
 //   Bitácora. | Pieza.  la bitácora lleva a su pantalla (views/bitacora); Pieza
@@ -25,7 +25,7 @@ import { settingsLink } from "../../components/settings-link/settings-link.js";
 import { connectLoop } from "../../components/connect-loop/connect-loop.js";
 import { dueLabel } from "../../utils/care.js";
 import { todayKey, daysBetween } from "../../utils/dates.js";
-import { formatDate, formatTime } from "../../utils/format.js";
+import { formatTime } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
 import { icon, arrow } from "../../utils/icons.js";
 
@@ -89,8 +89,8 @@ function head(title, status) {
 }
 
 // El protagonista: el nombre del terrario en gigante ("TR01").
-// Debajo, un chip con el día en que se creó (`recorded`: el día que empezó
-// a sonar, el mismo que el panel llama "Empezó a sonar") y "Escuchar".
+// Debajo, "+ info" (lleva a su ficha, con todas las especificaciones; el día
+// en que empezó a sonar también está ahí) y "Escuchar".
 function pieceHero(terrario) {
   return `
     <div class="mine__hero reveal">
@@ -99,9 +99,7 @@ function pieceHero(terrario) {
     </div>
 
     <div class="mine__pieza reveal">
-      <ul class="mine__chips" aria-label="Tu terrario">
-        ${terrario.recorded ? `<li class="chip">Creado ${formatDate(terrario.recorded)}</li>` : ""}
-      </ul>
+      <a class="chip mine__info" href="#/terrario/${terrario.id}" aria-label="Más información de ${escapeHTML(codeOf(terrario))}">+ info</a>
       <a class="block__action" href="#/escuchar/${terrario.id}">${icon("play")} Escuchar</a>
     </div>
   `;

@@ -8,10 +8,49 @@
 // CARE_GUIDE (la guía de Cuidados) y los pasos 04 y 05 de STEPS son un
 // borrador propio, armado con lo que dice la web: revisarlos antes de publicar.
 
+// "¿Cómo funciona?" de la página de cada terrario: tres pasos, cada uno con
+// su foto (la ficha cambia la foto al tocar el paso, views/terrario).
+// Las fotos son las de la web (cuidados/sq10, sq5, sq7) a 800px; la de la
+// ventana va en el paso 01, que habla de la luz (en la web estaba en el 02).
 export const HOW_IT_WORKS = [
-  "Colocá el terrario en un lugar con luz indirecta, preferentemente cerca de una ventana. Esto asegura que las plantas reciban la iluminación adecuada para mantenerse saludables.",
-  "Escaneando el código QR accedés directamente a la armonía de las plantas: la pieza musical generada a partir de su actividad y al mismo tiempo a material exclusivo asociado a tu terrario.",
-  "Vas a escuchar el terrario y descubrir una conversación sutil que nace del ecosistema mismo y se traduce en música. De esta manera podés oír y observar al mismo tiempo tu terrario.",
+  {
+    text: "Colocá el terrario en un lugar con luz indirecta, preferentemente cerca de una ventana. Esto asegura que las plantas reciban la iluminación adecuada para mantenerse saludables.",
+    image: "src/assets/images/ficha/ventana.jpg",
+    alt: "Un terrario de vidrio con suculentas junto a una ventana",
+  },
+  {
+    text: "Escaneando el código QR accedés directamente a la armonía de las plantas: la pieza musical generada a partir de su actividad y al mismo tiempo a material exclusivo asociado a tu terrario.",
+    image: "src/assets/images/ficha/jeringa.jpg",
+    alt: "Una mano riega un terrario con una jeringa",
+  },
+  {
+    text: "Vas a escuchar el terrario y descubrir una conversación sutil que nace del ecosistema mismo y se traduce en música. De esta manera podés oír y observar al mismo tiempo tu terrario.",
+    image: "src/assets/images/ficha/pinza.jpg",
+    alt: "Una mano acomoda las plantas de un terrario con una pinza",
+  },
+];
+
+// Las tres características de cada terrario (la página de cada terrario en
+// filotaxia.com), con sus fotos a 800px. La ficha las muestra en un slider.
+export const FEATURES = [
+  {
+    title: "Recipiente resistente",
+    text: "El contenedor está fabricado en vidrio duradero, fácil de limpiar y diseñado para proteger el ecosistema sin alterar su equilibrio.",
+    image: "src/assets/images/ficha/recipiente.jpg",
+    alt: "Un terrario en un recipiente cilíndrico de vidrio, visto desde arriba",
+  },
+  {
+    title: "QR integrado",
+    text: "Cada terrario incluye un código QR que permite escuchar la biosonificación de sus plantas en formato musical.",
+    image: "src/assets/images/ficha/qr.jpg",
+    alt: "Suculentas y piedras de un terrario, vistas desde arriba",
+  },
+  {
+    title: "Composición única",
+    text: "La selección de especies y el orden de sus capas garantizan un diseño equilibrado y funcional en cada terrario.",
+    image: "src/assets/images/ficha/composicion.jpg",
+    alt: "Suculentas de hojas puntiagudas de un terrario, de cerca",
+  },
 ];
 
 export const CARE_FAQ = [
@@ -51,21 +90,21 @@ export const STEPS = [
     key: "ubicado",
     title: "Ubicá tu terrario",
     short: "Luz indirecta, cerca de una ventana.",
-    text: HOW_IT_WORKS[0],
+    text: HOW_IT_WORKS[0].text,
     video: null,
   },
   {
     key: "escaneado",
     title: "Conectá tu terrario",
     short: "Con el QR de su base.",
-    text: HOW_IT_WORKS[1],
+    text: HOW_IT_WORKS[1].text,
     video: null,
   },
   {
     key: "escuchado",
     title: "Escuchá su pieza",
     short: "Sus plantas, convertidas en música.",
-    text: HOW_IT_WORKS[2],
+    text: HOW_IT_WORKS[2].text,
     video: null,
   },
   {
@@ -101,19 +140,32 @@ export const CARE_GUIDE = [
   ],
 ];
 
-// De la planta a la pieza: las tres etapas (página "Formas")
+// "1 proceso / 3 etapas" de la página Música de filotaxia.com (la Guía):
+// la frase de arriba, las fotos del slider (las de la web a 800px, en
+// src/assets/images/guia/) y las tres etapas [título, texto].
+export const PROCESS_INTRO =
+  "Filotaxia es un arte que incluye naturaleza, ciencia y música, donde las bioemisiones de las plantas son traducidas en sonido a partir de una onda definida por la forma de sus hojas.";
+
+export const PROCESS_PHOTOS = [
+  { image: "src/assets/images/guia/proceso-01.jpg", alt: "Un terrario redondo de vidrio visto desde arriba, con suculentas y piedras" },
+  { image: "src/assets/images/guia/proceso-02.jpg", alt: "Una mano acomoda con una pinza las plantas de un terrario" },
+  { image: "src/assets/images/guia/proceso-03.jpg", alt: "Suculentas entre piedras, vistas desde arriba" },
+  { image: "src/assets/images/guia/proceso-04.jpg", alt: "Una pinza dentro de un terrario cilíndrico de vidrio" },
+  { image: "src/assets/images/guia/proceso-05.jpg", alt: "Un terrario redondo de vidrio con suculentas, de frente" },
+];
+
 export const PROCESS = [
   [
-    "Selección y armado",
-    "Las plantas se eligen por su forma, tamaño y color. El armado incluye las cuatro capas esenciales: plantas, sustrato, metal y piedras.",
+    "Selección y armado del terrario",
+    "Las plantas se eligen por su forma, tamaño y color, asegurando un terrario equilibrado y estético. El armado incluye las 4 capas esenciales: plantas, sustrato, metal y piedras. Esta etapa es fundamental ya que define la base sobre la cual se construirá la experiencia sonora y visual.",
   ],
   [
     "Biosonificación",
-    "Con un instrumento llamado Biodata conectamos electrodos a cada planta. Cuando cambia su conductividad, la planta genera notas MIDI: así se escuchan procesos biológicos que no se ven.",
+    "Usamos un instrumento llamado Biodata con el que conectamos electrodos en cada planta, para traducir las bioemisiones en información musical. La planta genera notas MIDI cuando se detecta un cambio en la conductividad, lo que permite escuchar los procesos biológicos invisibles, causados por estímulos externos e internos. A estas variaciones eléctricas le damos una voz creando así el sonido de las plantas.",
   ],
   [
     "Producción musical",
-    "Esas notas pasan por un sintetizador y se graban en una pieza única para cada terrario, la que escuchás al escanear su QR.",
+    "Los datos obtenidos de la biosonificación se integran en el sintetizador Microfreak y se plasman en el software Ableton. Cada señal se convierte en sonido, dando vida a composiciones únicas grabadas en un contexto definido. Esta etapa combina creatividad y tecnología, dando como resultado final una pieza musical única para cada terrario que podrá ser reproducida escaneando el QR.",
   ],
 ];
 
@@ -135,13 +187,15 @@ export const LAYERS = [
     "src/assets/videos/capas/capa04-piedras.mp4"],
 ];
 
-// El terrario de la pantalla 4 del Manifiesto: la foto del TR01 (la de
-// producto de filotaxia.com, la misma de la colección), con un punto por capa
-// (`layer`: su lugar en LAYERS) y uno por planta (`name`: el de
-// content/plantas.js). x / y son el lugar del punto, en % del ancho y del
-// alto de la foto (cambialos para moverlos).
+// El terrario de la pantalla 2 del Manifiesto: la foto del TR01 (la de
+// producto de filotaxia.com), con un punto por capa (`layer`: su lugar en
+// LAYERS) y uno por planta (`name`: el de content/plantas.js). x / y son el
+// lugar del punto, en % del ancho y del alto de la foto (cambialos para
+// moverlos). Tiene su propio archivo, tr01-por-dentro.jpg (el recorte viejo):
+// los puntos están medidos sobre ese recorte, así que tr01.jpg (la de la
+// colección, centrada en el terrario) puede cambiar sin moverlos.
 export const INSIDE_TERRARIUM = {
-  image: "src/assets/images/terrarios/tr01.jpg",
+  image: "src/assets/images/terrarios/tr01-por-dentro.jpg",
   alt: "El terrario TR01: una pecera redonda de vidrio con suculentas, piedras y sustrato",
   spots: [
     { kind: "capa", layer: 0, x: 45, y: 37 },

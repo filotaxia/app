@@ -34,11 +34,17 @@
 // de filotaxia.com); la 2, la 3 y la 4 llenan el alto (título arriba,
 // terrario o tarjetas abajo / gráfico arriba, texto abajo); las demás van centradas.
 //
-// Se pasa de pantalla solo tocando o con click (tercio izquierdo = atrás,
-// resto = adelante) o con las flechas del teclado: deslizar o hacer scroll
-// no la mueve (overflow hidden en el CSS; el JS la corre con scrollTo).
-// No hay botón "Siguiente" a la vista (así las pantallas tienen más lugar):
-// queda uno escondido para lectores de pantalla.
+// Pasa sola, como las historias de Instagram: cada pantalla dura lo que
+// tarda su animación de adentro en terminar, más 3 s (AFTER_MS) para mirarla
+// quieta, y su línea de arriba se llena en ese tiempo; al llenarse, sigue la
+// próxima (en la última se queda). Ver slideDuration(). Mantener apretado la pausa; tocar algo de
+// adentro de una pantalla (un punto, una capa, las hojas) frena el autoplay
+// del todo, porque la persona está explorando. Con "reducir movimiento" en el
+// teléfono no pasa sola.
+// A mano: tocando o con click (tercio izquierdo = atrás, resto = adelante),
+// con los botones redondos ‹ › de abajo, tocando una de las líneas de arriba (va
+// directo a esa pantalla) o con las flechas del teclado. Deslizar o hacer
+// scroll no la mueve (overflow hidden en el CSS; el JS la corre con scrollTo).
 
 import { get, set } from "../../store/store.js";
 import { linkedIds } from "../../store/collection.js";
@@ -54,6 +60,19 @@ import { escapeHTML } from "../../utils/html.js";
 import { icon } from "../../utils/icons.js";
 
 export const title = "Manifiesto";
+
+// Autoplay: cada pantalla se queda esto después de que termina su animación
+const AFTER_MS = 3000;
+// Pantalla 3: cada cuánto se abre la capa siguiente, y lo que tarda en abrirse
+// (manifiesto.css: flex-grow 0.6s)
+const LAYER_MS = 5000;
+const LAYER_OPEN_MS = 600;
+// Pantalla 4: a los cuánto giran las hojas a sus ondas, y lo que tarda el giro
+// de las cuatro tarjetas (leaf-waves.css: 0.8s + 0.1s por tarjeta)
+const FLIP_AT_MS = 3000;
+const FLIP_MS = 1100;
+// Apretar más que esto es "pausar", no "tocar para pasar"
+const HOLD_MS = 300;
 // Sin barra en el primer escaneo (con id: es parte del onboarding);
 // abierto desde la barra (sin id), la barra sigue ahí
 export const nav = ({ params }) => !params.id;
@@ -72,12 +91,12 @@ const SLIDES = [
   // 2. Por dentro: la foto del terrario con sus puntos
   //    (ver anatomy() más abajo)
   `
-    <p class="manifiesto__title">Cada capa.<br />Cada planta.</p>
+    <p class="manifiesto__title">Ecosistemas<br />que hablan.</p>
     ${anatomy()}
   `,
   // 3. Capas: el terrario por dentro (ver layers() más abajo)
   `
-    <p class="manifiesto__kicker">(Un terrario, cuatro capas)</p>
+    <p class="manifiesto__title">Un terrario.<br />Cuatro capas.</p>
     ${layers()}
   `,
   // 4. Idioma: título arriba a la izquierda y las cuatro tarjetas grandes abajo,
@@ -89,7 +108,7 @@ const SLIDES = [
   `,
   // 5. Mecanismo: paso a paso, cada uno con su gráfico (ver mechanism() más abajo)
   `
-    <p class="manifiesto__kicker">(Biosonificación)</p>
+    <p class="manifiesto__title">Biosonificación.</p>
     ${mechanism()}
   `,
   // 6. Prueba: depende del terrario, por eso es una función (ver render).
@@ -136,8 +155,13 @@ export async function render(root, { params }) {
       <h1 class="visually-hidden" tabindex="-1">Manifiesto</h1>
 
       <div class="manifiesto__top">
-        <ol class="manifiesto__progress" aria-hidden="true">
-          ${SLIDES.map(() => `<li class="manifiesto__bar"></li>`).join("")}
+        <ol class="manifiesto__progress" aria-label="Pantallas">
+          ${SLIDES.map((_, i) => `
+            <li>
+              <button class="manifiesto__bar" type="button" data-go="${i}" aria-label="Ir a la pantalla ${i + 1}">
+                <span class="manifiesto__line"><span class="manifiesto__fill" data-fill></span></span>
+              </button>
+            </li>`).join("")}
         </ol>
         <div class="manifiesto__meta">
           <span class="eyebrow" data-count aria-hidden="true">01 / 0${SLIDES.length}</span>
@@ -153,18 +177,25 @@ export async function render(root, { params }) {
           </section>`).join("")}
       </div>
 
-      <!-- Para lectores de pantalla: a la vista se pasa tocando -->
-      <button class="visually-hidden" type="button" data-next>Siguiente pantalla</button>
+      <div class="manifiesto__nav">
+        <button class="manifiesto__arrow" type="button" data-prev aria-label="Pantalla anterior" disabled>${icon("chevron-left")}</button>
+        <button class="manifiesto__arrow" type="button" data-next aria-label="Pantalla siguiente">${icon("chevron-right")}</button>
+      </div>
     </section>
   `;
 
   const track = root.querySelector("[data-track]");
   const slides = [...root.querySelectorAll("[data-slide]")];
+  const screen = root.querySelector(".manifiesto");
   const bars = [...root.querySelectorAll(".manifiesto__bar")];
+  const fills = [...root.querySelectorAll("[data-fill]")];
   const count = root.querySelector("[data-count]");
+  const prev = root.querySelector("[data-prev]");
   const next = root.querySelector("[data-next]");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let current = 0;   // la pantalla a la que vamos (solo la cambia goTo)
+  let shown = 0;     // la que se ve (la cambia show)
+  let autoplay = !reduceMotion;
   const waves = bindLeafWaves(root);   // los dos puntos de la pantalla 4
   const layerCycle = bindLayers(root);  // las barras de la pantalla 3
   bindAnatomy(root);                    // los puntos de la pantalla 2
@@ -185,17 +216,41 @@ export async function render(root, { params }) {
     track.scrollTo({ left: target * track.clientWidth, behavior: reduceMotion ? "auto" : "smooth" });
   }
 
-  // Pinta la pantalla actual: barras de progreso y contador
+  // Las líneas de arriba: las anteriores llenas, las siguientes vacías y la
+  // actual llenándose (con autoplay) o llena (sin autoplay, o en la última)
+  function paintBars(index) {
+    const playing = autoplay && index < last;
+    fills.forEach((fill, i) => {
+      fill.classList.remove("is-playing");
+      fill.classList.toggle("is-full", i < index || (i === index && !playing));
+      bars[i].toggleAttribute("aria-current", i === index);
+    });
+    if (playing) {
+      fills[index].style.setProperty("--duration", `${slideDuration(slides[index])}ms`);
+      void fills[index].offsetWidth;   // así la animación arranca de cero
+      fills[index].classList.add("is-playing");
+    }
+  }
+
+  function stopAutoplay() {
+    if (!autoplay) return;
+    autoplay = false;
+    paintBars(shown);
+  }
+
+  // Pinta la pantalla actual: líneas de progreso, contador y flechas
   // (no toca `current`: mientras desliza de la 1 a la 3 pasa por la 2, y eso
   // no tiene que cambiar a dónde vamos)
   function show(index) {
+    shown = index;
     slides[index].dataset.seen = "";   // arranca su animación de entrada (una vez)
-    bars.forEach((bar, i) => bar.classList.toggle("is-done", i <= index));
+    paintBars(index);
     slides.forEach((slide, i) => slide.toggleAttribute("aria-hidden", i !== index));
     count.textContent = `${String(index + 1).padStart(2, "0")} / ${String(SLIDES.length).padStart(2, "0")}`;
-    next.hidden = index === last;
+    prev.disabled = index === 0;
+    next.disabled = index === last;
     // Pantalla 4: a los 3 s de verla, las hojas giran a sus ondas
-    if (slides[index].querySelector("[data-leaf-waves]")) waves.play();
+    if (slides[index].querySelector("[data-leaf-waves]")) waves.play(FLIP_AT_MS);
     // Pantalla 3: las capas pasan solas solo mientras se ve
     if (slides[index].querySelector("[data-layers]")) layerCycle.play();
     else layerCycle.stop();
@@ -209,14 +264,54 @@ export async function render(root, { params }) {
   );
   slides.forEach((slide) => observer.observe(slide));
 
-  // Tocar: el tercio izquierdo vuelve, el resto avanza (salvo el botón
-  // "Escuchar la pieza", que es un link)
+  // Autoplay: cuando la línea de la pantalla actual se llena, sigue la próxima
+  fills.forEach((fill, i) => {
+    fill.addEventListener("animationend", () => {
+      if (autoplay && i === shown) goTo(i + 1);
+    });
+  });
+
+  // Mantener apretado pausa (la línea se frena); al soltar, sigue
+  let pressedAt = 0;
+  let held = false;
+  track.addEventListener("pointerdown", () => {
+    pressedAt = performance.now();
+    held = false;
+    screen.classList.add("is-paused");
+  });
+  track.addEventListener("pointerup", () => {
+    held = performance.now() - pressedAt > HOLD_MS;
+    screen.classList.remove("is-paused");
+  });
+  ["pointercancel", "pointerleave"].forEach((type) =>
+    track.addEventListener(type, () => screen.classList.remove("is-paused")));
+
+  // Con la app en segundo plano tampoco avanza
+  function onVisibility() {
+    screen.classList.toggle("is-away", document.hidden);
+  }
+  document.addEventListener("visibilitychange", onVisibility);
+
+  // Tocar algo de adentro de una pantalla (un punto, una capa, las hojas):
+  // está explorando, el autoplay se frena del todo. Va en la fase de captura
+  // porque esos controles frenan el click para no pasar de pantalla.
   track.addEventListener("click", (event) => {
-    if (event.target.closest("[data-listen]")) return;
+    if (event.target.closest("button, a")) stopAutoplay();
+  }, true);
+
+  // Tocar: el tercio izquierdo vuelve, el resto avanza (salvo el botón
+  // "Escuchar la pieza", que es un link, y salvo que haya sido una pausa)
+  track.addEventListener("click", (event) => {
+    const wasHeld = held;
+    held = false;   // vale solo para el click que sigue a ese apretón
+    if (event.target.closest("[data-listen]") || wasHeld) return;
     const { left, width } = track.getBoundingClientRect();
     goTo(event.clientX - left < width / 3 ? current - 1 : current + 1);
   });
+  prev.addEventListener("click", () => goTo(current - 1));
   next.addEventListener("click", () => goTo(current + 1));
+  // Las líneas de arriba llevan directo a su pantalla
+  bars.forEach((bar) => bar.addEventListener("click", () => goTo(Number(bar.dataset.go))));
 
   // Saltar / Cerrar / Escuchar la pieza: ya lo vio
   root.querySelectorAll("[data-done]").forEach((link) => {
@@ -239,7 +334,24 @@ export async function render(root, { params }) {
     waves.stop();
     layerCycle.stop();
     document.removeEventListener("keydown", onKey);
+    document.removeEventListener("visibilitychange", onVisibility);
   };
+}
+
+// Cuánto se queda una pantalla con autoplay: hasta que termina su animación
+// de adentro, más AFTER_MS. Las animaciones CSS (la entrada de cada cosa, los
+// gráficos de la 5) se miden en el momento con getAnimations(), salvo las que
+// no terminan nunca (los puntos que respiran); las que mueve el JS se suman
+// aparte: la 3 recorre sus cuatro capas, la 4 gira las hojas a sus ondas.
+function slideDuration(slide) {
+  const css = slide.getAnimations({ subtree: true }).map((animation) => {
+    const { endTime } = animation.effect.getComputedTiming();
+    return Number.isFinite(endTime) ? endTime - (animation.currentTime ?? 0) : 0;
+  });
+  let js = 0;
+  if (slide.querySelector("[data-layers]")) js = LAYER_MS * (LAYERS.length - 1) + LAYER_OPEN_MS;
+  if (slide.querySelector("[data-leaf-waves]")) js = FLIP_AT_MS + FLIP_MS;
+  return Math.round(Math.max(0, js, ...css) + AFTER_MS);
 }
 
 /* ---------------------------------------- */
@@ -339,7 +451,7 @@ function layers() {
 }
 
 // Abre una capa por vez. Devuelve:
-//   play()  empieza a pasar solas (cada 3,5 s), si la persona no tocó una franja
+//   play()  empieza a pasar solas (cada LAYER_MS, 5 s), si la persona no tocó una franja
 //   stop()  las frena (al salir de la pantalla)
 // Las franjas y "+ info" frenan el click, así tocarlas no pasa de pantalla.
 function bindLayers(root) {
@@ -379,7 +491,7 @@ function bindLayers(root) {
   return {
     play() {
       if (touched || timer || reduceMotion) return;
-      timer = setInterval(() => open((current + 1) % LAYERS.length), 3500);
+      timer = setInterval(() => open((current + 1) % LAYERS.length), LAYER_MS);
     },
     stop() {
       clearInterval(timer);

@@ -14,11 +14,26 @@
 /* El cuadro gris: el dibujo arriba y, debajo, el paso que se está viendo */
 .connect-loop {
     --loop: 12s;
+    /* el fondo del cuadro y el gris de los textos (el cuerpo del teléfono
+       usa el mismo fondo para tapar lo que queda detrás) */
+    --loop-bg: var(--color-block-bg);
+    --loop-muted: var(--color-text-muted);
     display: flex;
     flex-direction: column;
     gap: var(--spacing-lg);
     padding: var(--spacing-md);
-    background: var(--color-block-bg);
+    background: var(--loop-bg);
+    /* el teléfono entra desde afuera: que no se asome fuera del cuadro */
+    overflow: hidden;
+}
+
+/* Al revés del tema, con contraste: en el tema claro, cuadro negro
+   (#141413) y dibujo blanco; en el oscuro, cuadro blanco y dibujo negro.
+   El gris de los textos sale del color del dibujo, más apagado */
+.connect-loop--inverse {
+    --loop-bg: var(--color-inverse-surface);
+    --loop-muted: color-mix(in srgb, currentColor 60%, transparent);
+    color: var(--color-inverse-text);
 }
 
 /* --- El dibujo: trazo de 1.5 en currentColor, como los del Manifiesto --- */
@@ -54,7 +69,7 @@
 
 /* El cuerpo del teléfono tapa lo que quede detrás cuando pasa al centro */
 .connect-loop__body {
-    fill: var(--color-block-bg);
+    fill: var(--loop-bg);
 }
 
 /* Posición quieta (paso 02): terrario a la izquierda, teléfono a la derecha */
@@ -75,7 +90,7 @@
 
 /* La línea punteada que va del teléfono al QR mientras lo lee */
 .connect-loop__beam {
-    stroke: var(--color-text-muted);
+    stroke: var(--loop-muted);
     stroke-dasharray: 2 4;
     animation: connect-beam var(--loop) linear infinite;
 }
@@ -118,12 +133,8 @@
     animation: connect-step var(--loop) linear calc(var(--step) * var(--loop) / 3) infinite;
 }
 
-.connect-loop__index {
-    color: var(--color-text);
-}
-
 .connect-loop__text {
-    color: var(--color-text-muted);
+    color: var(--loop-muted);
 }
 
 @keyframes connect-terrarium {

@@ -46,8 +46,17 @@
     --color-art-plant: light-dark(var(--color-gray-400), var(--color-gray-600));
     --color-art-glow: light-dark(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.06)); /* respira mientras suena */
 
-    /* --- Inverso: botón principal, play, toast, botón de Ajustes activo --- */
-    --color-inverse-bg: var(--color-text);
+    /* --- Botones y la línea de los links: negro puro (#000), como en
+       filotaxia.com; en oscuro, blanco. El texto y los fondos negros
+       usan #141413 (--color-text) --- */
+    --color-action: light-dark(var(--color-black), var(--color-gray-50));
+
+    /* --- Inverso: botón principal, Conectar, play, opción elegida, acciones
+       de los bloques (botones: --color-action). Las superficies al revés del
+       tema que no son botones (toast, el cuadro de Tu recorrido, la hoja
+       resaltada) van en --color-inverse-surface: #141413 --- */
+    --color-inverse-bg: var(--color-action);
+    --color-inverse-surface: var(--color-text);
     --color-inverse-text: var(--color-bg);
     --color-inverse-hover: light-dark(var(--color-gray-800), var(--color-gray-300));
     --color-focus: var(--color-text);
@@ -80,7 +89,7 @@
     --color-nav-hover-bg: color-mix(in srgb, var(--color-text) 4%, transparent);
 
     /* --- Fondo detrás de las hojas modales --- */
-    --color-backdrop: light-dark(rgba(10, 10, 10, 0.35), rgba(0, 0, 0, 0.6));
+    --color-backdrop: light-dark(rgba(20, 20, 19, 0.35), rgba(0, 0, 0, 0.6));
 
     /* --- Compartir (components/share-sheet): la imagen para historias, como
        la de Spotify. Fijos, no siguen al tema: la imagen sale igual en claro
