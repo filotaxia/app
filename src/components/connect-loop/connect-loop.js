@@ -13,15 +13,23 @@
 // y su texto en gris (como "/Capa02").
 // Es un dibujo de línea en currentColor (sigue al tema), como los gráficos
 // del Manifiesto. Lo usan Mi terrario cuando todavía no hay terrario y la
-// Guía, en "Tu recorrido".
+// Guía, bajo el título "Filotaxia".
 //
 //   connectLoop()                  → el cuadro gris con el dibujo y los pasos
 //   connectLoop({ inverse: true }) → el cuadro al revés del tema, para que
 //                                    resalte (negro con el dibujo blanco en
 //                                    el tema claro; blanco y negro en el
 //                                    oscuro). Lo usa la Guía.
+//
+// El cuadro, el trazo y el chip de abajo también los usa
+// components/production-loop (la Producción, en el Manifiesto), con su
+// propio dibujo.
 
-const STEPS = ["El QR de su base", "Conectalo con la cámara", "Escuchá su pieza"];
+const STEPS = [
+  ["/Paso01", "El QR de su base"],
+  ["/Paso02", "Conectalo con la cámara"],
+  ["/Paso03", "Escuchá su pieza"],
+];
 
 export function connectLoop({ inverse = false } = {}) {
   return `
@@ -31,16 +39,23 @@ export function connectLoop({ inverse = false } = {}) {
         <line class="connect-loop__beam" x1="196" y1="122" x2="114" y2="141" />
         ${phone()}
       </svg>
-      <figcaption>
-        <ol class="connect-loop__steps">
-          ${STEPS.map((text, i) => `
-            <li class="connect-loop__step" style="--step: ${i}">
-              <span class="connect-loop__index">/Paso${String(i + 1).padStart(2, "0")}</span>
-              <span class="connect-loop__text">${text}</span>
-            </li>`).join("")}
-        </ol>
-      </figcaption>
+      ${loopSteps(STEPS)}
     </figure>
+  `;
+}
+
+// Los tres pasos de debajo del dibujo, uno por vez: [nombre, texto]
+function loopSteps(steps) {
+  return `
+    <figcaption>
+      <ol class="connect-loop__steps">
+        ${steps.map(([label, text], i) => `
+          <li class="connect-loop__step" style="--step: ${i}">
+            <span class="chip connect-loop__index">${label}</span>
+            <span class="connect-loop__text">${text}</span>
+          </li>`).join("")}
+      </ol>
+    </figcaption>
   `;
 }
 

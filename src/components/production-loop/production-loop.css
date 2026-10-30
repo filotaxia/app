@@ -1,0 +1,182 @@
+/* ============================================
+   Components — Production Loop
+   ============================================ */
+
+/* La Producción (ver production-loop.js). El cuadro y el trazo del dibujo
+   son los de connect-loop. Los cables van en blanco con su corriente; las
+   partes, en gris, y la que se toca se enciende en blanco. Lo que se mueve
+   solo, en una vuelta de --loop (12 s, la de connect-loop):
+     - la corriente de los cables y las notas por los cables MIDI, siempre
+     - el Microfreak: las teclas se encienden, la perilla gira tres veces y
+       la pantalla pasa de seno a triángulo a sierra (un tercio cada una);
+       encima, el sonido
+     - la compu: el cabezal recorre las pistas
+   Sin animación (menos movimiento), connect-loop.css lo deja todo quieto. */
+
+/* Lo que no está elegido queda en este gris.
+   Abajo el cuadro guarda lugar fijo para el texto (que va en posición
+   absoluta, ver .production-loop__info): el chip, su aire y tres líneas,
+   más el aire que lo separa del dibujo. Así, cambie el texto lo que cambie,
+   el dibujo no se mueve */
+.production-loop {
+    --off: 0.4;
+    position: relative;
+    padding-bottom: calc(var(--spacing-md) + 28px + var(--spacing-sm) + var(--font-base-line) * 3 + var(--spacing-lg));
+}
+
+/* --- Las partes que se tocan --- */
+.production-loop__glass,
+.production-loop__part,
+.production-loop__sound {
+    opacity: var(--off);
+    transition: opacity var(--transition-fast);
+}
+
+.production-loop__part {
+    cursor: pointer;
+    outline: none;
+}
+
+.production-loop__part[aria-pressed="true"],
+.production-loop:has([data-part="microfreak"][aria-pressed="true"]) .production-loop__sound {
+    opacity: 1;
+}
+
+/* El área para el dedo: invisible, pero recibe el toque (fill transparente
+   cuenta como pintado). Con el teclado, el foco la marca punteada */
+.production-loop__hit {
+    fill: transparent;
+    stroke: none;
+}
+
+.production-loop__part:focus-visible {
+    opacity: 1;
+}
+
+.production-loop__part:focus-visible .production-loop__hit {
+    stroke: currentColor;
+    stroke-dasharray: 2 3;
+}
+
+/* --- Debajo del dibujo: el chip con el nombre y qué hace (como los pasos
+   de connect-loop, pero fijo: cambia al tocar una parte). Apoyado al pie
+   del cuadro, en posición absoluta: si el texto crece o se achica, no
+   empuja al dibujo --- */
+.production-loop__info {
+    position: absolute;
+    right: var(--spacing-md);
+    bottom: var(--spacing-md);
+    left: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+/* --- Los cables, siempre con corriente: la línea un poco apagada y encima
+   corren rayitas blancas en el sentido del cable (el dashoffset negativo
+   las lleva hacia adelante; -10 es un dash + su espacio, así la vuelta no
+   salta) --- */
+.production-loop__cable {
+    opacity: 0.5;
+}
+
+.production-loop__flow {
+    stroke-dasharray: 3 7;
+    animation: production-flow 0.5s linear infinite;
+}
+
+/* --- Las notas que pasan por los cables MIDI, una detrás de la otra
+   (--run, el largo del cable, lo pone el JS) --- */
+.production-loop__note {
+    animation: production-note 1.2s linear calc(var(--i) * -0.4s) infinite;
+}
+
+/* --- El Microfreak --- */
+.production-loop__key {
+    opacity: 0;
+    animation: production-key 1.6s linear calc(var(--i) * 0.4s) infinite;
+}
+
+.production-loop__knob {
+    animation: production-knob var(--loop) var(--ease-standard) infinite;
+}
+
+.production-loop__wave--sine {
+    animation: production-sine var(--loop) linear infinite;
+}
+
+.production-loop__wave--triangle,
+.production-loop__wave--saw {
+    opacity: 0;
+}
+
+.production-loop__wave--triangle {
+    animation: production-triangle var(--loop) linear infinite;
+}
+
+.production-loop__wave--saw {
+    animation: production-saw var(--loop) linear infinite;
+}
+
+.production-loop__arc {
+    animation: production-arc 1.5s var(--ease-out) calc(var(--i) * 0.25s) infinite;
+}
+
+/* --- La compu: el cabezal recorre las pistas (de 218 a 294) --- */
+.production-loop__playhead {
+    animation: production-playhead 4s linear infinite;
+}
+
+@keyframes production-flow {
+    to { stroke-dashoffset: -10; }
+}
+
+@keyframes production-note {
+    0% { transform: translateX(0); opacity: 0; }
+    15%, 80% { opacity: 1; }
+    100% { transform: translateX(var(--run)); opacity: 0; }
+}
+
+@keyframes production-key {
+    0%, 100% { opacity: 0; }
+    10%, 30% { opacity: 1; }
+    45% { opacity: 0; }
+}
+
+/* La perilla gira al empezar cada tercio, y con ella cambia la onda */
+@keyframes production-knob {
+    0%, 30% { transform: rotate(-100deg); }
+    36%, 63% { transform: rotate(-20deg); }
+    69%, 94% { transform: rotate(60deg); }
+    100% { transform: rotate(-100deg); }
+}
+
+@keyframes production-sine {
+    0%, 32% { opacity: 1; }
+    34%, 98% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes production-triangle {
+    0%, 32% { opacity: 0; }
+    34%, 65% { opacity: 1; }
+    67%, 100% { opacity: 0; }
+}
+
+@keyframes production-saw {
+    0%, 65% { opacity: 0; }
+    67%, 98% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes production-arc {
+    0% { opacity: 0; transform: translateY(4px); }
+    30% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-4px); }
+}
+
+@keyframes production-playhead {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(76px); }
+}

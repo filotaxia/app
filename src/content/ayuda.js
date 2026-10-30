@@ -142,7 +142,8 @@ export const CARE_GUIDE = [
 
 // "1 proceso / 3 etapas" de la página Música de filotaxia.com (la Guía):
 // la frase de arriba, las fotos del slider (las de la web a 800px, en
-// src/assets/images/guia/) y las tres etapas [título, texto].
+// src/assets/images/guia/) y las tres etapas [título, texto]. Los textos de las
+// etapas son los de la web, acortados para leerlos en el celular.
 export const PROCESS_INTRO =
   "Filotaxia es un arte que incluye naturaleza, ciencia y música, donde las bioemisiones de las plantas son traducidas en sonido a partir de una onda definida por la forma de sus hojas.";
 
@@ -157,15 +158,15 @@ export const PROCESS_PHOTOS = [
 export const PROCESS = [
   [
     "Selección y armado del terrario",
-    "Las plantas se eligen por su forma, tamaño y color, asegurando un terrario equilibrado y estético. El armado incluye las 4 capas esenciales: plantas, sustrato, metal y piedras. Esta etapa es fundamental ya que define la base sobre la cual se construirá la experiencia sonora y visual.",
+    "Elegimos las plantas por su forma, tamaño y color, y armamos el terrario en 4 capas: plantas, sustrato, metal y piedras. Es la base de todo lo que vas a ver y escuchar.",
   ],
   [
     "Biosonificación",
-    "Usamos un instrumento llamado Biodata con el que conectamos electrodos en cada planta, para traducir las bioemisiones en información musical. La planta genera notas MIDI cuando se detecta un cambio en la conductividad, lo que permite escuchar los procesos biológicos invisibles, causados por estímulos externos e internos. A estas variaciones eléctricas le damos una voz creando así el sonido de las plantas.",
+    "Con Biodata conectamos electrodos a cada planta. Cada vez que cambia su conductividad, la planta genera una nota MIDI: así se escucha lo que pasa adentro de ella.",
   ],
   [
     "Producción musical",
-    "Los datos obtenidos de la biosonificación se integran en el sintetizador Microfreak y se plasman en el software Ableton. Cada señal se convierte en sonido, dando vida a composiciones únicas grabadas en un contexto definido. Esta etapa combina creatividad y tecnología, dando como resultado final una pieza musical única para cada terrario que podrá ser reproducida escaneando el QR.",
+    "Esas notas pasan al sintetizador Microfreak y a Ableton, donde le damos una voz a cada planta. El resultado es una pieza única para cada terrario, que suena al escanear su QR.",
   ],
 ];
 

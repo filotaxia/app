@@ -53,7 +53,7 @@
 
     /* --- Inverso: botón principal, Conectar, play, opción elegida, acciones
        de los bloques (botones: --color-action). Las superficies al revés del
-       tema que no son botones (toast, el cuadro de Tu recorrido, la hoja
+       tema que no son botones (toast, el cuadro animado de la Guía, la hoja
        resaltada) van en --color-inverse-surface: #141413 --- */
     --color-inverse-bg: var(--color-action);
     --color-inverse-surface: var(--color-text);

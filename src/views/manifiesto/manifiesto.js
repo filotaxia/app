@@ -2,7 +2,7 @@
    Views — Manifiesto
    ============================================ */
 
-// Introducción a la biosonificación en seis pantallas, para que la pieza
+// Introducción a la biosonificación en siete pantallas, para que la pieza
 // se escuche como lo que es (y no como ruido al azar):
 //
 //   1. Gancho      una cita de filotaxia.com, distinta cada vez que se abre
@@ -14,37 +14,41 @@
 //                  el texto de la capa encendida; pasan solas
 //   4. Idioma      cada forma de hoja → su onda (components/leaf-waves)
 //   5. Mecanismo   01 / 02 / 03, de la planta a la nota, con un gráfico por paso
-//                  que entra uno después del otro (señal → sensor → notas)
-//   6. Prueba      la huella de TU pieza: sus notas reales (audio/score.js)
+//                  que entra uno después del otro (señal → Biodata → notas)
+//   6. Producción  los dos Biodata del terrario, en un dibujo que se mueve
+//                  (components/production-loop): el de las plantas va al
+//                  Microfreak (ahí le damos una voz a cada planta) y el del
+//                  sustrato, a la compu (Ableton); tocar una parte la explica
+//   7. Prueba      la huella de TU pieza: sus notas reales (audio/score.js)
 //                  en un piano roll que un cabezal recorre, con nombre y fecha;
 //                  abajo, "Escuchar la pieza" lleva a su reproductor (#/escuchar).
-//                  (Antes había una 7 con el reproductor adentro: en el
+//                  (Antes había una pantalla más con el reproductor adentro: en el
 //                  celular hacía lento al Manifiesto, así que se sacó.)
 //
 // Con id (#/manifiesto/04) era la introducción del primer escaneo; hoy el
 // QR lleva directo a la pieza y nada manda acá con id, pero la ruta sigue
 // andando por si se vuelve a usar. "Saltar" guarda
-// `manifiesto_seen` y sigue al reproductor de ese terrario; llegar a la 6
+// `manifiesto_seen` y sigue al reproductor de ese terrario; llegar a la 7
 // también lo guarda (ya lo vio todo).
 // También es una sección de la barra, sin id (#/manifiesto): ahí "Saltar"
-// es "Cerrar" (vuelve a Mi terrario). En la 6 siempre dice "Cerrar".
-// El terrario de la pantalla 6 lo elige pickTerrario.
+// es "Cerrar" (vuelve a Mi terrario). En la 7 siempre dice "Cerrar".
+// El terrario de la pantalla 7 lo elige pickTerrario.
 //
 // La pantalla 1 apoya la cita abajo a la izquierda (como las cards de citas
 // de filotaxia.com); la 2, la 3 y la 4 llenan el alto (título arriba,
 // terrario o tarjetas abajo / gráfico arriba, texto abajo); las demás van centradas.
 //
 // Pasa sola, como las historias de Instagram: cada pantalla dura lo que
-// tarda su animación de adentro en terminar, más 3 s (AFTER_MS) para mirarla
+// tarda su animación de adentro en terminar, más 6 s (AFTER_MS) para mirarla
 // quieta, y su línea de arriba se llena en ese tiempo; al llenarse, sigue la
 // próxima (en la última se queda). Ver slideDuration(). Mantener apretado la pausa; tocar algo de
 // adentro de una pantalla (un punto, una capa, las hojas) frena el autoplay
 // del todo, porque la persona está explorando. Con "reducir movimiento" en el
 // teléfono no pasa sola.
-// A mano: tocando o con click (tercio izquierdo = atrás, resto = adelante),
-// con los botones redondos ‹ › de abajo, tocando una de las líneas de arriba (va
-// directo a esa pantalla) o con las flechas del teclado. Deslizar o hacer
-// scroll no la mueve (overflow hidden en el CSS; el JS la corre con scrollTo).
+// A mano: con los botones redondos ‹ › de abajo, tocando una de las líneas de
+// arriba (va directo a esa pantalla) o con las flechas del teclado. Tocar la
+// pantalla en sí no la pasa. Deslizar o hacer scroll tampoco (overflow hidden
+// en el CSS; el JS la corre con scrollTo).
 
 import { get, set } from "../../store/store.js";
 import { linkedIds } from "../../store/collection.js";
@@ -55,6 +59,7 @@ import { LAYERS, INSIDE_TERRARIUM } from "../../content/ayuda.js";
 import { getPlanta, WAVE_NAMES } from "../../content/plantas.js";
 import { buildScore, seedFrom } from "../../audio/score.js";
 import { leafWaves, bindLeafWaves } from "../../components/leaf-waves/leaf-waves.js";
+import { productionLoop, bindProductionLoop } from "../../components/production-loop/production-loop.js";
 import { formatDate } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
 import { icon } from "../../utils/icons.js";
@@ -62,7 +67,7 @@ import { icon } from "../../utils/icons.js";
 export const title = "Manifiesto";
 
 // Autoplay: cada pantalla se queda esto después de que termina su animación
-const AFTER_MS = 3000;
+const AFTER_MS = 6000;
 // Pantalla 3: cada cuánto se abre la capa siguiente, y lo que tarda en abrirse
 // (manifiesto.css: flex-grow 0.6s)
 const LAYER_MS = 5000;
@@ -71,8 +76,9 @@ const LAYER_OPEN_MS = 600;
 // de las cuatro tarjetas (leaf-waves.css: 0.8s + 0.1s por tarjeta)
 const FLIP_AT_MS = 3000;
 const FLIP_MS = 1100;
-// Apretar más que esto es "pausar", no "tocar para pasar"
-const HOLD_MS = 300;
+// Pantalla 6: una vuelta entera del dibujo de la Producción (la perilla
+// pasa por sus tres ondas; connect-loop.css: --loop 12s)
+const PRODUCTION_LOOP_MS = 12000;
 // Sin barra en el primer escaneo (con id: es parte del onboarding);
 // abierto desde la barra (sin id), la barra sigue ahí
 export const nav = ({ params }) => !params.id;
@@ -111,7 +117,14 @@ const SLIDES = [
     <p class="manifiesto__title">Biosonificación.</p>
     ${mechanism()}
   `,
-  // 6. Prueba: depende del terrario, por eso es una función (ver render).
+  // 6. Producción: título arriba y, abajo, el dibujo de los dos Biodata
+  //    (plantas → Microfreak, sustrato → compu); tocar una parte la explica
+  //    (components/production-loop)
+  `
+    <p class="manifiesto__title">Producción.<br />Una voz por planta.</p>
+    ${productionLoop()}
+  `,
+  // 7. Prueba: depende del terrario, por eso es una función (ver render).
   //    Abajo, el botón negro que lleva a escuchar su pieza
   ({ terrario }) => `
     ${pieceGraphic(terrario)}
@@ -134,7 +147,8 @@ const SLIDE_LAYOUT = {
   1: "manifiesto__slide--anatomy",  // título arriba, terrario y su explicación abajo
   2: "manifiesto__slide--layers",   // barras arriba, número y texto abajo
   3: "manifiesto__slide--split",    // título arriba, tarjetas abajo
-  5: "manifiesto__slide--piece",    // la huella y el texto al centro, el botón abajo
+  5: "manifiesto__slide--production", // título arriba, la animación abajo
+  6: "manifiesto__slide--piece",    // la huella y el texto al centro, el botón abajo
 };
 
 export async function render(root, { params }) {
@@ -199,6 +213,7 @@ export async function render(root, { params }) {
   const waves = bindLeafWaves(root);   // los dos puntos de la pantalla 4
   const layerCycle = bindLayers(root);  // las barras de la pantalla 3
   bindAnatomy(root);                    // los puntos de la pantalla 2
+  bindProductionLoop(root);             // las partes de la pantalla 6
   const skip = root.querySelector("[data-skip-link]");
 
   // Última pantalla: llegar hasta acá cuenta como haberlo visto todo; arriba,
@@ -272,18 +287,8 @@ export async function render(root, { params }) {
   });
 
   // Mantener apretado pausa (la línea se frena); al soltar, sigue
-  let pressedAt = 0;
-  let held = false;
-  track.addEventListener("pointerdown", () => {
-    pressedAt = performance.now();
-    held = false;
-    screen.classList.add("is-paused");
-  });
-  track.addEventListener("pointerup", () => {
-    held = performance.now() - pressedAt > HOLD_MS;
-    screen.classList.remove("is-paused");
-  });
-  ["pointercancel", "pointerleave"].forEach((type) =>
+  track.addEventListener("pointerdown", () => screen.classList.add("is-paused"));
+  ["pointerup", "pointercancel", "pointerleave"].forEach((type) =>
     track.addEventListener(type, () => screen.classList.remove("is-paused")));
 
   // Con la app en segundo plano tampoco avanza
@@ -292,22 +297,14 @@ export async function render(root, { params }) {
   }
   document.addEventListener("visibilitychange", onVisibility);
 
-  // Tocar algo de adentro de una pantalla (un punto, una capa, las hojas):
+  // Tocar algo de adentro de una pantalla (un punto, una capa, las hojas,
+  // una parte de la Producción):
   // está explorando, el autoplay se frena del todo. Va en la fase de captura
-  // porque esos controles frenan el click para no pasar de pantalla.
+  // porque los puntos de las hojas (leaf-waves) frenan su click.
   track.addEventListener("click", (event) => {
-    if (event.target.closest("button, a")) stopAutoplay();
+    if (event.target.closest("button, a, [role='button']")) stopAutoplay();
   }, true);
 
-  // Tocar: el tercio izquierdo vuelve, el resto avanza (salvo el botón
-  // "Escuchar la pieza", que es un link, y salvo que haya sido una pausa)
-  track.addEventListener("click", (event) => {
-    const wasHeld = held;
-    held = false;   // vale solo para el click que sigue a ese apretón
-    if (event.target.closest("[data-listen]") || wasHeld) return;
-    const { left, width } = track.getBoundingClientRect();
-    goTo(event.clientX - left < width / 3 ? current - 1 : current + 1);
-  });
   prev.addEventListener("click", () => goTo(current - 1));
   next.addEventListener("click", () => goTo(current + 1));
   // Las líneas de arriba llevan directo a su pantalla
@@ -343,6 +340,7 @@ export async function render(root, { params }) {
 // gráficos de la 5) se miden en el momento con getAnimations(), salvo las que
 // no terminan nunca (los puntos que respiran); las que mueve el JS se suman
 // aparte: la 3 recorre sus cuatro capas, la 4 gira las hojas a sus ondas.
+// La 6 se repite sin fin, así que se cuenta una vuelta entera.
 function slideDuration(slide) {
   const css = slide.getAnimations({ subtree: true }).map((animation) => {
     const { endTime } = animation.effect.getComputedTiming();
@@ -351,6 +349,7 @@ function slideDuration(slide) {
   let js = 0;
   if (slide.querySelector("[data-layers]")) js = LAYER_MS * (LAYERS.length - 1) + LAYER_OPEN_MS;
   if (slide.querySelector("[data-leaf-waves]")) js = FLIP_AT_MS + FLIP_MS;
+  if (slide.querySelector("[data-production]")) js = PRODUCTION_LOOP_MS;
   return Math.round(Math.max(0, js, ...css) + AFTER_MS);
 }
 
@@ -399,7 +398,7 @@ function spotInfo(spot) {
   `;
 }
 
-// Tocar un punto lo elige y cuenta qué es. Frena el click para no pasar de pantalla.
+// Tocar un punto lo elige y cuenta qué es.
 function bindAnatomy(root) {
   const box = root.querySelector("[data-anatomy]");
   if (!box) return;
@@ -407,8 +406,7 @@ function bindAnatomy(root) {
   const info = box.querySelector("[data-spot-info]");
 
   dots.forEach((dot) => {
-    dot.addEventListener("click", (event) => {
-      event.stopPropagation();
+    dot.addEventListener("click", () => {
       dots.forEach((d) => d.setAttribute("aria-pressed", String(d === dot)));
       info.innerHTML = spotInfo(INSIDE_TERRARIUM.spots[Number(dot.dataset.spot)]);
     });
@@ -453,7 +451,6 @@ function layers() {
 // Abre una capa por vez. Devuelve:
 //   play()  empieza a pasar solas (cada LAYER_MS, 5 s), si la persona no tocó una franja
 //   stop()  las frena (al salir de la pantalla)
-// Las franjas y "+ info" frenan el click, así tocarlas no pasa de pantalla.
 function bindLayers(root) {
   const box = root.querySelector("[data-layers]");
   if (!box) return { play() {}, stop() {} };
@@ -479,8 +476,7 @@ function bindLayers(root) {
   }
 
   hits.forEach((hit) => {
-    hit.addEventListener("click", (event) => {
-      event.stopPropagation();
+    hit.addEventListener("click", () => {
       touched = true;
       clearInterval(timer);
       timer = 0;
@@ -510,7 +506,7 @@ function pad(n) {
 
 // Los tres gráficos cuentan la misma señal, cada vez más "música":
 //   01  la señal eléctrica de la planta, nerviosa y continua (se dibuja sola)
-//   02  el sensor la lee: muestras puntuales, una tras otra
+//   02  Biodata la lee: muestras puntuales, una tras otra
 //   03  cada muestra pasa a ser una nota (como un piano roll)
 // Todos miden 320 × 64 y usan currentColor, así siguen al tema.
 // Son funciones (no constantes) para poder usarlas arriba, en SLIDES.
@@ -518,7 +514,7 @@ function pad(n) {
 function mechanism() {
   const steps = [
     ["Cada planta genera microfluctuaciones eléctricas constantes", signalGraphic()],
-    ["Un sensor las capta en tiempo real", sensorGraphic()],
+    ["Biodata las capta en tiempo real", sensorGraphic()],
     ["Se traducen a notas — eso es biosonificación", notesGraphic()],
   ];
 
@@ -605,10 +601,10 @@ function notesGraphic() {
 }
 
 /* ---------------------------------------- */
-/* Pantalla 6: la huella de tu pieza */
+/* Pantalla 7: la huella de tu pieza */
 /* ---------------------------------------- */
 
-// El terrario de la pantalla 6 (su pieza y el botón para escucharla): el recién escaneado (id en la ruta); si se
+// El terrario de la pantalla 7 (su pieza y el botón para escucharla): el recién escaneado (id en la ruta); si se
 // abrió desde la barra, el propio o el primero de la colección; si no hay
 // ninguno, el primero del catálogo.
 async function pickTerrario(id) {
