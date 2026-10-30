@@ -10,7 +10,7 @@
 //                  medida que avanza, como en la web) y las tres etapas
 //                  ("Etapa 1 / Selección y armado del terrario" y su texto).
 //                  Textos y fotos: PROCESS_INTRO / PROCESS_PHOTOS / PROCESS.
-//   Tu recorrido   la animación de los 3 pasos para conectar el terrario
+//   Filotaxia      la animación de los 3 pasos para conectar el terrario
 //                  (components/connect-loop: el QR de su base → la cámara →
 //                  su pieza), la misma que Mi terrario cuando no hay terrario,
 //                  pero al revés del tema (negro en el claro), para que resalte.
@@ -46,13 +46,13 @@ export function render(root) {
         ${PROCESS.map(([name, text], i) => `
           <li class="process__stage">
             <h3 class="process__stage-title">Etapa ${i + 1} / ${escapeHTML(name)}</h3>
-            <p class="lead">${escapeHTML(text)}</p>
+            <p class="process__stage-text">${escapeHTML(text)}</p>
           </li>`).join("")}
       </ol>
     </section>
 
     <section class="journey reveal" aria-labelledby="journey-title">
-      <h2 class="guide-title" id="journey-title">Tu recorrido</h2>
+      <h2 class="guide-title" id="journey-title">Filotaxia</h2>
       ${connectLoop({ inverse: true })}
     </section>
 

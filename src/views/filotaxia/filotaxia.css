@@ -4,7 +4,7 @@
 
 /* De arriba hacia abajo: el proceso ("1 proceso / 3 etapas", como en la
    página Música de filotaxia.com: frase grande, slider de fotos con una línea
-   que se llena y las tres etapas), "Tu recorrido" (la animación de los 3
+   que se llena y las tres etapas), "Filotaxia" (la animación de los 3
    pasos para conectar, components/connect-loop) y las preguntas frecuentes. */
 
 /* Cada sección separada por el mismo aire */
@@ -108,11 +108,23 @@
     line-height: var(--font-base-line);
 }
 
-/* --- Tu recorrido: el título y, debajo, la animación de los 3 pasos --- */
+/* El texto, del mismo tamaño que el texto chico del Manifiesto (15px) */
+.process__stage-text {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    color: var(--color-text-muted);
+}
+
+/* --- "Filotaxia" (antes "Tu recorrido"): el título y, debajo, la animación de los 3 pasos --- */
 .journey {
     display: flex;
     flex-direction: column;
     gap: var(--gap-md);
+}
+
+/* Acá el cuadro es más alto: más aire arriba de la animación */
+.journey .connect-loop {
+    padding-top: var(--spacing-4xl);
 }
 
 /* --- Preguntas frecuentes (las clases .faq son de cuidados.css) --- */

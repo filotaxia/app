@@ -117,8 +117,8 @@
 
 /* --- Los pasos: uno por vez, el que se está viendo en el dibujo.
    Los tres ocupan el mismo lugar (la misma celda de la grilla) y se
-   turnan con un fade; texto chico del Manifiesto: "/Paso01" en el color
-   del texto principal y debajo su texto en gris, los dos de 15px --- */
+   turnan con un fade. Arriba, "/Paso01" en un chip como el "+ info" de
+   Mi terrario (components/chip) y debajo su texto en gris, de 15px --- */
 .connect-loop__steps {
     display: grid;
     font-size: var(--font-base-size);
@@ -133,8 +133,20 @@
     animation: connect-step var(--loop) linear calc(var(--step) * var(--loop) / 3) infinite;
 }
 
+/* El chip, del ancho de su texto. Su fondo sale del color del dibujo,
+   apenas encendido, así se ve igual en el cuadro gris, en el negro y en
+   el blanco (el fondo del chip, --color-block-bg, acá desaparecería) */
+.connect-loop__index {
+    align-self: flex-start;
+    margin-bottom: var(--spacing-sm);
+    background: color-mix(in srgb, currentColor 12%, transparent);
+    color: inherit;
+}
+
+/* Si el texto ocupa dos líneas, que queden parejas (sin una palabra sola abajo) */
 .connect-loop__text {
     color: var(--loop-muted);
+    text-wrap: balance;
 }
 
 @keyframes connect-terrarium {

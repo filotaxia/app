@@ -123,14 +123,14 @@ html:has(.manifiesto) body {
     min-height: 0;
     margin-inline: calc(var(--gutter) * -1);
     /* No se mueve con el dedo, la ruedita ni el trackpad (overflow hidden):
-       se pasa de pantalla solo tocando o con las flechas, y el JS lo
-       desliza con scrollTo. touch-action: manipulation saca la demora
-       del doble toque */
+       se pasa de pantalla con los botones ‹ ›, las líneas de arriba o las
+       flechas, y el JS lo desliza con scrollTo. touch-action: manipulation
+       saca la demora del doble toque. Sin barra de scroll: la saca base.css
+       para toda la app */
     overflow: hidden;
     overscroll-behavior: none;
     touch-action: manipulation;
     scroll-snap-type: x mandatory;
-    cursor: pointer;   /* sin barra de scroll: la saca base.css para toda la app */
 }
 
 /* Cada pantalla centra su contenido en el alto disponible */
@@ -170,7 +170,7 @@ html:has(.manifiesto) body {
     animation-play-state: running;
 }
 
-/* Frase grande + atribución chica (pantallas 1 y 6) */
+/* Frase grande + atribución chica (pantallas 1 y 7) */
 .manifiesto__quote {
     display: flex;
     flex-direction: column;
@@ -185,7 +185,7 @@ html:has(.manifiesto) body {
     text-wrap: pretty;
 }
 
-/* Pantallas 5 y 6: frase centrada */
+/* Frase centrada */
 .manifiesto__quote--center {
     align-items: center;
     text-align: center;
@@ -712,7 +712,38 @@ html:has(.manifiesto) body {
 }
 
 /* ---------------------------------------- */
-/* Pantalla 6: la huella de tu pieza */
+/* Pantalla 6: la Producción
+   Título arriba y, debajo, el cuadro de components/production-loop
+   (plantas → Biodata → Microfreak y sustrato → Biodata → compu; tocar una
+   parte la explica) ocupando todo el alto que queda, como la foto de la 2 o las
+   tarjetas de la 4. */
+.manifiesto__slide--production {
+    justify-content: flex-start;
+    gap: var(--gap-lg);
+    padding-top: calc(var(--manifiesto-top) + var(--spacing-xl));
+}
+
+.manifiesto__slide--production > .production-loop {
+    flex: 1;
+    min-height: 0;
+}
+
+/* El dibujo toma el alto que sobra y queda centrado en él (el SVG mantiene
+   su proporción); qué hace cada parte sigue al pie del cuadro */
+.manifiesto__slide--production .connect-loop__stage {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+}
+
+/* Hasta que se ve la pantalla, la animación espera en su primer cuadro:
+   así arranca de cero cuando llegás */
+.manifiesto__slide:not([data-seen]) .production-loop * {
+    animation-play-state: paused;
+}
+
+/* ---------------------------------------- */
+/* Pantalla 7: la huella de tu pieza */
 /* ---------------------------------------- */
 
 /* Piano roll de las notas reales: un cabezal lo recorre en --sweep y cada
@@ -765,7 +796,7 @@ html:has(.manifiesto) body {
 }
 
 /* ---------------------------------------- */
-/* Pantalla 6: la huella y el texto al centro y, al pie, el botón negro
+/* Pantalla 7: la huella y el texto al centro y, al pie, el botón negro
    "Escuchar la pieza" a todo el ancho (como .screen__actions): los dos
    margin-top: auto reparten el aire que sobra arriba y abajo del texto */
 .manifiesto__slide--piece > :first-child,
