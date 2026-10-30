@@ -19,8 +19,8 @@
     --color-gray-400: #a3a3a3;    /* planta dibujada, placeholders; texto secundario en oscuro */
     --color-gray-500: #737373;    /* texto secundario */
     --color-gray-600: #404040;    /* planta dibujada y track en oscuro */
-    --color-gray-700: #262626;    /* líneas y luz de las ilustraciones en oscuro */
-    --color-gray-800: #171717;    /* bloque en oscuro; hover del botón negro */
-    --color-gray-900: #0a0a0a;    /* texto en claro, fondo en oscuro */
+    --color-gray-700: #303030;    /* líneas y luz de las ilustraciones en oscuro */
+    --color-gray-800: #212121;    /* bloque en oscuro; hover del botón negro */
+    --color-gray-900: #141413;    /* texto en claro, fondo en oscuro */
 
 }

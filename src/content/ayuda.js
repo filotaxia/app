@@ -90,21 +90,21 @@ export const STEPS = [
     key: "ubicado",
     title: "Ubicá tu terrario",
     short: "Luz indirecta, cerca de una ventana.",
-    text: HOW_IT_WORKS[0],
+    text: HOW_IT_WORKS[0].text,
     video: null,
   },
   {
     key: "escaneado",
     title: "Conectá tu terrario",
     short: "Con el QR de su base.",
-    text: HOW_IT_WORKS[1],
+    text: HOW_IT_WORKS[1].text,
     video: null,
   },
   {
     key: "escuchado",
     title: "Escuchá su pieza",
     short: "Sus plantas, convertidas en música.",
-    text: HOW_IT_WORKS[2],
+    text: HOW_IT_WORKS[2].text,
     video: null,
   },
   {
@@ -140,19 +140,32 @@ export const CARE_GUIDE = [
   ],
 ];
 
-// De la planta a la pieza: las tres etapas (página "Formas")
+// "1 proceso / 3 etapas" de la página Música de filotaxia.com (la Guía):
+// la frase de arriba, las fotos del slider (las de la web a 800px, en
+// src/assets/images/guia/) y las tres etapas [título, texto].
+export const PROCESS_INTRO =
+  "Filotaxia es un arte que incluye naturaleza, ciencia y música, donde las bioemisiones de las plantas son traducidas en sonido a partir de una onda definida por la forma de sus hojas.";
+
+export const PROCESS_PHOTOS = [
+  { image: "src/assets/images/guia/proceso-01.jpg", alt: "Un terrario redondo de vidrio visto desde arriba, con suculentas y piedras" },
+  { image: "src/assets/images/guia/proceso-02.jpg", alt: "Una mano acomoda con una pinza las plantas de un terrario" },
+  { image: "src/assets/images/guia/proceso-03.jpg", alt: "Suculentas entre piedras, vistas desde arriba" },
+  { image: "src/assets/images/guia/proceso-04.jpg", alt: "Una pinza dentro de un terrario cilíndrico de vidrio" },
+  { image: "src/assets/images/guia/proceso-05.jpg", alt: "Un terrario redondo de vidrio con suculentas, de frente" },
+];
+
 export const PROCESS = [
   [
-    "Selección y armado",
-    "Las plantas se eligen por su forma, tamaño y color. El armado incluye las cuatro capas esenciales: plantas, sustrato, metal y piedras.",
+    "Selección y armado del terrario",
+    "Las plantas se eligen por su forma, tamaño y color, asegurando un terrario equilibrado y estético. El armado incluye las 4 capas esenciales: plantas, sustrato, metal y piedras. Esta etapa es fundamental ya que define la base sobre la cual se construirá la experiencia sonora y visual.",
   ],
   [
     "Biosonificación",
-    "Con un instrumento llamado Biodata conectamos electrodos a cada planta. Cuando cambia su conductividad, la planta genera notas MIDI: así se escuchan procesos biológicos que no se ven.",
+    "Usamos un instrumento llamado Biodata con el que conectamos electrodos en cada planta, para traducir las bioemisiones en información musical. La planta genera notas MIDI cuando se detecta un cambio en la conductividad, lo que permite escuchar los procesos biológicos invisibles, causados por estímulos externos e internos. A estas variaciones eléctricas le damos una voz creando así el sonido de las plantas.",
   ],
   [
     "Producción musical",
-    "Esas notas pasan por un sintetizador y se graban en una pieza única para cada terrario, la que escuchás al escanear su QR.",
+    "Los datos obtenidos de la biosonificación se integran en el sintetizador Microfreak y se plasman en el software Ableton. Cada señal se convierte en sonido, dando vida a composiciones únicas grabadas en un contexto definido. Esta etapa combina creatividad y tecnología, dando como resultado final una pieza musical única para cada terrario que podrá ser reproducida escaneando el QR.",
   ],
 ];
 

@@ -14,7 +14,7 @@
 
 export const THEMES = ["system", "light", "dark"];
 
-const BAR_COLORS = { light: "#ffffff", dark: "#0a0a0a" };
+const BAR_COLORS = { light: "#ffffff", dark: "#141413" };
 
 export function applyTheme(theme = "light") {
   const root = document.documentElement;

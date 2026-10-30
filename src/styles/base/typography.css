@@ -42,7 +42,7 @@ h3 {
     gap: var(--spacing-4xl);
     /* el aire arriba agranda el área tocable (12 + 22 + 12 = 46px ≥ 44) */
     padding-block: var(--spacing-md);
-    border-bottom: 1px solid currentColor;
+    border-bottom: 1px solid var(--color-action);
     font-size: var(--font-base-size);
     line-height: var(--font-base-line);
     font-weight: var(--font-weight-regular);

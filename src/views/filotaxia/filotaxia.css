@@ -2,281 +2,123 @@
    Views — Guía
    ============================================ */
 
-/* Como una lista de tareas del día: arriba la card "Tu recorrido" con el
-   porcentaje grande y un punto por paso; debajo, una fila gris por paso
-   (chips, título, una línea y el círculo "Ver" a la derecha), separadas
-   por 2px de aire. Debajo de todo, "Para saber más". */
+/* De arriba hacia abajo: el proceso ("1 proceso / 3 etapas", como en la
+   página Música de filotaxia.com: frase grande, slider de fotos con una línea
+   que se llena y las tres etapas), "Tu recorrido" (la animación de los 3
+   pasos para conectar, components/connect-loop) y las preguntas frecuentes. */
 
-/* --- Tu recorrido --- */
-.journey {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-        "label   count"
-        "percent dots";
-    align-items: end;
-    row-gap: var(--spacing-xl);
-    padding: var(--spacing-lg);
-    background: var(--color-block-bg);
+/* Cada sección separada por el mismo aire */
+.journey,
+.guide-faq {
+    margin-top: var(--spacing-5xl);
 }
 
-.journey__label {
-    grid-area: label;
-    align-self: start;
-    font-size: var(--font-sm-size);
-    line-height: var(--font-sm-line);
-    color: var(--color-text-muted);
-}
-
-.journey__count {
-    grid-area: count;
-    align-self: start;
-    font-size: var(--font-sm-size);
-    line-height: var(--font-sm-line);
-}
-
-.journey__percent {
-    grid-area: percent;
-    font-size: var(--num-lg-size);
-    line-height: var(--num-lg-line);
-    letter-spacing: var(--num-lg-tracking);
-    /* el tracking negativo come el borde izquierdo de la primera cifra */
-    margin-left: -3px;
-}
-
-/* Un punto por paso, se llenan de izquierda a derecha con los hechos */
-.journey__dots {
-    grid-area: dots;
-    display: flex;
-    gap: 6px;
-    padding-bottom: var(--spacing-sm);
-}
-
-.journey__dot {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;   /* círculo a propósito, como en la referencia */
-    background: var(--color-track);
-    transition: background-color var(--transition-normal);
-}
-
-.journey__dot.is-done {
-    background: var(--color-text);
-}
-
-/* --- Los pasos --- */
-.steps {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    margin-top: calc(var(--gap-xl) * -1 + var(--spacing-sm));   /* pegada a la card de arriba */
-}
-
-.step {
-    display: flex;
-    align-items: center;
-    gap: var(--gap-md);
-    padding: var(--spacing-lg);
-    background: var(--color-block-bg);
-}
-
-.step__body {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-sm);
-}
-
-.step__chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--gap-xs);
-}
-
-/* Chip chico blanco (como las etiquetas de los bloques) */
-.step__chip {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--gap-xs);
-    min-height: 26px;
-    padding: 0 var(--spacing-sm);
-    background: var(--color-badge-bg);
-    font-size: var(--font-xs-size);
-    line-height: var(--font-xs-line);
-}
-
-/* "✓ Hecho": inverso, la marca del paso cumplido */
-.step__chip--done {
-    background: var(--color-inverse-bg);
-    color: var(--color-inverse-text);
-}
-
-.step__chip svg {
-    width: 12px;
-    height: 12px;
-    stroke-width: 2;
-}
-
-.step__title {
+/* Título de sección, del tamaño del título de las pantallas */
+.guide-title {
     font-size: var(--font-xl-size);
     line-height: var(--font-xl-line);
     letter-spacing: var(--font-xl-tracking);
 }
 
-.step__short {
-    font-size: var(--font-sm-size);
-    line-height: var(--font-sm-line);
-    color: var(--color-text-muted);
-}
-
-/* Los pasos hechos, un poco atenuados (menos el chip "Hecho" y el ✓) */
-.step.is-done .step__title,
-.step.is-done .step__short {
-    opacity: 0.5;
-}
-
-/* El círculo "Ver": negro (o claro con ✓ si el paso está hecho) */
-.step__see {
-    flex-shrink: 0;
-    width: var(--size-play);
-    height: var(--size-play);
-    display: grid;
-    place-items: center;
-    border-radius: 50%;   /* círculo a propósito, como el play */
-    background: var(--color-inverse-bg);
-    color: var(--color-inverse-text);
-    font-size: var(--font-sm-size);
-    line-height: var(--font-sm-line);
-    transition: transform var(--transition-fast);
-}
-
-.step__see:active {
-    transform: scale(0.94);
-}
-
-.step.is-done .step__see {
-    background: var(--color-badge-bg);
-    color: var(--color-text);
-}
-
-.step__see svg {
-    width: var(--icon-md);
-    height: var(--icon-md);
-}
-
-/* --- Hoja del paso: el video, el texto y el botón --- */
-.step-sheet {
+/* --- Proceso --- */
+.process {
     display: flex;
     flex-direction: column;
     gap: var(--gap-lg);
+    margin-top: var(--spacing-xl);
 }
 
-.step-sheet__video {
+/* "1 proceso / 3 etapas": chico, en el color del texto (el h4 de la web) */
+.process__label {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+/* La frase grande (el h3 de la web) */
+.process__intro {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+/* Slider: llega hasta los bordes de la pantalla (se come el margen lateral),
+   cada foto se frena alineada con el texto y la siguiente asoma */
+.process__slider {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+    margin-top: var(--spacing-lg);
+}
+
+.process__track {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter);
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+}
+
+.process__track::-webkit-scrollbar {
+    display: none;
+}
+
+.process__slide {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+}
+
+.process__photo {
     width: 100%;
-    aspect-ratio: 16 / 9;
-    background: var(--color-inverse-bg);
-}
-
-/* Sin video todavía: un recuadro con el play y "Video en preparación" */
-.step-sheet__video--soon {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--gap-sm);
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
     background: var(--color-block-bg);
-    color: var(--color-text-muted);
-    font-size: var(--font-sm-size);
-    line-height: var(--font-sm-line);
 }
 
-.step-sheet__video--soon svg {
-    width: var(--icon-lg);
-    height: var(--icon-lg);
+/* La línea de progreso: fina, gris, y lo lleno en el color del texto, que
+   crece desde la izquierda (el JS le cambia el scaleX al deslizar) */
+.process__progress {
+    height: 2px;
+    background: var(--color-track);
+    overflow: hidden;
 }
 
-.step-sheet__done {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--gap-xs);
-    min-height: var(--size-btn);
-    font-size: var(--font-sm-size);
-    color: var(--color-text-muted);
+.process__bar {
+    display: block;
+    height: 100%;
+    background: var(--color-text);
+    transform: scaleX(0.18);
+    transform-origin: left;
 }
 
-.step-sheet__done svg {
-    width: var(--icon-sm);
-    height: var(--icon-sm);
-}
-
-/* --- Para saber más --- */
-.help__heading {
-    margin-top: var(--spacing-3xl);
-    font-size: var(--font-lg-size);
-    line-height: var(--font-lg-line);
-    letter-spacing: var(--font-lg-tracking);
-}
-
-.help {
+/* Las tres etapas: "Etapa 1 / …" en el color del texto, el texto en gris */
+.process__stages {
     display: flex;
     flex-direction: column;
-    gap: var(--gap-lg);
-    padding-top: var(--spacing-xl);
-    border-top: 1px solid var(--color-line);
+    gap: var(--spacing-2xl);
+    margin-top: var(--spacing-lg);
 }
 
-.help__steps,
-.help__faq {
+.process__stage-title {
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+/* --- Tu recorrido: el título y, debajo, la animación de los 3 pasos --- */
+.journey {
     display: flex;
     flex-direction: column;
-    gap: var(--gap-xl);
-}
-
-.help__step {
-    display: flex;
     gap: var(--gap-md);
 }
 
-.help__index {
-    flex-shrink: 0;
-    width: 28px;
-    font-size: var(--font-sm-size);
-    line-height: var(--font-sm-line);
-    font-weight: var(--font-weight-medium);
-    font-variant-numeric: tabular-nums;
-}
-
-.help__item {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-xs);
-}
-
-.help dt,
-.help__step-title {
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
-    font-weight: var(--font-weight-medium);
-}
-
-/* El material de una capa, chico y gris al lado del nombre */
-.help__material {
-    margin-left: var(--spacing-xs);
-    font-size: var(--font-sm-size);
-    line-height: var(--font-sm-line);
-    font-weight: var(--font-weight-regular);
-    color: var(--color-text-muted);
-}
-
-.help .lead {
-    max-width: 480px;
-}
-
-/* "Ver el Manifiesto →" al final */
-.help__more {
+/* --- Preguntas frecuentes (las clases .faq son de cuidados.css) --- */
+.guide-faq__more {
     align-self: flex-start;
+    margin-top: var(--spacing-lg);
 }
 
 /* ============================================
@@ -284,7 +126,11 @@ RESPONSIVE
 ============================================ */
 
 @media (min-width: 768px) {
-    .view:has(.steps) {
+    .view:has(.process) {
         max-width: 560px;
+    }
+
+    .process__slide {
+        flex-basis: 420px;
     }
 }
