@@ -2,8 +2,8 @@
    Views — Terrario
    ============================================ */
 
-/* Ajustes arriba a la derecha, ilustración a todo el ancho, texto alineado
-   a la izquierda, acciones al pie. */
+/* Volver y Ajustes arriba, ilustración a todo el ancho, texto alineado
+   a la izquierda; Especificaciones termina con filas que son links. */
 
 .terrario {
     display: flex;
@@ -11,9 +11,11 @@
     gap: var(--gap-xl);
 }
 
+/* "← Mi terrario" a la izquierda, Ajustes a la derecha */
 .terrario__top {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: space-between;
     /* pegado arriba y a la foto (el gap de la ficha es de 24px) */
     margin-block: calc(var(--spacing-md) * -1) calc(var(--spacing-lg) * -1);
 }
@@ -32,6 +34,16 @@
     outline: none;
 }
 
+/* El código ("TR05") en grande: más que los títulos de sección (28px),
+   con el tracking cerrado de los números grandes */
+.terrario__code {
+    font-size: var(--num-lg-size);
+    line-height: var(--num-lg-line);
+    letter-spacing: var(--num-lg-tracking);
+    /* el tracking negativo come el borde izquierdo de la "T" */
+    margin-left: -2px;
+}
+
 .terrario__story {
     max-width: 420px;
     margin-top: var(--spacing-xs);
@@ -44,6 +56,14 @@
     display: flex;
     flex-direction: column;
     gap: var(--gap-md);
+}
+
+/* --- Títulos de sección: como el título de las pantallas (header) --- */
+.terrario__title {
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
 }
 
 .specs__list {
@@ -72,14 +92,176 @@
     text-align: right;
 }
 
+/* --- Filas-link (Próximo riego, Bitácora, Pieza): como las de arriba,
+   pero el dato va en negro con una flecha y toda la fila se toca --- */
+.specs__row--link {
+    position: relative;
+    align-items: center;
+    min-height: var(--size-tap);
+}
+
+.specs__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-sm);
+}
+
+/* El link cubre toda la fila */
+.specs__link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+
+.specs__row--link:active {
+    opacity: 0.6;
+}
+
+/* ============================================
+   Secciones de abajo (terrario-secciones.js)
+   ============================================ */
+
+/* Especificaciones, Características, Cómo funciona y Preguntas: el mismo
+   aire arriba de cada una */
+.terrario .specs,
+.features,
+.how,
+.terrario .faq {
+    margin-top: var(--spacing-3xl);
+}
+
+/* --- Características: slider que se desliza con el dedo --- */
+.features {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+}
+
+/* El track llega hasta los bordes de la pantalla (se come el margen
+   lateral) y cada tarjeta se frena alineada con el texto de arriba.
+   La siguiente asoma a la derecha: así se ve que hay más. */
+.features__track {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+}
+
+.features__track::-webkit-scrollbar {
+    display: none;
+}
+
+.features__card {
+    flex: 0 0 85%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+    scroll-snap-align: start;
+}
+
+.features__image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    margin-bottom: var(--spacing-sm);
+    object-fit: cover;
+    background: var(--color-block-bg);
+}
+
+.features__title {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+/* --- Cómo funciona: la foto arriba y los pasos debajo --- */
+.how {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+    align-items: flex-start;
+}
+
+/* Las tres fotos apiladas: se ve la activa (sin GSAP, cambia sin animación;
+   con GSAP, la animación pisa la opacidad) */
+.how__images {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 930 / 800;
+    overflow: hidden;
+    background: var(--color-block-bg);
+}
+
+.how__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+}
+
+.how__image.is-active {
+    z-index: 1;
+    opacity: 1;
+}
+
+.how__list {
+    width: 100%;
+    border-top: 1px solid var(--color-line);
+}
+
+/* Cada paso: número, texto y flecha. El activo en negro, el resto en gris */
+.how__step {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--gap-md);
+    width: 100%;
+    padding-block: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-line);
+    text-align: left;
+    color: var(--color-text-muted);
+    transition: color var(--transition-normal);
+}
+
+.how__step[aria-pressed="true"] {
+    color: var(--color-text);
+}
+
+.how__number,
+.how__text {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+}
+
+/* La flecha gira hacia arriba en el paso activo, como en la web */
+.how__step .arrow {
+    /* arriba, a su tamaño: estirada al alto de la fila, al girar se saldría */
+    align-self: start;
+    font-size: var(--font-base-size);
+    transition: transform var(--transition-normal);
+}
+
+.how__step[aria-pressed="true"] .arrow {
+    transform: rotate(-45deg);
+}
+
 /* ============================================
 RESPONSIVE
 ============================================ */
 
 @media (min-width: 768px) {
     .terrario__art,
-    .specs {
+    .specs,
+    .how {
         max-width: 420px;
+    }
+
+    .features__card {
+        flex-basis: 320px;
     }
 
     .terrario .screen__actions {

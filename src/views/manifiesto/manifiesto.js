@@ -34,11 +34,18 @@
 // de filotaxia.com); la 2, la 3 y la 4 llenan el alto (título arriba,
 // terrario o tarjetas abajo / gráfico arriba, texto abajo); las demás van centradas.
 //
-// Se pasa de pantalla solo tocando o con click (tercio izquierdo = atrás,
-// resto = adelante) o con las flechas del teclado: deslizar o hacer scroll
-// no la mueve (overflow hidden en el CSS; el JS la corre con scrollTo).
-// No hay botón "Siguiente" a la vista (así las pantallas tienen más lugar):
-// queda uno escondido para lectores de pantalla.
+// Pasa sola, como las historias de Instagram: cada pantalla dura 4 s
+// (AUTOPLAY_MS) y su línea de arriba se va llenando; al llenarse, sigue la
+// próxima (en la última se queda). Mantener apretado la pausa; tocar algo de
+// adentro de una pantalla (un punto, una capa, las hojas) frena el autoplay
+// del todo, porque la persona está explorando. Con "reducir movimiento" en el
+// teléfono no pasa sola.
+// A mano: tocando o con click (tercio izquierdo = atrás, resto = adelante),
+// y en ese borde aparece un instante una barra lateral con la flecha; tocando
+// una de las líneas de arriba (va directo a esa pantalla) o con las flechas
+// del teclado. Deslizar o hacer scroll no la mueve (overflow hidden en el
+// CSS; el JS la corre con scrollTo). Hay "anterior" / "siguiente" escondidos
+// para lectores de pantalla.
 
 import { get, set } from "../../store/store.js";
 import { linkedIds } from "../../store/collection.js";
@@ -51,9 +58,14 @@ import { buildScore, seedFrom } from "../../audio/score.js";
 import { leafWaves, bindLeafWaves } from "../../components/leaf-waves/leaf-waves.js";
 import { formatDate } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
-import { icon } from "../../utils/icons.js";
+import { icon, arrow } from "../../utils/icons.js";
 
 export const title = "Manifiesto";
+
+// Cuánto dura cada pantalla con autoplay (la línea de arriba tarda esto en llenarse)
+const AUTOPLAY_MS = 4000;
+// Apretar más que esto es "pausar", no "tocar para pasar"
+const HOLD_MS = 300;
 // Sin barra en el primer escaneo (con id: es parte del onboarding);
 // abierto desde la barra (sin id), la barra sigue ahí
 export const nav = ({ params }) => !params.id;
@@ -132,12 +144,17 @@ export async function render(root, { params }) {
   const last = SLIDES.length - 1;
 
   root.innerHTML = `
-    <section class="screen manifiesto">
+    <section class="screen manifiesto" style="--autoplay: ${AUTOPLAY_MS}ms">
       <h1 class="visually-hidden" tabindex="-1">Manifiesto</h1>
 
       <div class="manifiesto__top">
-        <ol class="manifiesto__progress" aria-hidden="true">
-          ${SLIDES.map(() => `<li class="manifiesto__bar"></li>`).join("")}
+        <ol class="manifiesto__progress" aria-label="Pantallas">
+          ${SLIDES.map((_, i) => `
+            <li>
+              <button class="manifiesto__bar" type="button" data-go="${i}" aria-label="Ir a la pantalla ${i + 1}">
+                <span class="manifiesto__line"><span class="manifiesto__fill" data-fill></span></span>
+              </button>
+            </li>`).join("")}
         </ol>
         <div class="manifiesto__meta">
           <span class="eyebrow" data-count aria-hidden="true">01 / 0${SLIDES.length}</span>
@@ -153,18 +170,30 @@ export async function render(root, { params }) {
           </section>`).join("")}
       </div>
 
+      <!-- Las barras laterales que se ven un instante al tocar un costado -->
+      <span class="manifiesto__side manifiesto__side--prev" data-side-prev aria-hidden="true"><span>${arrow("left")}</span></span>
+      <span class="manifiesto__side manifiesto__side--next" data-side-next aria-hidden="true"><span>${arrow()}</span></span>
+
       <!-- Para lectores de pantalla: a la vista se pasa tocando -->
-      <button class="visually-hidden" type="button" data-next>Siguiente pantalla</button>
+      <button class="visually-hidden" type="button" data-prev>Pantalla anterior</button>
+      <button class="visually-hidden" type="button" data-next>Pantalla siguiente</button>
     </section>
   `;
 
   const track = root.querySelector("[data-track]");
   const slides = [...root.querySelectorAll("[data-slide]")];
+  const screen = root.querySelector(".manifiesto");
   const bars = [...root.querySelectorAll(".manifiesto__bar")];
+  const fills = [...root.querySelectorAll("[data-fill]")];
+  const sidePrev = root.querySelector("[data-side-prev]");
+  const sideNext = root.querySelector("[data-side-next]");
   const count = root.querySelector("[data-count]");
+  const prev = root.querySelector("[data-prev]");
   const next = root.querySelector("[data-next]");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let current = 0;   // la pantalla a la que vamos (solo la cambia goTo)
+  let shown = 0;     // la que se ve (la cambia show)
+  let autoplay = !reduceMotion;
   const waves = bindLeafWaves(root);   // los dos puntos de la pantalla 4
   const layerCycle = bindLayers(root);  // las barras de la pantalla 3
   bindAnatomy(root);                    // los puntos de la pantalla 2
@@ -185,15 +214,52 @@ export async function render(root, { params }) {
     track.scrollTo({ left: target * track.clientWidth, behavior: reduceMotion ? "auto" : "smooth" });
   }
 
-  // Pinta la pantalla actual: barras de progreso y contador
+  // Un paso a mano (tocar un costado, teclado): la barra de ese lado se ve
+  // un instante y pasa de pantalla
+  function step(direction) {
+    const target = current + direction;
+    if (target < 0 || target > last) return;
+    if (!reduceMotion) {
+      (direction < 0 ? sidePrev : sideNext).animate(
+        [{ opacity: 0 }, { opacity: 1, offset: 0.25 }, { opacity: 0 }],
+        { duration: 700, easing: "ease-out" },
+      );
+    }
+    goTo(target);
+  }
+
+  // Las líneas de arriba: las anteriores llenas, las siguientes vacías y la
+  // actual llenándose (con autoplay) o llena (sin autoplay, o en la última)
+  function paintBars(index) {
+    const playing = autoplay && index < last;
+    fills.forEach((fill, i) => {
+      fill.classList.remove("is-playing");
+      fill.classList.toggle("is-full", i < index || (i === index && !playing));
+      bars[i].toggleAttribute("aria-current", i === index);
+    });
+    if (playing) {
+      void fills[index].offsetWidth;   // así la animación arranca de cero
+      fills[index].classList.add("is-playing");
+    }
+  }
+
+  function stopAutoplay() {
+    if (!autoplay) return;
+    autoplay = false;
+    paintBars(shown);
+  }
+
+  // Pinta la pantalla actual: líneas de progreso y contador
   // (no toca `current`: mientras desliza de la 1 a la 3 pasa por la 2, y eso
   // no tiene que cambiar a dónde vamos)
   function show(index) {
+    shown = index;
     slides[index].dataset.seen = "";   // arranca su animación de entrada (una vez)
-    bars.forEach((bar, i) => bar.classList.toggle("is-done", i <= index));
+    paintBars(index);
     slides.forEach((slide, i) => slide.toggleAttribute("aria-hidden", i !== index));
     count.textContent = `${String(index + 1).padStart(2, "0")} / ${String(SLIDES.length).padStart(2, "0")}`;
-    next.hidden = index === last;
+    prev.disabled = index === 0;
+    next.disabled = index === last;
     // Pantalla 4: a los 3 s de verla, las hojas giran a sus ondas
     if (slides[index].querySelector("[data-leaf-waves]")) waves.play();
     // Pantalla 3: las capas pasan solas solo mientras se ve
@@ -209,14 +275,54 @@ export async function render(root, { params }) {
   );
   slides.forEach((slide) => observer.observe(slide));
 
-  // Tocar: el tercio izquierdo vuelve, el resto avanza (salvo el botón
-  // "Escuchar la pieza", que es un link)
-  track.addEventListener("click", (event) => {
-    if (event.target.closest("[data-listen]")) return;
-    const { left, width } = track.getBoundingClientRect();
-    goTo(event.clientX - left < width / 3 ? current - 1 : current + 1);
+  // Autoplay: cuando la línea de la pantalla actual se llena, sigue la próxima
+  fills.forEach((fill, i) => {
+    fill.addEventListener("animationend", () => {
+      if (autoplay && i === shown) goTo(i + 1);
+    });
   });
-  next.addEventListener("click", () => goTo(current + 1));
+
+  // Mantener apretado pausa (la línea se frena); al soltar, sigue
+  let pressedAt = 0;
+  let held = false;
+  track.addEventListener("pointerdown", () => {
+    pressedAt = performance.now();
+    held = false;
+    screen.classList.add("is-paused");
+  });
+  track.addEventListener("pointerup", () => {
+    held = performance.now() - pressedAt > HOLD_MS;
+    screen.classList.remove("is-paused");
+  });
+  ["pointercancel", "pointerleave"].forEach((type) =>
+    track.addEventListener(type, () => screen.classList.remove("is-paused")));
+
+  // Con la app en segundo plano tampoco avanza
+  function onVisibility() {
+    screen.classList.toggle("is-away", document.hidden);
+  }
+  document.addEventListener("visibilitychange", onVisibility);
+
+  // Tocar algo de adentro de una pantalla (un punto, una capa, las hojas):
+  // está explorando, el autoplay se frena del todo. Va en la fase de captura
+  // porque esos controles frenan el click para no pasar de pantalla.
+  track.addEventListener("click", (event) => {
+    if (event.target.closest("button, a")) stopAutoplay();
+  }, true);
+
+  // Tocar: el tercio izquierdo vuelve, el resto avanza (salvo el botón
+  // "Escuchar la pieza", que es un link, y salvo que haya sido una pausa)
+  track.addEventListener("click", (event) => {
+    const wasHeld = held;
+    held = false;   // vale solo para el click que sigue a ese apretón
+    if (event.target.closest("[data-listen]") || wasHeld) return;
+    const { left, width } = track.getBoundingClientRect();
+    step(event.clientX - left < width / 3 ? -1 : 1);
+  });
+  prev.addEventListener("click", () => step(-1));
+  next.addEventListener("click", () => step(1));
+  // Las líneas de arriba llevan directo a su pantalla
+  bars.forEach((bar) => bar.addEventListener("click", () => goTo(Number(bar.dataset.go))));
 
   // Saltar / Cerrar / Escuchar la pieza: ya lo vio
   root.querySelectorAll("[data-done]").forEach((link) => {
@@ -229,8 +335,8 @@ export async function render(root, { params }) {
   });
 
   function onKey(event) {
-    if (event.key === "ArrowRight") goTo(current + 1);
-    if (event.key === "ArrowLeft") goTo(current - 1);
+    if (event.key === "ArrowRight") step(1);
+    if (event.key === "ArrowLeft") step(-1);
   }
   document.addEventListener("keydown", onKey);
 
@@ -239,6 +345,7 @@ export async function render(root, { params }) {
     waves.stop();
     layerCycle.stop();
     document.removeEventListener("keydown", onKey);
+    document.removeEventListener("visibilitychange", onVisibility);
   };
 }
 

@@ -54,16 +54,59 @@ html:has(.manifiesto) body {
     gap: var(--gap-xs);
 }
 
+.manifiesto__progress li {
+    flex: 1;
+}
+
+/* Cada línea es un botón que lleva a su pantalla: se toca en 44px de alto,
+   pero ocupa solo los 2px de la línea (los márgenes negativos devuelven el
+   resto), así la tira de arriba no cambia de alto */
 .manifiesto__bar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: var(--size-tap);
+    margin-block: calc((var(--size-tap) - 2px) / -2);
+}
+
+.manifiesto__line {
+    position: relative;
     flex: 1;
     height: 2px;
     border-radius: var(--radius-full);
     background: var(--color-track);
-    transition: background-color var(--transition-normal);
+    overflow: hidden;
 }
 
-.manifiesto__bar.is-done {
+/* Lo lleno de la línea: vacío, lleno (.is-full) o llenándose en lo que dura
+   la pantalla (.is-playing; --autoplay lo pone el JS). Al terminar, el JS
+   pasa a la próxima */
+.manifiesto__fill {
+    position: absolute;
+    inset: 0;
     background: var(--color-text);
+    transform: scaleX(0);
+    transform-origin: left;
+}
+
+.manifiesto__fill.is-full {
+    transform: scaleX(1);
+}
+
+@keyframes manifiesto-fill {
+    to {
+        transform: scaleX(1);
+    }
+}
+
+.manifiesto__fill.is-playing {
+    animation: manifiesto-fill var(--autoplay) linear forwards;
+}
+
+/* Apretando la pantalla, o con la app en segundo plano: se frena */
+.manifiesto.is-paused .manifiesto__fill,
+.manifiesto.is-away .manifiesto__fill {
+    animation-play-state: paused;
 }
 
 .manifiesto__meta {
@@ -751,6 +794,54 @@ html:has(.manifiesto) body {
 /* "Saltar" / "Cerrar": link de texto sin la línea de abajo */
 .manifiesto__skip {
     border-bottom: none;
+}
+
+/* --- Barras laterales: al tocar un costado, en ese borde se ve un instante
+   una franja que se desvanece hacia adentro, con la flecha (el JS anima la
+   opacidad). No reciben toques: el toque es del carrusel --- */
+.manifiesto__side {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    width: 72px;
+    display: flex;
+    align-items: center;
+    padding-inline: var(--spacing-md);
+    font-size: var(--font-xl-size);
+    color: var(--color-text);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.manifiesto__side--prev {
+    left: calc(var(--gutter) * -1);
+}
+
+.manifiesto__side--next {
+    right: calc(var(--gutter) * -1);
+    justify-content: flex-end;
+}
+
+/* La franja: el color del texto, suave, que se va a transparente */
+.manifiesto__side::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.12;
+}
+
+.manifiesto__side--prev::before {
+    background: linear-gradient(to right, var(--color-text), transparent);
+}
+
+.manifiesto__side--next::before {
+    background: linear-gradient(to left, var(--color-text), transparent);
+}
+
+/* La flecha, encima de la franja */
+.manifiesto__side > span {
+    position: relative;
 }
 
 /* ============================================

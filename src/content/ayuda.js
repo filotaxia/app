@@ -8,10 +8,49 @@
 // CARE_GUIDE (la guía de Cuidados) y los pasos 04 y 05 de STEPS son un
 // borrador propio, armado con lo que dice la web: revisarlos antes de publicar.
 
+// "¿Cómo funciona?" de la página de cada terrario: tres pasos, cada uno con
+// su foto (la ficha cambia la foto al tocar el paso, views/terrario).
+// Las fotos son las de la web (cuidados/sq10, sq5, sq7) a 800px; la de la
+// ventana va en el paso 01, que habla de la luz (en la web estaba en el 02).
 export const HOW_IT_WORKS = [
-  "Colocá el terrario en un lugar con luz indirecta, preferentemente cerca de una ventana. Esto asegura que las plantas reciban la iluminación adecuada para mantenerse saludables.",
-  "Escaneando el código QR accedés directamente a la armonía de las plantas: la pieza musical generada a partir de su actividad y al mismo tiempo a material exclusivo asociado a tu terrario.",
-  "Vas a escuchar el terrario y descubrir una conversación sutil que nace del ecosistema mismo y se traduce en música. De esta manera podés oír y observar al mismo tiempo tu terrario.",
+  {
+    text: "Colocá el terrario en un lugar con luz indirecta, preferentemente cerca de una ventana. Esto asegura que las plantas reciban la iluminación adecuada para mantenerse saludables.",
+    image: "src/assets/images/ficha/ventana.jpg",
+    alt: "Un terrario de vidrio con suculentas junto a una ventana",
+  },
+  {
+    text: "Escaneando el código QR accedés directamente a la armonía de las plantas: la pieza musical generada a partir de su actividad y al mismo tiempo a material exclusivo asociado a tu terrario.",
+    image: "src/assets/images/ficha/jeringa.jpg",
+    alt: "Una mano riega un terrario con una jeringa",
+  },
+  {
+    text: "Vas a escuchar el terrario y descubrir una conversación sutil que nace del ecosistema mismo y se traduce en música. De esta manera podés oír y observar al mismo tiempo tu terrario.",
+    image: "src/assets/images/ficha/pinza.jpg",
+    alt: "Una mano acomoda las plantas de un terrario con una pinza",
+  },
+];
+
+// Las tres características de cada terrario (la página de cada terrario en
+// filotaxia.com), con sus fotos a 800px. La ficha las muestra en un slider.
+export const FEATURES = [
+  {
+    title: "Recipiente resistente",
+    text: "El contenedor está fabricado en vidrio duradero, fácil de limpiar y diseñado para proteger el ecosistema sin alterar su equilibrio.",
+    image: "src/assets/images/ficha/recipiente.jpg",
+    alt: "Un terrario en un recipiente cilíndrico de vidrio, visto desde arriba",
+  },
+  {
+    title: "QR integrado",
+    text: "Cada terrario incluye un código QR que permite escuchar la biosonificación de sus plantas en formato musical.",
+    image: "src/assets/images/ficha/qr.jpg",
+    alt: "Suculentas y piedras de un terrario, vistas desde arriba",
+  },
+  {
+    title: "Composición única",
+    text: "La selección de especies y el orden de sus capas garantizan un diseño equilibrado y funcional en cada terrario.",
+    image: "src/assets/images/ficha/composicion.jpg",
+    alt: "Suculentas de hojas puntiagudas de un terrario, de cerca",
+  },
 ];
 
 export const CARE_FAQ = [

@@ -10,27 +10,38 @@
 // El primero que se escanea pasa a ser "Mi terrario".
 // Sin escanear (por ejemplo, escribiendo #/terrario/03), un terrario que este
 // teléfono no tiene conectado muestra "Sin conectar" y no se suma.
-// Si el terrario trae ficha técnica (modelo, ecosistema, plantas…), se lista
-// debajo de la historia, como en filotaxia.com.
-// Al pie: "Escuchar" (el reproductor), sus cuidados o la colección, y su
-// Bitácora (views/bitacora). Ajustes queda arriba a la derecha.
+// Debajo de la historia, "Especificaciones", como en filotaxia.com: la ficha
+// técnica (modelo, ecosistema, plantas…) y, en la misma lista, tres filas
+// que son links, con una flecha: el próximo riego → Cuidados (o, si no es el
+// propio, cuántos terrarios hay → Colección), sus notas → Bitácora
+// (views/bitacora) y la duración de la pieza → el reproductor (views/escuchar).
+// Arriba, "← Mi terrario" o "← Colección" a la izquierda (como en Escuchar)
+// y Ajustes a la derecha.
+// Más abajo, como en la página del terrario en filotaxia.com
+// (terrario-secciones.js): Características (slider), Cómo funciona (la foto
+// cambia al tocar cada paso, con GSAP) y Preguntas frecuentes al final.
 
 import { getTerrario, codeOf } from "../../content/terrarios.js";
-import { isLinked, link, markScanned } from "../../store/collection.js";
+import { isLinked, link, markScanned, linkedIds } from "../../store/collection.js";
 import { takeScanIntent } from "../../utils/scan-intent.js";
-import { claimIfFirst, myTerrarioId } from "../../store/my-terrario.js";
+import { claimIfFirst, myTerrarioId, lastCare } from "../../store/my-terrario.js";
+import { entries } from "../../store/bitacora.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
 import { toast } from "../../components/toast/toast.js";
-import { formatDate } from "../../utils/format.js";
+import { formatDate, formatTime } from "../../utils/format.js";
+import { nextCare, dueLabel } from "../../utils/care.js";
+import { todayKey } from "../../utils/dates.js";
 import { escapeHTML } from "../../utils/html.js";
+import { arrow } from "../../utils/icons.js";
+import { sections, bindSections, heading } from "./terrario-secciones.js";
 
 export const title = ({ params }) => {
   const terrario = getTerrario(params.id);
   return terrario ? codeOf(terrario) : "Terrario";
 };
 
-export async function render(root, { params }) {
+export async function render(root, { params, from }) {
   const terrario = getTerrario(params.id);
 
   if (!terrario) {
@@ -60,37 +71,44 @@ export async function render(root, { params }) {
   }
 
   const isMine = (await myTerrarioId()) === terrario.id;
+  const back = backTo(from, isMine);
+  const today = todayKey();
+  const notes = await entries(terrario.id);
 
   root.innerHTML = `
     <article class="screen terrario">
-      <div class="terrario__top">${settingsLink()}</div>
+      <div class="terrario__top">
+        <a class="back-link" href="${back.href}">${arrow("left")} ${back.label}</a>
+        ${settingsLink()}
+      </div>
       <div class="terrario__art reveal">${terrariumArt({ photo: terrario.photo })}</div>
 
       <div class="terrario__info reveal-stagger">
-        <p class="eyebrow">Terrario</p>
-        <h1 class="title" tabindex="-1">${escapeHTML(codeOf(terrario))}</h1>
+        <h1 class="title terrario__code" tabindex="-1">${escapeHTML(codeOf(terrario))}</h1>
         <p class="terrario__story lead">
           Un ecosistema vivo que empezó a sonar el ${formatDate(terrario.recorded)}.
           ${escapeHTML(terrario.story)}
         </p>
       </div>
 
-      ${specs(terrario)}
+      ${specs(terrario, [
+        isMine ? await careRow(terrario, today) : await collectionRow(),
+        ["Bitácora", notes.length === 1 ? "1 nota" : `${notes.length} notas`, `#/bitacora/${terrario.id}`],
+        ["Pieza", formatTime(terrario.duration), `#/escuchar/${terrario.id}`, `Escuchar la pieza (${formatTime(terrario.duration)})`],
+      ])}
 
-      <div class="screen__actions">
-        <a class="btn btn--primary" href="#/escuchar/${terrario.id}">Escuchar</a>
-        ${isMine
-          ? `<a class="text-link" href="#/mi-terrario">Ver sus cuidados</a>`
-          : `<a class="text-link" href="#/coleccion">Ir a mis terrarios</a>`}
-        <a class="text-link" href="#/bitacora/${terrario.id}">Ver su bitácora</a>
-      </div>
+      ${sections()}
     </article>
   `;
 
+  return bindSections(root);
 }
 
-// "Especificaciones": filas con la etiqueta chica a la izquierda y el dato a la derecha
-function specs(terrario) {
+// "Especificaciones": filas con la etiqueta chica a la izquierda y el dato a
+// la derecha. Al final, `links` ([etiqueta, dato, href, texto para lectores de
+// pantalla opcional]): filas iguales, pero toda la fila es un link (el <a> del
+// dato se estira con ::after en CSS).
+function specs(terrario, links) {
   const rows = [
     ["Modelo", terrario.model],
     ["Ecosistema", terrario.specs?.ecosistema],
@@ -99,11 +117,9 @@ function specs(terrario) {
     ...(terrario.plants ?? []).map((plant, i) => [`Planta ${String(i + 1).padStart(2, "0")}`, plant]),
   ].filter(([, value]) => value);
 
-  if (!rows.length) return "";
-
   return `
     <section class="specs reveal" aria-labelledby="specs-title">
-      <h2 class="eyebrow" id="specs-title">Especificaciones</h2>
+      ${heading("specs-title", "Especificaciones")}
       <dl class="specs__list">
         ${rows
           .map(([label, value]) => `
@@ -112,9 +128,39 @@ function specs(terrario) {
             <dd class="specs__value">${escapeHTML(value)}</dd>
           </div>`)
           .join("")}
+        ${links
+          .map(([label, value, href, ariaLabel = `${label}: ${value}`]) => `
+          <div class="specs__row specs__row--link">
+            <dt class="specs__label">${label}</dt>
+            <dd class="specs__value">
+              <a class="specs__link" href="${href}" aria-label="${escapeHTML(ariaLabel)}">${escapeHTML(value)} ${arrow()}</a>
+            </dd>
+          </div>`)
+          .join("")}
       </dl>
     </section>
   `;
+}
+
+// "←" vuelve a donde estaba la persona (Mi terrario o Colección); si llegó
+// de otro lado (el reproductor, Ajustes), a la sección de este terrario.
+// La misma regla que el reproductor (views/escuchar).
+function backTo(from = "", isMine) {
+  if (from.startsWith("mi-terrario")) return { href: "#/mi-terrario", label: "Mi terrario" };
+  if (from === "coleccion") return { href: "#/coleccion", label: "Colección" };
+  return isMine ? { href: "#/mi-terrario", label: "Mi terrario" } : { href: "#/coleccion", label: "Colección" };
+}
+
+// El terrario propio: cuándo toca el próximo riego → la subpágina de cuidados
+async function careRow(terrario, today) {
+  const riego = nextCare({ last: await lastCare(terrario.id, "riego"), every: terrario.care.riego_days, today });
+  return ["Próximo riego", dueLabel(riego.daysLeft), "#/mi-terrario/cuidados"];
+}
+
+// Uno que no es el propio: cuántos terrarios hay conectados → la colección
+async function collectionRow() {
+  const count = (await linkedIds()).length;
+  return ["Mis terrarios", count === 1 ? "1 terrario" : `${count} terrarios`, "#/coleccion"];
 }
 
 // Un terrario que existe pero este teléfono no escaneó
