@@ -12,18 +12,89 @@
    480×400 fijo (particles.js) pero se muestra al ancho
    disponible, hasta esos 480px: la escala la hace sola el CSS. */
 .ptc {
-    position: relative;
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
 }
 
 .ptc-canvas {
     display: block;
     width: 100%;
     max-width: 480px;
+    margin: 0 auto;
     height: auto;
     aspect-ratio: 480 / 400;
     color: var(--color-text);
     cursor: crosshair;
     touch-action: none;
+}
+
+/* Donde la referencia pone sus dos números (00:00 … 03:33:09): acá, el
+   nombre de la hoja elegida a la izquierda y el de su onda a la derecha */
+.ptc-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--gap-md);
+}
+
+/* Cada lado: la etiqueta chica ("forma", "onda") arriba y el nombre grande
+   debajo, como "hoja / Puntiaguda" en leaf-waves */
+.ptc-info__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xs);
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+.ptc-info__item--end {
+    align-items: flex-end;
+}
+
+.ptc-info__caption {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    letter-spacing: 0;
+    color: var(--color-text-muted);
+}
+
+/* Como "00:00" (negro) y "03:33:09" (gris) en la referencia */
+.ptc-info__leaf {
+    color: var(--color-text);
+}
+
+.ptc-info__wave {
+    color: var(--color-text-muted);
+    text-align: right;
+}
+
+/* Los puntos de abajo, uno por hoja (como leaf-waves__dots): acá vive el
+   cambio de forma, no en el canvas, para que tocarlo en el celular no
+   cambie la hoja sin querer */
+.ptc-nav {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.ptc-dot {
+    width: var(--size-tap);
+    height: var(--size-tap);
+    display: grid;
+    place-items: center;
+}
+
+.ptc-dot::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-track);
+    transition: background-color var(--transition-fast);
+}
+
+.ptc-dot[aria-pressed="true"]::before {
+    background: var(--color-text);
 }
