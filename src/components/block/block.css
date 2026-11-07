@@ -56,16 +56,17 @@
     line-height: var(--font-base-line);
 }
 
-/* Etiqueta chica blanca arriba a la derecha */
+/* Etiqueta chica arriba a la derecha: texto plano, sin fondo
+   (como los chips, components/chip); pegada al título, más cerca que el
+   resto de las filas de la grilla */
 .block__badge {
     grid-area: badge;
     align-self: start;
     justify-self: start;
-    padding: var(--spacing-2xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    background: var(--color-badge-bg);
-    font-size: var(--font-2xs-size);
+    margin-top: calc(-1 * var(--spacing-2xs));
+    font-size: var(--font-xs-size);
     line-height: var(--font-xs-line);
+    color: var(--color-text);
     white-space: nowrap;
 }
 

@@ -6,7 +6,8 @@
 //   #/inicio                 splash
 //   #/mi-terrario            el terrario propio y sus cuidados
 //   #/mi-terrario/cuidados   riego, la guía general y las preguntas frecuentes
-//   #/escanear               escaneo del QR (desde el bloque Pieza)
+//   #/escanear               escaneo del QR ("Conectar" en Mi terrario o el QR chico
+//                            del bloque Pieza; ya no está en la barra)
 //   #/t/k7f2q9               adonde llega el QR impreso (/t/k7f2q9, vía 404.html):
 //                            busca el terrario de ese código y abre su ficha conectándolo
 //   #/terrario/04            ficha de un terrario (solo conecta si se llega escaneando)
@@ -14,11 +15,14 @@
 //   #/bitacora/04            bitácora de un terrario
 //   #/coleccion              mi colección
 //   #/ajustes                ajustes (desde el punto de arriba a la derecha)
-//   #/filotaxia              la experiencia paso a paso (antes, la hoja Ayuda de Ajustes)
+//   #/filotaxia              la Guía: la experiencia paso a paso (antes, la hoja Ayuda
+//                            de Ajustes; en la barra se llama "Guía")
+//   #/formas-ondas           Filotaxia: el catálogo de suculentas (hoja, su onda, su
+//                            foto), la génesis del proyecto — el centro de la barra
 //   #/manifiesto/04          introducción, una sola vez tras el primer escaneo
 //   #/manifiesto             la misma, desde la barra (termina en Mi terrario)
 //
-// La barra de abajo: Mi terrario · Colección · Conectar · Manifiesto · Guía.
+// La barra de abajo: Mi terrario · Colección · Filotaxia · Manifiesto · Guía.
 //
 // No hay cuentas: la colección vive en el teléfono.
 //
@@ -48,6 +52,7 @@ import * as bitacora from "./views/bitacora/bitacora.js";
 import * as ajustes from "./views/ajustes/ajustes.js";
 import * as cuidados from "./views/cuidados/cuidados.js";
 import * as filotaxia from "./views/filotaxia/filotaxia.js";
+import * as formasOndas from "./views/formas-ondas/formas-ondas.js";
 import * as manifiesto from "./views/manifiesto/manifiesto.js";
 import { setHeader, focusHeaderTitle } from "./layout/header/header.js";
 
@@ -64,6 +69,7 @@ const ROUTES = [
   ["coleccion", coleccion],
   ["ajustes", ajustes],
   ["filotaxia", filotaxia],
+  ["formas-ondas", formasOndas],
   ["manifiesto/:id?", manifiesto],
 ];
 const DEFAULT_ROUTE = "inicio";

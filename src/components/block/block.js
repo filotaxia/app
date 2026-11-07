@@ -3,7 +3,8 @@
    ============================================ */
 
 // Un bloque de dato: título con punto arriba a la izquierda, etiqueta arriba
-// a la derecha, ícono (opcional) y valor grande abajo (los números van sin
+// a la derecha entre paréntesis ("(Cada 30 días)", como "(PMF)" en
+// filotaxia.com), ícono (opcional) y valor grande abajo (los números van sin
 // punto final: "27 días", "4:11"). Con `meter`, el fondo se llena de
 // izquierda a derecha (como la batería de la referencia). Con `href`, el
 // bloque entero es un link. Van dentro de un <div class="blocks">.
@@ -22,7 +23,7 @@ export function block({ title, badge, icon: iconName, value, meter, action = "",
     <${tag} class="${classes}"${style}${href ? ` href="${href}"` : ""}>
       ${meter ? `<span class="block__fill" aria-hidden="true"></span>` : ""}
       <h2 class="block__title">${title}.</h2>
-      <span class="block__badge">${escapeHTML(badge)}</span>
+      <span class="block__badge">(${escapeHTML(badge)})</span>
       ${iconName ? `<span class="block__icon">${icon(iconName)}</span>` : ""}
       <p class="block__value${value.length > 9 ? " block__value--long" : ""}">${digits(value)}</p>
       ${action}

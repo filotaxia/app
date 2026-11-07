@@ -9,8 +9,8 @@
 //   03  el terrario se va y el teléfono muestra la app: play y la pieza sonando
 //
 // Debajo del dibujo, dentro del mismo cuadro gris, el paso que se está
-// viendo, con el texto chico del Manifiesto: "/Paso01" en el color del texto
-// y su texto en gris (como "/Capa02").
+// viendo, con el texto chico del Manifiesto: "(Paso01)" en el color del
+// texto y su texto en gris, como en filotaxia.com ("(PMF)", "(Manifiesto)").
 // Es un dibujo de línea en currentColor (sigue al tema), como los gráficos
 // del Manifiesto. Lo usan Mi terrario cuando todavía no hay terrario y la
 // Guía, bajo el título "Filotaxia".
@@ -26,9 +26,9 @@
 // propio dibujo.
 
 const STEPS = [
-  ["/Paso01", "El QR de su base"],
-  ["/Paso02", "Conectalo con la cámara"],
-  ["/Paso03", "Escuchá su pieza"],
+  ["(Paso01)", "El QR de su base"],
+  ["(Paso02)", "Conectalo con la cámara"],
+  ["(Paso03)", "Escuchá su pieza"],
 ];
 
 export function connectLoop({ inverse = false } = {}) {

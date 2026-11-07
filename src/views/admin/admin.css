@@ -140,10 +140,8 @@
     color: var(--color-text-muted);
 }
 
-/* Borrador y retirado: el chip sin fondo, con borde */
+/* Borrador y retirado: texto gris (publicado queda en --color-text) */
 .admin-chip--quiet {
-    background: transparent;
-    box-shadow: inset 0 0 0 1px var(--color-line);
     color: var(--color-text-muted);
 }
 

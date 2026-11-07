@@ -73,7 +73,7 @@
 
 .process__photo {
     width: 100%;
-    aspect-ratio: 3 / 2;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
     background: var(--color-block-bg);
 }
@@ -94,12 +94,25 @@
     transform-origin: left;
 }
 
-/* Las tres etapas: "Etapa 1 / …" en el color del texto, el texto en gris */
+/* Las tres etapas: "Etapa 1 / …" en el color del texto, el texto en gris.
+   Quedan apiladas en el mismo lugar (grid, una sola celda: el alto lo pone
+   la más alta) y solo se ve la activa; bindSlider (filotaxia.js) la cambia
+   según el scroll horizontal del slider de fotos, con fade. */
 .process__stages {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2xl);
+    display: grid;
     margin-top: var(--spacing-lg);
+}
+
+.process__stage {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    pointer-events: none;
+}
+
+.process__stage.is-active {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .process__stage-title {
@@ -127,10 +140,30 @@
     padding-top: var(--spacing-4xl);
 }
 
-/* --- Preguntas frecuentes (las clases .faq son de cuidados.css) --- */
-.guide-faq__more {
-    align-self: flex-start;
-    margin-top: var(--spacing-lg);
+/* --- Preguntas frecuentes (las clases .faq son de cuidados.css) ---
+   Como el "Section FAQ" de filotaxia.com: "(PMF)" + una frase grande, y a
+   la derecha "(Guía)" — después viene la línea del primer .faq__item
+   (.faq__item:first-of-type, cuidados.css), así queda la misma línea que
+   separa la intro de la lista */
+.faq-intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+}
+
+.faq-intro__text {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+.faq-intro__pmf {
+    margin-right: var(--spacing-sm);
+}
+
+.faq-intro__label {
+    align-self: flex-end;
+    color: var(--color-text-muted);
 }
 
 /* ============================================

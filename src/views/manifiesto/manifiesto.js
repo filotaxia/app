@@ -8,7 +8,8 @@
 //   1. Gancho      una cita de filotaxia.com, distinta cada vez que se abre
 //                  (content/citas.js; la última mostrada queda en el store)
 //   2. Por dentro  la foto del TR01 con puntos sobre sus capas y sus
-//                  plantas: tocar uno lo explica
+//                  plantas: se encienden solos uno por vez (como las capas
+//                  de la 3) y tocar uno lo explica y frena el autoplay
 //   3. Capas       el terrario por dentro: cuatro franjas horizontales, una por
 //                  capa (con su imagen en movimiento), y debajo "/Capa01" y
 //                  el texto de la capa encendida; pasan solas
@@ -58,7 +59,7 @@ import { QUOTES, nextQuoteIndex } from "../../content/citas.js";
 import { LAYERS, INSIDE_TERRARIUM } from "../../content/ayuda.js";
 import { getPlanta, WAVE_NAMES } from "../../content/plantas.js";
 import { buildScore, seedFrom } from "../../audio/score.js";
-import { leafWaves, bindLeafWaves } from "../../components/leaf-waves/leaf-waves.js";
+import { leafWaves, leafWaveDots, bindLeafWaves } from "../../components/leaf-waves/leaf-waves.js";
 import { productionLoop, bindProductionLoop } from "../../components/production-loop/production-loop.js";
 import { formatDate } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
@@ -68,6 +69,8 @@ export const title = "Manifiesto";
 
 // Autoplay: cada pantalla se queda esto después de que termina su animación
 const AFTER_MS = 6000;
+// Pantalla 2: cada cuánto se enciende el punto siguiente
+const ANATOMY_MS = 4000;
 // Pantalla 3: cada cuánto se abre la capa siguiente, y lo que tarda en abrirse
 // (manifiesto.css: flex-grow 0.6s)
 const LAYER_MS = 5000;
@@ -107,7 +110,8 @@ const SLIDES = [
   `,
   // 4. Idioma: título arriba a la izquierda y las cuatro tarjetas grandes abajo,
   //    en igualdad (todavía no es tu terrario): primero las hojas y, a los 3 s,
-  //    giran a sus ondas; los dos puntos de arriba a la derecha cambian la vista
+  //    giran a sus ondas; los dos puntos que cambian la vista están en
+  //    manifiesto__nav, entre las flechas (leafWaveDots(), más abajo).
   `
     <p class="manifiesto__title">Cada planta.<br />Su propia onda.</p>
     ${leafWaves({ flip: true })}
@@ -193,6 +197,7 @@ export async function render(root, { params }) {
 
       <div class="manifiesto__nav">
         <button class="manifiesto__arrow" type="button" data-prev aria-label="Pantalla anterior" disabled>${icon("chevron-left")}</button>
+        <div class="manifiesto__nav-mid" data-nav-mid hidden>${leafWaveDots()}</div>
         <button class="manifiesto__arrow" type="button" data-next aria-label="Pantalla siguiente">${icon("chevron-right")}</button>
       </div>
     </section>
@@ -206,13 +211,14 @@ export async function render(root, { params }) {
   const count = root.querySelector("[data-count]");
   const prev = root.querySelector("[data-prev]");
   const next = root.querySelector("[data-next]");
+  const navMid = root.querySelector("[data-nav-mid]");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let current = 0;   // la pantalla a la que vamos (solo la cambia goTo)
   let shown = 0;     // la que se ve (la cambia show)
   let autoplay = !reduceMotion;
   const waves = bindLeafWaves(root);   // los dos puntos de la pantalla 4
   const layerCycle = bindLayers(root);  // las barras de la pantalla 3
-  bindAnatomy(root);                    // los puntos de la pantalla 2
+  const anatomyCycle = bindAnatomy(root); // los puntos de la pantalla 2
   bindProductionLoop(root);             // las partes de la pantalla 6
   const skip = root.querySelector("[data-skip-link]");
 
@@ -264,8 +270,14 @@ export async function render(root, { params }) {
     count.textContent = `${String(index + 1).padStart(2, "0")} / ${String(SLIDES.length).padStart(2, "0")}`;
     prev.disabled = index === 0;
     next.disabled = index === last;
-    // Pantalla 4: a los 3 s de verla, las hojas giran a sus ondas
-    if (slides[index].querySelector("[data-leaf-waves]")) waves.play(FLIP_AT_MS);
+    // Pantalla 4: a los 3 s de verla, las hojas giran a sus ondas; sus dos
+    // puntos (entre las flechas) solo se ven en esta pantalla
+    const isLanguage = !!slides[index].querySelector("[data-leaf-waves]");
+    navMid.hidden = !isLanguage;
+    if (isLanguage) waves.play(FLIP_AT_MS);
+    // Pantalla 2: los puntos se encienden solos uno por vez, solo mientras se ve
+    if (slides[index].querySelector("[data-anatomy]")) anatomyCycle.play();
+    else anatomyCycle.stop();
     // Pantalla 3: las capas pasan solas solo mientras se ve
     if (slides[index].querySelector("[data-layers]")) layerCycle.play();
     else layerCycle.stop();
@@ -329,6 +341,7 @@ export async function render(root, { params }) {
   return () => {
     observer.disconnect();
     waves.stop();
+    anatomyCycle.stop();
     layerCycle.stop();
     document.removeEventListener("keydown", onKey);
     document.removeEventListener("visibilitychange", onVisibility);
@@ -347,6 +360,7 @@ function slideDuration(slide) {
     return Number.isFinite(endTime) ? endTime - (animation.currentTime ?? 0) : 0;
   });
   let js = 0;
+  if (slide.querySelector("[data-anatomy]")) js = ANATOMY_MS * (INSIDE_TERRARIUM.spots.length - 1);
   if (slide.querySelector("[data-layers]")) js = LAYER_MS * (LAYERS.length - 1) + LAYER_OPEN_MS;
   if (slide.querySelector("[data-leaf-waves]")) js = FLIP_AT_MS + FLIP_MS;
   if (slide.querySelector("[data-production]")) js = PRODUCTION_LOOP_MS;
@@ -398,19 +412,44 @@ function spotInfo(spot) {
   `;
 }
 
-// Tocar un punto lo elige y cuenta qué es.
+// Tocar un punto lo elige y cuenta qué es. Como las capas de la pantalla 3:
+// play() los va encendiendo solo uno por vez (cada ANATOMY_MS) mientras
+// nadie tocó ninguno; stop() los frena (al salir de la pantalla).
 function bindAnatomy(root) {
   const box = root.querySelector("[data-anatomy]");
-  if (!box) return;
+  if (!box) return { play() {}, stop() {} };
   const dots = [...box.querySelectorAll("[data-spot]")];
   const info = box.querySelector("[data-spot-info]");
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let current = 0;
+  let touched = false;
+  let timer = 0;
+
+  function open(index) {
+    current = index;
+    dots.forEach((d, i) => d.setAttribute("aria-pressed", String(i === index)));
+    info.innerHTML = spotInfo(INSIDE_TERRARIUM.spots[index]);
+  }
 
   dots.forEach((dot) => {
     dot.addEventListener("click", () => {
-      dots.forEach((d) => d.setAttribute("aria-pressed", String(d === dot)));
-      info.innerHTML = spotInfo(INSIDE_TERRARIUM.spots[Number(dot.dataset.spot)]);
+      touched = true;
+      clearInterval(timer);
+      timer = 0;
+      open(Number(dot.dataset.spot));
     });
   });
+
+  return {
+    play() {
+      if (touched || timer || reduceMotion) return;
+      timer = setInterval(() => open((current + 1) % dots.length), ANATOMY_MS);
+    },
+    stop() {
+      clearInterval(timer);
+      timer = 0;
+    },
+  };
 }
 
 /* ---------------------------------------- */

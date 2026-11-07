@@ -1,0 +1,29 @@
+/* ============================================
+   Components — Particles
+   ============================================ */
+
+/* ══ Particles ═════════════════════════════════════════════
+   particles.js. Los puntos se dibujan en un <canvas> con el
+   `color` del propio elemento, así el trazo sigue al tema —
+   acá, --color-text (el alias semántico de este proyecto; el
+   original (Bencho, MIT) lo resolvía con --fill-on/--ink, que
+   acá no existen, así que quedan mapeados a lo nuestro en vez
+   de agregar tokens nuevos). El canvas dibuja en un lienzo de
+   480×400 fijo (particles.js) pero se muestra al ancho
+   disponible, hasta esos 480px: la escala la hace sola el CSS. */
+.ptc {
+    position: relative;
+    display: grid;
+    place-items: center;
+}
+
+.ptc-canvas {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    aspect-ratio: 480 / 400;
+    color: var(--color-text);
+    cursor: crosshair;
+    touch-action: none;
+}
