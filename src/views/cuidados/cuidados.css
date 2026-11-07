@@ -4,7 +4,8 @@
 
 /* Los bloques del terrario (components/block), la guía en pasos 01/ 02/ 03/
    y las preguntas frecuentes que se abren (details nativo): filas con
-   línea fina y un + que gira a × */
+   línea fina y un + grande y negro que pasa a − al abrir, como en
+   filotaxia.com (inspo/proyecto-filotaxia/src/css/components/acordeon.css) */
 
 /* --- Guía: número chico a la izquierda, tema y texto --- */
 .guide,
@@ -63,6 +64,7 @@
     padding-block: var(--spacing-md);
     font-size: var(--font-base-size);
     line-height: var(--font-base-line);
+    font-weight: var(--font-weight-medium);
     list-style: none;
     cursor: pointer;
 }
@@ -71,17 +73,42 @@
     display: none;
 }
 
-/* Un + que gira a × al abrir */
-.faq__question::after {
-    content: "+";
+/* El +, calcado del de filotaxia.com (acordeon.css): no es texto, son dos
+   barras (los pseudo-elementos del span .faq__toggle); al abrir, la
+   vertical se achica a 0 y queda la horizontal sola (un −) */
+.faq__toggle {
+    position: relative;
     flex-shrink: 0;
-    font-size: var(--font-lg-size);
-    color: var(--color-text-muted);
+    width: 18px;
+    height: 18px;
+}
+
+.faq__toggle::before,
+.faq__toggle::after {
+    content: "";
+    position: absolute;
+    background: var(--color-text);
+}
+
+.faq__toggle::before {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    transform: translateY(-50%);
+}
+
+.faq__toggle::after {
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 100%;
+    transform: translateX(-50%);
     transition: transform var(--transition-normal);
 }
 
-.faq__item[open] .faq__question::after {
-    transform: rotate(45deg);
+.faq__item[open] .faq__toggle::after {
+    transform: translateX(-50%) scaleY(0);
 }
 
 .faq__answer {

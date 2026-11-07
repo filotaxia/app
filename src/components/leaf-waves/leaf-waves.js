@@ -9,9 +9,11 @@
 //   leafWaves({ flip: true })             → tarjetas de dos caras (Manifiesto): primero
 //                                           la hoja ("hoja / Puntiaguda") y, al girar,
 //                                           su onda en negro ("onda / Triangular").
-//                                           Arriba a la derecha, dos puntos para elegir
-//                                           la vista (hojas · ondas). Conectarlos con
-//                                           bindLeafWaves(root) después de insertar el HTML.
+//                                           Los dos puntos para elegir la vista (hojas ·
+//                                           ondas) van aparte: leafWaveDots() — en el
+//                                           Manifiesto se ponen entre las flechas de
+//                                           abajo, no accá arriba. Conectarlos con
+//                                           bindLeafWaves(root) después de insertar los dos HTML.
 //   leafWaves({ active: ["puntiaguda"] }) → esas en negro sólido, el resto atenuado
 //                                           (para la ficha de un terrario)
 //
@@ -36,24 +38,32 @@ export function leafWaves({ active = [], flip = false } = {}) {
   // data-face dice qué cara se ve: "hoja" (al principio) u "onda"
   return `
     <div class="leaf-waves-flip" data-leaf-waves data-face="hoja">
-      <div class="leaf-waves__dots" role="group" aria-label="Vista">
-        <button class="leaf-waves__dot" type="button" data-face-to="hoja" aria-pressed="true" aria-label="Ver las hojas"></button>
-        <button class="leaf-waves__dot" type="button" data-face-to="onda" aria-pressed="false" aria-label="Ver las ondas"></button>
-      </div>
       ${grid}
     </div>
   `;
 }
 
-// Conecta los dos puntos. Devuelve:
+// Los dos puntos que eligen la vista (hojas · ondas) de leafWaves({ flip: true }).
+// Van aparte porque en el Manifiesto no quedan sobre la tarjeta: se ponen en
+// el medio de las flechas de abajo (manifiesto__nav).
+export function leafWaveDots() {
+  return `
+    <div class="leaf-waves__dots" role="group" aria-label="Vista">
+      <button class="leaf-waves__dot" type="button" data-face-to="hoja" aria-pressed="true" aria-label="Ver las hojas"></button>
+      <button class="leaf-waves__dot" type="button" data-face-to="onda" aria-pressed="false" aria-label="Ver las ondas"></button>
+    </div>
+  `;
+}
+
+// Conecta los dos puntos (estén donde estén dentro de `root`) con la tarjeta.
+// Devuelve:
 //   play(ms)  después de ms (3 s por defecto) pasa solo de las hojas a sus
 //             ondas, una vez; no hace nada si la persona ya tocó un punto
 //   stop()    cancela el cambio pendiente (al salir de la pantalla)
-// Los puntos frenan el click, así tocar uno no pasa de pantalla en el Manifiesto.
 export function bindLeafWaves(root) {
   const box = root.querySelector("[data-leaf-waves]");
-  if (!box) return { play() {}, stop() {} };
-  const dots = [...box.querySelectorAll("[data-face-to]")];
+  const dots = [...root.querySelectorAll("[data-face-to]")];
+  if (!box || !dots.length) return { play() {}, stop() {} };
   let touched = false;
   let timer = 0;
 

@@ -8,10 +8,33 @@
     text-align: center;
 }
 
+/* Se apaga entera al irse, como el preloader de filotaxia.com cuando termina */
+.splash--out {
+    animation: splash-out 0.4s var(--ease-standard) forwards;
+}
+
+@keyframes splash-out {
+    to { opacity: 0; }
+}
+
 .splash__brand {
     display: flex;
     flex-direction: column;
     gap: var(--gap-md);
+}
+
+/* Solo el isotipo baja 30px con fade; el logotipo y la bajada quedan
+   fijos, igual que en el sitio (ver preloader-site.js en /inspo, que usa
+   0.8s: acá un poco más lento para que se note mejor en el celular) */
+.splash__isotipo--in {
+    animation: splash-in 1.3s var(--ease-out) both;
+}
+
+@keyframes splash-in {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
 }
 
 /* Marca: PNG negros con transparencia usados como máscara; el color
@@ -24,8 +47,10 @@
     mask: center / contain no-repeat;
 }
 
+/* 100px: el mismo ancho que usa filotaxia.com para esta imagen en celular
+   (.pre-loader-img1, @media max-width: 780px) */
 .splash__isotipo {
-    width: 72px;
+    width: 100px;
     aspect-ratio: 512 / 324;
     margin-bottom: var(--spacing-xl);
     mask-image: url("../../assets/images/marca/isotipo.png");

@@ -4,8 +4,9 @@
 
 /* Layout de la referencia "Status.": "Filotaxia." + "Armonía en plantas."
    arriba (Ajustes a la derecha), aire, el número gigante (el nombre del
-   terrario, "TR01"), "+ info" y "Escuchar", y la grilla de bloques de 2
-   columnas (components/block) que arranca con la foto a todo el ancho. */
+   terrario, "TR01") alineado abajo con "Escuchar", y la grilla de bloques
+   de 2 columnas (components/block) que arranca con la foto a todo el
+   ancho (la foto lleva a la ficha: ahí están todas las especificaciones). */
 
 .mine {
     display: flex;
@@ -35,8 +36,13 @@
     color: var(--color-text-faint);
 }
 
-/* --- Número protagonista: el nombre del terrario ("TR01") --- */
+/* --- Número protagonista: el nombre del terrario ("TR01"), alineado
+   abajo con "Escuchar" --- */
 .mine__hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--gap-md);
     margin-top: var(--spacing-6xl);
 }
 
@@ -50,25 +56,14 @@
     margin-left: -4px;
 }
 
-/* "+ info" a la izquierda, "Escuchar" a la derecha */
-.mine__pieza {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--gap-md);
-    margin-top: var(--spacing-lg);
-}
-
-/* "Escuchar", del mismo tamaño que "+ info" (28px de alto).
-   El área tocable sigue siendo de 44px, por encima y por debajo. */
-.mine__pieza .block__action,
-.mine__info {
+/* "Escuchar": el área tocable sigue siendo de 44px, por encima y por debajo */
+.mine__hero .block__action {
     position: relative;
+    flex-shrink: 0;
     min-height: 28px;
 }
 
-.mine__pieza .block__action::before,
-.mine__info::before {
+.mine__hero .block__action::before {
     content: "";
     position: absolute;
     inset: 50% 0 auto;
@@ -76,18 +71,9 @@
     transform: translateY(-50%);
 }
 
-.mine__pieza .block__action svg {
+.mine__hero .block__action svg {
     width: 10px;
     height: 10px;
-}
-
-/* --- "+ info": un chip que es link a la ficha --- */
-.mine__info {
-    transition: transform var(--transition-fast);
-}
-
-.mine__info:active {
-    transform: scale(0.96);
 }
 
 /* --- Bloques --- */

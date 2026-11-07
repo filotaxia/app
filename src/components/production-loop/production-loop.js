@@ -14,29 +14,30 @@
 // Los cables van en blanco, con la corriente corriendo siempre; las partes
 // (plantas, sustrato, las dos cajas, el sintetizador y la compu) en gris.
 // Tocar una parte la enciende en blanco y, debajo, cuenta qué hace (como los
-// puntos de la pantalla 2 del Manifiesto). Mientras tanto, por los cables
-// MIDI pasan notas, el sintetizador cambia de onda y suena, y en la compu el
-// cabezal recorre la pieza. Lo usa el Manifiesto (pantalla 6).
+// puntos de la pantalla 2 del Manifiesto), con su nombre entre paréntesis,
+// como "(PMF)" o "(Manifiesto)" en filotaxia.com. Mientras tanto, por los
+// cables MIDI pasan notas, el sintetizador cambia de onda y suena, y en la
+// compu el cabezal recorre la pieza. Lo usa el Manifiesto (pantalla 6).
 //
 //   productionLoop()          → el cuadro al revés del tema (como el de la Guía)
 //   bindProductionLoop(root)  → tocar una parte la explica
 
 // Lo que se lee debajo del dibujo antes de tocar algo
-const INTRO = ["/Producción", "Tocá cada parte del dibujo para ver qué hace."];
+const INTRO = ["(Producción)", "Tocá cada parte del dibujo para ver qué hace."];
 
 // Cada parte: [nombre, texto]. Las claves son las del data-part del dibujo.
 const PARTS = {
-  plantas: ["/Plantas",
+  plantas: ["(Plantas)",
     "Generan señales eléctricas con lo que pasa afuera (el tacto, la luz, la temperatura) y adentro, como la fotosíntesis. Dos electrodos en sus hojas las leen."],
-  sustrato: ["/Sustrato",
+  sustrato: ["(Sustrato)",
     "Un electrodo en la tierra capta su actividad eléctrica: la otra mitad de la pieza."],
-  "biodata-02": ["/Biodata 02",
+  "biodata-02": ["(Biodata 02)",
     "Capta las bioemisiones de las plantas y, cada vez que cambia su conductividad, genera una nota MIDI. Se las pasa al Microfreak."],
-  "biodata-01": ["/Biodata 01",
+  "biodata-01": ["(Biodata 01)",
     "Hace lo mismo con el sustrato: vuelve sus variaciones eléctricas notas MIDI y se las pasa a la compu."],
-  microfreak: ["/Microfreak",
+  microfreak: ["(Microfreak)",
     "Biodata entrega notas, no sonido. En el sintetizador le damos una voz a cada planta: una onda que sale de la forma de sus hojas."],
-  ableton: ["/Ableton",
+  ableton: ["(Ableton)",
     "Las notas del sustrato entran a la compu y se suman a las de las plantas. Ahí queda grabada la pieza de tu terrario."],
 };
 

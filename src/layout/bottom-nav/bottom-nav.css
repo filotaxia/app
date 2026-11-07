@@ -4,9 +4,9 @@
 
 /* Mobile: barra flotante de vidrio (como la de Fitness de Apple), centrada
    y separada de los bordes. Cinco ítems con ícono + label:
-   Mi terrario · Colección · Conectar · Manifiesto · Guía. Conectar (el escáner), la
-   acción principal, va en el centro con fondo negro; la sección activa
-   lleva un fondo suave.
+   Mi terrario · Colección · Filotaxia · Manifiesto · Guía. Filotaxia (el
+   catálogo de formas y ondas, views/formas-ondas), la acción principal, va
+   en el centro con fondo negro; la sección activa lleva un fondo suave.
    Desktop (>= 1024): riel vertical fijo a la izquierda.
 
    Es de lo poco redondeado de la app (el resto es cuadrado, como la web):
@@ -82,10 +82,10 @@
     font-weight: var(--font-weight-medium);
 }
 
-/* Conectar: el isotipo de la marca (las dos hojas, src/assets/images/marca/)
+/* Filotaxia: el isotipo de la marca (las dos hojas, src/assets/images/marca/)
    en lugar de un ícono de Lucide. Es un PNG usado como máscara, así toma
-   el color del texto como los demás íconos (blanco sobre el negro de
-   Conectar). Es más ancho que alto. */
+   el color del texto como los demás íconos (blanco sobre el negro del
+   ítem). Es más ancho que alto. */
 .bottom-nav__logo {
     display: block;
     width: 26px;
@@ -111,7 +111,7 @@
     stroke-width: 2;
 }
 
-/* Conectar: la acción principal. Mismo tamaño y redondeo que la pill
+/* Filotaxia: la acción principal. Mismo tamaño y redondeo que la pill
    activa, pero en negro (inverso), así se lee como el botón de la barra.
    Va después de las reglas de hover/activo para ganarles. */
 .bottom-nav__link--main,

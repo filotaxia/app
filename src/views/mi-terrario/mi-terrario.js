@@ -5,7 +5,8 @@
 // Mi terrario (#/mi-terrario; la primera de la barra): el terrario propio
 // (referencia: pantalla "Status." de una app de energía):
 // "Filotaxia." + "Armonía en plantas." en gris, Ajustes arriba a la derecha,
-// el nombre del terrario en gigante ("TR01", con "+ info" y "Escuchar") y bloques:
+// el nombre del terrario en gigante ("TR01", con "Conectar": el escáner, ya
+// no está en la barra) y bloques:
 //
 //   (foto)              la foto del terrario a todo el ancho; lleva a su ficha
 //   Bitácora. | Pieza.  la bitácora lleva a su pantalla (views/bitacora); Pieza
@@ -88,19 +89,17 @@ function head(title, status) {
   `;
 }
 
-// El protagonista: el nombre del terrario en gigante ("TR01").
-// Debajo, "+ info" (lleva a su ficha, con todas las especificaciones; el día
-// en que empezó a sonar también está ahí) y "Escuchar".
+// El protagonista: el nombre del terrario en gigante ("TR01"), alineado
+// abajo con "Conectar" (el escáner: ya no está en la barra, "Conectar" la
+// reemplaza acá y en el QR chico del bloque Pieza, más abajo; para escuchar
+// está el bloque Pieza entero y la foto del terrario, que llevan al
+// reproductor y a la ficha).
 function pieceHero(terrario) {
   return `
     <div class="mine__hero reveal">
       <p class="mine__big" aria-hidden="true">${escapeHTML(codeOf(terrario))}</p>
       <p class="visually-hidden">Tu terrario es el ${escapeHTML(codeOf(terrario))}.</p>
-    </div>
-
-    <div class="mine__pieza reveal">
-      <a class="chip mine__info" href="#/terrario/${terrario.id}" aria-label="Más información de ${escapeHTML(codeOf(terrario))}">+ info</a>
-      <a class="block__action" href="#/escuchar/${terrario.id}">${icon("play")} Escuchar</a>
+      <a class="block__action" href="#/escanear">${icon("scan-line")} Conectar</a>
     </div>
   `;
 }
@@ -116,7 +115,7 @@ function pieceBlock(terrario) {
         <a class="pieza__link" href="#/escuchar/${terrario.id}" aria-label="Pieza: ${duration}. Escuchar">Pieza.</a>
       </h2>
       <a class="pieza__scan" href="#/escanear" aria-label="Conectar otro terrario">${icon("qr-code")}</a>
-      <span class="block__badge">Duración</span>
+      <span class="block__badge">(Duración)</span>
       <p class="block__value">${digits(duration)}</p>
     </article>
   `;
@@ -126,7 +125,7 @@ function empty() {
   return `
     <section class="screen mine mine--empty">
       ${head("Filotaxia.", "Conectá tu terrario.")}
-      <div class="mine__connect reveal">${connectLoop()}</div>
+      <div class="mine__connect reveal">${connectLoop({ inverse: true })}</div>
       <div class="screen__actions">
         <p class="lead">Conectalo con el QR de su base para ver sus cuidados.</p>
         <a class="btn btn--primary" href="#/escanear">${icon("scan-line")} Conectar mi terrario</a>

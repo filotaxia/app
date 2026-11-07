@@ -50,6 +50,7 @@
 @import url('./components/connect-loop/connect-loop.css');
 @import url('./components/production-loop/production-loop.css');
 @import url('./components/share-sheet/share-sheet.css');
+@import url('./components/particles/particles.css');
 
 /* ============================================
    VIEWS
@@ -65,4 +66,5 @@
 @import url('./views/manifiesto/manifiesto.css');
 @import url('./views/cuidados/cuidados.css');
 @import url('./views/filotaxia/filotaxia.css');
+@import url('./views/formas-ondas/formas-ondas.css');
 @import url('./views/admin/admin.css');

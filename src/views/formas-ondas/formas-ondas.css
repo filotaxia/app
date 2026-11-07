@@ -1,0 +1,63 @@
+/* ============================================
+   Views — Formas y ondas
+   ============================================ */
+
+/* Debajo del título, "Arte y música experimental" (components/particles);
+   después, la grilla hoja → onda (components/leaf-waves) y, abajo, el
+   catálogo de suculentas en una grilla de 2 columnas. */
+.art {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+}
+
+.shapes {
+    margin-top: var(--spacing-5xl);
+}
+
+.shapes-catalog {
+    margin-top: var(--spacing-5xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-md);
+}
+
+.shapes-catalog__list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg) var(--spacing-sm);
+}
+
+.shapes-catalog__item {
+    display: flex;
+    flex-direction: column;
+}
+
+.shapes-catalog__photo {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    background: var(--color-block-bg);
+    margin-bottom: var(--spacing-sm);
+}
+
+.shapes-catalog__name {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+.shapes-catalog__leaf {
+    font-size: var(--font-xs-size);
+    line-height: var(--font-xs-line);
+    color: var(--color-text-muted);
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+
+@media (min-width: 640px) {
+    .shapes-catalog__list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

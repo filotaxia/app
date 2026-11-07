@@ -342,24 +342,9 @@ html:has(.manifiesto) body {
    ocupando todo el alto que queda (dos filas iguales). En pantallas muy
    altas la grilla no pasa de 640px, así las tarjetas no se estiran de más. */
 .manifiesto__slide--split {
-    position: relative;   /* para ubicar los dos puntos (ver abajo) */
     justify-content: flex-start;
     gap: var(--gap-lg);
     padding-top: calc(var(--manifiesto-top) + var(--spacing-xl));
-}
-
-/* Los dos puntos (hojas · ondas) salen de su fila y van a la derecha,
-   apoyados en la línea de abajo del texto del título: 6px por encima de
-   su borde de abajo (el título tiene dos líneas: 2 × --font-2xl-line).
-   Cada punto es un círculo de 8px en el medio de un área tocable de 44:
-   por eso se resta la mitad del área y 4px (+ esos 6). El último punto
-   queda alineado con el borde derecho de las tarjetas (−4px: el aire
-   tocable que tiene a su derecha) */
-.manifiesto__slide--split .leaf-waves__dots {
-    position: absolute;
-    top: calc(var(--manifiesto-top) + var(--spacing-xl) + var(--font-2xl-line) * 2 - var(--size-tap) / 2 - 10px);
-    right: calc(var(--gutter) - var(--spacing-xs));
-    margin: 0;
 }
 
 .manifiesto__slide--split > .leaf-waves-flip {
@@ -819,11 +804,17 @@ html:has(.manifiesto) body {
 }
 
 /* --- Abajo: dos botones redondos ‹ › para pasar de pantalla, uno en cada
-   borde (borde fino, el chevron en el color del texto) --- */
+   borde (borde fino, el chevron en el color del texto). En el medio, solo
+   en la pantalla 4 (Idioma), los dos puntos de leafWaveDots() --- */
 .manifiesto__nav {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     padding-bottom: var(--spacing-sm);
+}
+
+.manifiesto__nav-mid {
+    display: flex;
 }
 
 /* Con la barra de abajo: más cerca de ella (bajan sobre el aire que la
@@ -870,10 +861,5 @@ RESPONSIVE
         width: 100%;
         max-width: 480px;
         margin-inline: auto;
-    }
-
-    /* Los puntos siguen el borde derecho de la columna de 480px */
-    .manifiesto__slide--split .leaf-waves__dots {
-        right: calc(max(var(--gutter), (100% - 480px) / 2) - var(--spacing-xs));
     }
 }

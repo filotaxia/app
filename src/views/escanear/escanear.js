@@ -13,9 +13,10 @@
 // - "Simular conexión" (herramienta de desarrollo) conecta un terrario de prueba
 //   pasando por su link, como si se hubiera escaneado.
 // Para la persona esto es "Conectar" (tono de la marca: escanear es solo el
-// cómo). Se llega desde "Conectar" en el centro de la barra, el QR chico de
-// la card Pieza (Mi terrario) o, sin terrario todavía, desde "Conectar mi
-// terrario"; Ajustes queda arriba a la derecha.
+// cómo). Ya no está en la barra (el centro lo ocupa Filotaxia, el catálogo
+// de formas y ondas): se llega desde "Conectar" en Mi terrario, el QR chico
+// de la card Pieza o, sin terrario todavía, desde "Conectar mi terrario";
+// Ajustes queda arriba a la derecha.
 
 import { terrarioIds, getTerrario } from "../../content/terrarios.js";
 import { linkedIds } from "../../store/collection.js";

@@ -55,10 +55,13 @@
         <!-- LAYOUT: View (el router monta acá cada pantalla) -->
         <main id="view" class="app-view" tabindex="-1"></main>
 
-        <!-- LAYOUT: Bottom-Nav (estructura de Pulso): Mi terrario · Colección · Conectar ·
-             Manifiesto · Guía; Conectar (el escáner) en el centro, en negro, como acción
-             principal. Riel lateral en desktop. Ajustes está en el header. En todas
-             las pantallas menos el splash y el Manifiesto del primer escaneo. -->
+        <!-- LAYOUT: Bottom-Nav (estructura de Pulso): Mi terrario · Colección · Filotaxia ·
+             Manifiesto · Guía; Filotaxia (el catálogo de formas y ondas, la génesis del
+             proyecto: views/formas-ondas) en el centro, en negro, con el isotipo de la
+             marca — antes era "Conectar" (el escáner); ahora se llega a él desde el botón
+             "Conectar" de Mi terrario o el QR chico del bloque Pieza, no desde la barra.
+             Riel lateral en desktop. Ajustes está en el header. En todas las pantallas
+             menos el splash y el Manifiesto del primer escaneo. -->
         <nav class="bottom-nav" aria-label="Secciones" data-nav hidden>
             <a class="bottom-nav__brand" href="#/mi-terrario">Filotaxia</a>
             <ul class="bottom-nav__list">
@@ -94,11 +97,12 @@
                     </a>
                 </li>
                 <li>
-                    <!-- Conectar (abre el escáner del QR): la acción principal, en el centro y en negro.
-                         Ícono: el isotipo de Filotaxia (las dos hojas), como máscara: toma el color del texto -->
-                    <a class="bottom-nav__link bottom-nav__link--main" href="#/escanear" data-route="escanear">
+                    <!-- Filotaxia (el catálogo de formas y ondas): la acción principal, en el
+                         centro y en negro. Ícono: el isotipo de Filotaxia (las dos hojas),
+                         como máscara: toma el color del texto -->
+                    <a class="bottom-nav__link bottom-nav__link--main" href="#/formas-ondas" data-route="formas-ondas">
                         <span class="bottom-nav__icon bottom-nav__logo" aria-hidden="true"></span>
-                        <span class="bottom-nav__label">Conectar</span>
+                        <span class="bottom-nav__label">Filotaxia</span>
                     </a>
                 </li>
                 <li>

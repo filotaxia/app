@@ -57,7 +57,10 @@ export async function render(root) {
       <div>
         ${CARE_FAQ.map(([question, answer]) => `
           <details class="faq__item">
-            <summary class="faq__question">${escapeHTML(question)}</summary>
+            <summary class="faq__question">
+              ${escapeHTML(question)}
+              <span class="faq__toggle" aria-hidden="true"></span>
+            </summary>
             <p class="faq__answer lead">${escapeHTML(answer)}</p>
           </details>`).join("")}
       </div>

@@ -76,17 +76,17 @@
    Frente: la hoja (foto) en la tarjeta clara.
    Dorso: la onda, en negro (en tema oscuro, gris: --color-feature-bg).
    Giran cuando cambia data-face ("hoja" → "onda"), cada una un poco después que la anterior
-   (--i). Arriba a la derecha, los dos puntos para elegir la vista. */
+   (--i). Los dos puntos que eligen la vista van aparte (leafWaveDots(), más
+   abajo: en el Manifiesto quedan en manifiesto__nav, entre las flechas). */
 .leaf-waves-flip {
     display: flex;
     flex-direction: column;
 }
 
+/* Los dos puntos (components/leaf-waves): sueltos, para ponerlos donde haga
+   falta — en el Manifiesto, centrados entre las flechas de manifiesto__nav */
 .leaf-waves__dots {
-    align-self: flex-end;
     display: flex;
-    /* el último punto queda alineado con el borde derecho de la grilla */
-    margin: calc(var(--spacing-md) * -1) calc(var(--spacing-xs) * -1) 0 0;
 }
 
 /* Cada punto: 8px a la vista, 18 × 44 tocables (10px de aire entre los dos) */
