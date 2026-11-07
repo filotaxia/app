@@ -6,7 +6,9 @@
 // A shape made of dots. Move over it and the dots are pushed
 // away from the pointer and spring home behind it; press and a
 // shockwave throws them out, and they gather again into the
-// NEXT shape — circle, square, flower, round again.
+// NEXT shape — the four leaf shapes of the catalog below
+// (puntiaguda, redondeada, dentada, recta; content/plantas.js),
+// round again.
 //
 // ── ONE SET OF DOTS, MANY SHAPES ────────────────────────
 // The dots never change, only where home is. Every shape is
@@ -14,6 +16,14 @@
 // pairs each dot with a new home by angle round the middle, so
 // the swarm sweeps round into the new outline rather than
 // crossing itself.
+//
+// ── LAS FORMAS SALEN DE LAS FOTOS ───────────────────────
+// Cada forma es una de las cuatro fotos de hoja (fondo
+// transparente) de src/assets/images/hojas/ — las mismas que usa
+// leaf-waves en su cara "hoja". Se dibuja la foto en un canvas
+// aparte y se muestrean sus puntos donde el alfa no es
+// transparente; el resultado (y la imagen ya cargada) se
+// cachean, así cambiar de forma la segunda vez es instantáneo.
 //
 // ── STRETCHED BY SPEED ──────────────────────────────────
 // A dot at rest is round; a moving one is drawn a little long
@@ -31,6 +41,8 @@
 //   bindParticles(root, opts) → arranca el dibujo y los eventos;
 //                                devuelve { stop() } para el cleanup
 
+import { LEAVES, WAVE_NAMES } from "../../content/plantas.js";
+
 // Se lee una sola vez, como el resto de los chequeos de
 // "reducir movimiento" de la app (el Manifiesto, por ejemplo):
 // una preferencia, no algo que cambia en vivo.
@@ -45,54 +57,63 @@ const CY = H / 2;
 // cuántos puntos tiene cada forma
 const N = 720;
 
-export const SHAPES = ["Circle", "Square", "Flower"];
+// Las cuatro hojas del catálogo (content/plantas.js), en el mismo orden
+// que leaf-waves
+export const SHAPES = Object.keys(LEAVES);
+const LEAF_DIR = "src/assets/images/hojas/";
+// margen alrededor de la hoja dentro del lienzo de muestreo
+const PAD = 36;
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
-function outline(s) {
-  const p = new Path2D();
-  if (s === "Circle") p.arc(CX, CY, 150, 0, Math.PI * 2);
-  else if (s === "Square") p.roundRect(CX - 140, CY - 140, 280, 280, 36);
-  else {
-    // cinco pétalos redondos alrededor de un centro más chico —
-    // círculos dibujados todos en el mismo sentido, así el relleno
-    // es su unión; los pétalos apenas se tocan con sus vecinos,
-    // para que las muescas entre ellos se vean del mismo grano
-    // que los puntos
-    for (let i = 0; i < 5; i++) {
-      const a = -Math.PI / 2 + (i * Math.PI * 2) / 5;
-      const x = CX + Math.cos(a) * 104;
-      const y = CY + 8 + Math.sin(a) * 104;
-      p.moveTo(x + 60, y);
-      p.arc(x, y, 60, 0, Math.PI * 2);
-    }
-    p.moveTo(CX + 58, CY + 8);
-    p.arc(CX, CY + 8, 58, 0, Math.PI * 2);
+// Carga (una sola vez por hoja) la foto de src/assets/images/hojas/
+const leafImages = new Map();
+function leafImage(key) {
+  if (!leafImages.has(key)) {
+    leafImages.set(
+      key,
+      new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = LEAF_DIR + key + ".webp";
+      })
+    );
   }
-  return p;
+  return leafImages.get(key);
 }
 
-// ── N puntos, repartidos parejo adentro de una forma ──
-// Una grilla hexagonal espaciada para que la forma tenga
-// alrededor de N puntos — su área sobre N, que es el espaciado
-// que la llena pareja — y después se recorta o se completa hasta
-// llegar a exactamente N. Antes era una grilla fina fija
-// adelgazada con un paso, y el paso pulsaba contra la grilla: el
-// círculo salía en bandas de zigzag.
-function homes(s) {
+// ── N puntos, repartidos parejo adentro de la silueta de la hoja ──
+// Una grilla hexagonal espaciada para que la forma tenga alrededor de N
+// puntos — su área sobre N, que es el espaciado que la llena pareja — y
+// después se recorta o se completa hasta llegar a exactamente N (como la
+// vieja grilla de formas vectoriales, pero el "adentro" ahora lo decide el
+// alfa de la foto en vez de un Path2D).
+async function homes(key) {
+  const img = await leafImage(key);
   const c = document.createElement("canvas");
   c.width = W;
   c.height = H;
   const g = c.getContext("2d");
-  const path = outline(s);
+  const scale = Math.min((W - PAD * 2) / img.width, (H - PAD * 2) / img.height);
+  const dw = img.width * scale;
+  const dh = img.height * scale;
+  g.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
+  const { data } = g.getImageData(0, 0, W, H);
+  const opaque = (x, y) => {
+    const ix = Math.round(x);
+    const iy = Math.round(y);
+    if (ix < 0 || iy < 0 || ix >= W || iy >= H) return false;
+    return data[(iy * W + ix) * 4 + 3] > 128;
+  };
   let area = 0;
-  for (let y = 1; y < H; y += 2) for (let x = 1; x < W; x += 2) if (g.isPointInPath(path, x, y)) area += 4;
+  for (let y = 1; y < H; y += 2) for (let x = 1; x < W; x += 2) if (opaque(x, y)) area += 4;
   const sp = Math.sqrt((area / N) * (2 / Math.sqrt(3)));
   const rowH = (sp * Math.sqrt(3)) / 2;
   const pts = [];
   for (let y = rowH / 2, row = 0; y < H; y += rowH, row++) {
     for (let x = sp / 2 + (row % 2) * (sp / 2); x < W; x += sp) {
-      if (g.isPointInPath(path, x, y)) pts.push([x, y]);
+      if (opaque(x, y)) pts.push([x, y]);
     }
   }
   // a unos pocos de N de cualquier lado: se descarta o se repite parejo
@@ -101,52 +122,97 @@ function homes(s) {
   return out;
 }
 
+// Los puntos de cada hoja, calculados una sola vez (muestrear la foto no es
+// gratis): la segunda vez que se pasa por esa forma ya está lista.
+const homesCache = new Map();
+function homesFor(key) {
+  if (!homesCache.has(key)) homesCache.set(key, homes(key));
+  return homesCache.get(key);
+}
+
 const angle = (x, y) => Math.atan2(y - CY, x - CX);
 
-// El <canvas>, listo para insertar con innerHTML.
+// El canvas (la hoja hecha de puntos) y, debajo, donde la referencia pone
+// sus dos números (00:00 … 03:33:09), el nombre de la hoja a la izquierda y
+// el de su onda a la derecha; más abajo, los puntos de navegación, uno por
+// hoja — tocar el canvas en el celular no debe cambiar la forma por
+// accidente, así que el cambio de forma vive en los puntos, no en el canvas
+// (que solo empuja y hace la onda de choque).
 export function particles() {
+  const leaf = LEAVES[SHAPES[0]];
   return `
     <div class="ptc">
       <canvas class="ptc-canvas" role="img"
-        aria-label="Una forma hecha de puntos. Moveté encima; tocá para cambiar la forma."></canvas>
+        aria-label="Las hojas del catálogo, hechas de puntos. Moveté encima o tocá para empujar los puntos."></canvas>
+      <div class="ptc-info">
+        <p class="ptc-info__item">
+          <span class="ptc-info__caption">forma</span>
+          <span class="ptc-info__leaf" data-leaf-name>${leaf.label}</span>
+        </p>
+        <p class="ptc-info__item ptc-info__item--end">
+          <span class="ptc-info__caption">onda</span>
+          <span class="ptc-info__wave" data-wave-name>${WAVE_NAMES[leaf.wave]}</span>
+        </p>
+      </div>
+      <div class="ptc-nav" role="group" aria-label="Hoja">
+        ${SHAPES.map((key) => `
+          <button class="ptc-dot" type="button" data-shape="${key}" aria-pressed="false" aria-label="Mostrar hoja ${LEAVES[key].label}"></button>
+        `).join("")}
+      </div>
     </div>
   `;
 }
 
 // Arranca el dibujo y los eventos sobre el <canvas> de dentro de `root`.
-//   shape  la forma con la que abre ("Circle", "Square" o "Flower")
+//   shape  la hoja con la que abre ("puntiaguda", "redondeada", "dentada" o "recta")
 //   reach  hasta dónde llega el empuje del puntero, en px
 //   force  qué tan fuerte empuja, 0..100
 //   grain  el tamaño de cada punto ("Fine" o "Coarse")
 // Devuelve { stop() }, para cuando se sale de la pantalla.
-export function bindParticles(root, { shape = "Circle", reach = 80, force = 60, grain = "Fine" } = {}) {
+export function bindParticles(root, { shape = SHAPES[0], reach = 80, force = 60, grain = "Fine" } = {}) {
   const canvas = root.querySelector(".ptc-canvas");
   if (!canvas) return { stop() {} };
+  const navDots = [...root.querySelectorAll(".ptc-dot")];
+  const leafName = root.querySelector("[data-leaf-name]");
+  const waveName = root.querySelector("[data-wave-name]");
 
   const still = stillness();
   const dots = [];
-  let at = "Circle";
+  let at = SHAPES[0];
   let hand = null;
   let raf = 0;
+  let gen = 0;   // para que un become() viejo no pise a uno más nuevo
   const knobs = { reach, force, grain };
 
-  // ── le da a cada punto una casa en una forma ──────────────
-  function become(s) {
+  // ── le da a cada punto una casa en una hoja ──────────────
+  // homesFor() es async (muestrea la foto la primera vez), así que un
+  // segundo become() puede llegar antes de que el primero termine: `gen`
+  // descarta la respuesta vieja.
+  async function become(s) {
     at = s;
-    const next = homes(s);
+    // los nombres y los puntos cambian al toque, no esperan a la foto
+    const leaf = LEAVES[s];
+    if (leafName) leafName.textContent = leaf.label;
+    if (waveName) waveName.textContent = WAVE_NAMES[leaf.wave];
+    navDots.forEach((dot) => dot.setAttribute("aria-pressed", String(dot.dataset.shape === s)));
+    const myGen = ++gen;
+    const next = await homesFor(s);
+    if (myGen !== gen) return;
     if (!dots.length) {
       next.forEach(([x, y]) => dots.push({ hx: x, hy: y, x, y, vx: 0, vy: 0 }));
-      return;
+    } else {
+      // se emparejan por ángulo alrededor del centro, así el enjambre barre
+      const a = dots.map((d, i) => [angle(d.x, d.y), i]).sort((p, q) => p[0] - q[0]);
+      const b = next.map((h, i) => [angle(h[0], h[1]), i]).sort((p, q) => p[0] - q[0]);
+      a.forEach(([, di], k) => {
+        const h = next[b[k][1]];
+        dots[di].hx = h[0];
+        dots[di].hy = h[1];
+        if (still) { dots[di].x = h[0]; dots[di].y = h[1]; }
+      });
     }
-    // se emparejan por ángulo alrededor del centro, así el enjambre barre
-    const a = dots.map((d, i) => [angle(d.x, d.y), i]).sort((p, q) => p[0] - q[0]);
-    const b = next.map((h, i) => [angle(h[0], h[1]), i]).sort((p, q) => p[0] - q[0]);
-    a.forEach(([, di], k) => {
-      const h = next[b[k][1]];
-      dots[di].hx = h[0];
-      dots[di].hy = h[1];
-      if (still) { dots[di].x = h[0]; dots[di].y = h[1]; }
-    });
+    draw();
+    run();
   }
 
   function draw() {
@@ -217,10 +283,8 @@ export function bindParticles(root, { shape = "Circle", reach = 80, force = 60, 
   canvas.width = Math.round(W * dpr);
   canvas.height = Math.round(H * dpr);
 
-  const s = SHAPES.includes(shape) ? shape : "Circle";
+  const s = SHAPES.includes(shape) ? shape : SHAPES[0];
   become(s);
-  draw();
-  run();
 
   function onMove(event) {
     if (still) return;
@@ -232,28 +296,31 @@ export function bindParticles(root, { shape = "Circle", reach = 80, force = 60, 
     run();
   }
   function onDown(event) {
-    // la onda de choque, y después la próxima forma
+    // solo la onda de choque: la forma no cambia al tocar el canvas (en el
+    // celular un toque sin querer no debe cambiarla); eso lo hacen los
+    // puntos de abajo (ptc-nav)
+    if (still) return;
     const p = where(event);
-    if (!still) {
-      const S = 0.4 + (clamp(knobs.force, 0, 100) / 100) * 1.2;
-      for (const d of dots) {
-        const dx = d.x - p.x;
-        const dy = d.y - p.y;
-        const dd = Math.hypot(dx, dy);
-        if (dd > 200 || dd < 0.01) continue;
-        const f = (1 - dd / 200) * 30 * S;
-        d.vx += (dx / dd) * f;
-        d.vy += (dy / dd) * f;
-      }
+    const S = 0.4 + (clamp(knobs.force, 0, 100) / 100) * 1.2;
+    for (const d of dots) {
+      const dx = d.x - p.x;
+      const dy = d.y - p.y;
+      const dd = Math.hypot(dx, dy);
+      if (dd > 200 || dd < 0.01) continue;
+      const f = (1 - dd / 200) * 30 * S;
+      d.vx += (dx / dd) * f;
+      d.vy += (dy / dd) * f;
     }
-    become(SHAPES[(SHAPES.indexOf(at) + 1) % SHAPES.length]);
-    draw();
     run();
+  }
+  function onNavClick(event) {
+    become(event.currentTarget.dataset.shape);
   }
 
   canvas.addEventListener("pointermove", onMove);
   canvas.addEventListener("pointerleave", onLeave);
   canvas.addEventListener("pointerdown", onDown);
+  navDots.forEach((dot) => dot.addEventListener("click", onNavClick));
 
   // Si cambia el tema (claro/oscuro) mientras está quieto, lo vuelve a pintar
   const mo = new MutationObserver(draw);
@@ -267,6 +334,7 @@ export function bindParticles(root, { shape = "Circle", reach = 80, force = 60, 
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerleave", onLeave);
       canvas.removeEventListener("pointerdown", onDown);
+      navDots.forEach((dot) => dot.removeEventListener("click", onNavClick));
     },
   };
 }

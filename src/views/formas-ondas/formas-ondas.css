@@ -2,21 +2,10 @@
    Views — Formas y ondas
    ============================================ */
 
-/* Debajo del título, "Arte y música experimental" (components/particles);
-   después, la grilla hoja → onda (components/leaf-waves) y, abajo, el
-   catálogo de suculentas en una grilla de 2 columnas. */
+/* Debajo del título, components/particles; abajo, el catálogo de
+   suculentas en una grilla de 2 columnas, el nombre de cada una sobre su
+   foto. */
 .art {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-md);
-}
-
-.shapes {
-    margin-top: var(--spacing-5xl);
-}
-
-.shapes-catalog {
-    margin-top: var(--spacing-5xl);
     display: flex;
     flex-direction: column;
     gap: var(--gap-md);
@@ -25,25 +14,39 @@
 .shapes-catalog__list {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-lg) var(--spacing-sm);
+    gap: var(--spacing-sm);
 }
 
 .shapes-catalog__item {
-    display: flex;
-    flex-direction: column;
+    position: relative;
 }
 
+/* padding-bottom (border-box: el cuadrado mide lo mismo) le deja a la
+   imagen un borde abajo del color de fondo del bloque, así el nombre no se
+   pisa con la foto; contain (no cover) para que la planta entre entera en
+   lo que queda, sin cortarse */
 .shapes-catalog__photo {
     width: 100%;
     aspect-ratio: 1;
-    object-fit: cover;
+    object-fit: contain;
     background: var(--color-block-bg);
-    margin-bottom: var(--spacing-sm);
+    display: block;
+    padding-bottom: calc(var(--font-base-line) + var(--font-xs-line) + var(--spacing-sm) * 2);
+}
+
+/* El nombre va en ese borde, abajo a la izquierda de la tarjeta */
+.shapes-catalog__caption {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-sm);
 }
 
 .shapes-catalog__name {
     font-size: var(--font-base-size);
     line-height: var(--font-base-line);
+    color: var(--color-text);
 }
 
 .shapes-catalog__leaf {
