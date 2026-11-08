@@ -27,6 +27,7 @@ import { PLANTAS, WAVE_NAMES, getPlanta } from "../../content/plantas.js";
 import { createTerrario, updateTerrario, uploadFile, publicFileURL } from "../../store/admin.js";
 import { qrFor, downloadSvg, downloadPng } from "./admin-qr.js";
 import { toast } from "../../components/toast/toast.js";
+import { loader, bindLoader } from "../../components/loader/loader.js";
 
 const STATUS_LABEL = { borrador: "Borrador", publicado: "Publicado", retirado: "Retirado" };
 
@@ -154,7 +155,10 @@ export function renderForm(root, { row, rows, onSaved }) {
 
       <div class="admin-form__footer">
         <p class="field__error" role="alert" data-error hidden></p>
-        <p class="lead" aria-live="polite" data-progress></p>
+        <p class="admin-form__progress lead" aria-live="polite" data-progress hidden>
+          ${loader({ size: 18, label: null })}
+          <span data-progress-text></span>
+        </p>
         <div class="admin-form__actions">
           <button class="btn btn--primary" type="submit" data-save>${isNew ? "Guardar borrador" : "Guardar"}</button>
           ${statusButton(data.status)}
@@ -241,6 +245,17 @@ export function renderForm(root, { row, rows, onSaved }) {
   async function save(status) {
     const errorBox = root.querySelector("[data-error]");
     const progress = root.querySelector("[data-progress]");
+    const progressText = root.querySelector("[data-progress-text]");
+    let progressLoader = null;
+    const setProgress = (text) => {
+      progress.hidden = !text;
+      progressText.textContent = text;
+      if (text && !progressLoader) progressLoader = bindLoader(progress);
+      if (!text && progressLoader) {
+        progressLoader.stop();
+        progressLoader = null;
+      }
+    };
     const buttons = form.querySelectorAll("button");
     const fail = (message, input) => {
       errorBox.textContent = message;
@@ -283,12 +298,12 @@ export function renderForm(root, { row, rows, onSaved }) {
       // 2. Subir los archivos elegidos
       const paths = {};
       for (const file of FILES.filter((f) => chosen[f.key])) {
-        progress.textContent = `Subiendo ${file.label.toLowerCase()}…`;
+        setProgress(`Subiendo ${file.label.toLowerCase()}…`);
         paths[file.key] = await upload(values.id, file, chosen[file.key]);
       }
 
       // 3. Guardar la fila
-      progress.textContent = "Guardando…";
+      setProgress("Guardando…");
       const fields = {
         model: values.model,
         recorded: values.recorded,
@@ -305,10 +320,11 @@ export function renderForm(root, { row, rows, onSaved }) {
         ? await createTerrario({ id: values.id, ...fields })
         : await updateTerrario(data.id, fields);
 
+      setProgress("");
       toast(status !== data.status ? `${saved.model}: ${STATUS_LABEL[status].toLowerCase()}` : `${saved.model} guardado`);
       onSaved(saved);
     } catch (error) {
-      progress.textContent = "";
+      setProgress("");
       buttons.forEach((button) => { button.disabled = false; });
       fail(error.message);
     }

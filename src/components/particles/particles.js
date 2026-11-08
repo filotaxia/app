@@ -39,9 +39,18 @@
 //
 //   particles()               → el <canvas>, listo para insertar
 //   bindParticles(root, opts) → arranca el dibujo y los eventos;
-//                                devuelve { stop() } para el cleanup
+//                                devuelve { stop(), show(key) } — show() es
+//                                para que otra parte de la pantalla (el
+//                                catálogo de suculentas, en formas-ondas.js)
+//                                mande el canvas a una hoja puntual, sin
+//                                pasar por las flechas; `onStep(dir)` (opts)
+//                                es para que esa misma parte se haga cargo
+//                                de qué hace cada flecha — en formas-ondas.js,
+//                                recorrer el catálogo planta por planta en
+//                                vez de las cuatro formas únicas
 
 import { LEAVES, WAVE_NAMES } from "../../content/plantas.js";
+import { icon } from "../../utils/icons.js";
 
 // Se lee una sola vez, como el resto de los chequeos de
 // "reducir movimiento" de la app (el Manifiesto, por ejemplo):
@@ -132,18 +141,23 @@ function homesFor(key) {
 
 const angle = (x, y) => Math.atan2(y - CY, x - CX);
 
-// El canvas (la hoja hecha de puntos) y, debajo, donde la referencia pone
-// sus dos números (00:00 … 03:33:09), el nombre de la hoja a la izquierda y
-// el de su onda a la derecha; más abajo, los puntos de navegación, uno por
-// hoja — tocar el canvas en el celular no debe cambiar la forma por
-// accidente, así que el cambio de forma vive en los puntos, no en el canvas
-// (que solo empuja y hace la onda de choque).
+// El canvas (la hoja hecha de puntos) con las flechas ‹ › encima, a media
+// altura (como en el Manifiesto), para pasar a la hoja anterior/siguiente;
+// debajo, donde la referencia pone sus dos números (00:00 … 03:33:09), el
+// nombre de la hoja a la izquierda y el de su onda a la derecha — tocar el
+// canvas en el celular no debe cambiar la forma por accidente, así que el
+// cambio de forma vive en las flechas, no en el canvas (que solo empuja y
+// hace la onda de choque).
 export function particles() {
   const leaf = LEAVES[SHAPES[0]];
   return `
     <div class="ptc">
-      <canvas class="ptc-canvas" role="img"
-        aria-label="Las hojas del catálogo, hechas de puntos. Moveté encima o tocá para empujar los puntos."></canvas>
+      <div class="ptc-art">
+        <canvas class="ptc-canvas" role="img"
+          aria-label="Las hojas del catálogo, hechas de puntos. Moveté encima o tocá para empujar los puntos."></canvas>
+        <button class="ptc-arrow ptc-arrow--prev" type="button" data-prev aria-label="Hoja anterior">${icon("chevron-left")}</button>
+        <button class="ptc-arrow ptc-arrow--next" type="button" data-next aria-label="Hoja siguiente">${icon("chevron-right")}</button>
+      </div>
       <div class="ptc-info">
         <p class="ptc-info__item">
           <span class="ptc-info__caption">forma</span>
@@ -154,11 +168,6 @@ export function particles() {
           <span class="ptc-info__wave" data-wave-name>${WAVE_NAMES[leaf.wave]}</span>
         </p>
       </div>
-      <div class="ptc-nav" role="group" aria-label="Hoja">
-        ${SHAPES.map((key) => `
-          <button class="ptc-dot" type="button" data-shape="${key}" aria-pressed="false" aria-label="Mostrar hoja ${LEAVES[key].label}"></button>
-        `).join("")}
-      </div>
     </div>
   `;
 }
@@ -168,11 +177,15 @@ export function particles() {
 //   reach  hasta dónde llega el empuje del puntero, en px
 //   force  qué tan fuerte empuja, 0..100
 //   grain  el tamaño de cada punto ("Fine" o "Coarse")
+//   onStep hace que las flechas, en vez de pasar a la hoja anterior/siguiente
+//          de las cuatro, avisen con -1/1 y no cambien nada por su cuenta —
+//          quien llame decide qué mostrar (y llama a show())
 // Devuelve { stop() }, para cuando se sale de la pantalla.
-export function bindParticles(root, { shape = SHAPES[0], reach = 80, force = 60, grain = "Fine" } = {}) {
+export function bindParticles(root, { shape = SHAPES[0], reach = 80, force = 60, grain = "Fine", onStep } = {}) {
   const canvas = root.querySelector(".ptc-canvas");
   if (!canvas) return { stop() {} };
-  const navDots = [...root.querySelectorAll(".ptc-dot")];
+  const prevBtn = root.querySelector("[data-prev]");
+  const nextBtn = root.querySelector("[data-next]");
   const leafName = root.querySelector("[data-leaf-name]");
   const waveName = root.querySelector("[data-wave-name]");
 
@@ -194,7 +207,6 @@ export function bindParticles(root, { shape = SHAPES[0], reach = 80, force = 60,
     const leaf = LEAVES[s];
     if (leafName) leafName.textContent = leaf.label;
     if (waveName) waveName.textContent = WAVE_NAMES[leaf.wave];
-    navDots.forEach((dot) => dot.setAttribute("aria-pressed", String(dot.dataset.shape === s)));
     const myGen = ++gen;
     const next = await homesFor(s);
     if (myGen !== gen) return;
@@ -297,8 +309,8 @@ export function bindParticles(root, { shape = SHAPES[0], reach = 80, force = 60,
   }
   function onDown(event) {
     // solo la onda de choque: la forma no cambia al tocar el canvas (en el
-    // celular un toque sin querer no debe cambiarla); eso lo hacen los
-    // puntos de abajo (ptc-nav)
+    // celular un toque sin querer no debe cambiarla); eso lo hacen las
+    // flechas de encima (ptc-arrow)
     if (still) return;
     const p = where(event);
     const S = 0.4 + (clamp(knobs.force, 0, 100) / 100) * 1.2;
@@ -313,20 +325,31 @@ export function bindParticles(root, { shape = SHAPES[0], reach = 80, force = 60,
     }
     run();
   }
-  function onNavClick(event) {
-    become(event.currentTarget.dataset.shape);
+  function step(dir) {
+    const i = SHAPES.indexOf(at);
+    become(SHAPES[(i + dir + SHAPES.length) % SHAPES.length]);
+  }
+  function onPrev() {
+    onStep ? onStep(-1) : step(-1);
+  }
+  function onNext() {
+    onStep ? onStep(1) : step(1);
   }
 
   canvas.addEventListener("pointermove", onMove);
   canvas.addEventListener("pointerleave", onLeave);
   canvas.addEventListener("pointerdown", onDown);
-  navDots.forEach((dot) => dot.addEventListener("click", onNavClick));
+  prevBtn?.addEventListener("click", onPrev);
+  nextBtn?.addEventListener("click", onNext);
 
   // Si cambia el tema (claro/oscuro) mientras está quieto, lo vuelve a pintar
   const mo = new MutationObserver(draw);
   mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
   return {
+    show(key) {
+      if (SHAPES.includes(key) && key !== at) become(key);
+    },
     stop() {
       cancelAnimationFrame(raf);
       raf = 0;
@@ -334,7 +357,8 @@ export function bindParticles(root, { shape = SHAPES[0], reach = 80, force = 60,
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerleave", onLeave);
       canvas.removeEventListener("pointerdown", onDown);
-      navDots.forEach((dot) => dot.removeEventListener("click", onNavClick));
+      prevBtn?.removeEventListener("click", onPrev);
+      nextBtn?.removeEventListener("click", onNext);
     },
   };
 }

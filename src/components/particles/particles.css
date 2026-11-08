@@ -17,16 +17,56 @@
     gap: var(--gap-md);
 }
 
+/* Envuelve el canvas para poder poner las flechas encima (absolute), a media
+   altura, sin que empujen el ancho del dibujo */
+.ptc-art {
+    position: relative;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
 .ptc-canvas {
     display: block;
     width: 100%;
-    max-width: 480px;
-    margin: 0 auto;
     height: auto;
     aspect-ratio: 480 / 400;
     color: var(--color-text);
     cursor: crosshair;
     touch-action: none;
+}
+
+/* Las flechas ‹ › para pasar de hoja: mismo botón redondo que el Manifiesto
+   (manifiesto__arrow), acá flotando sobre el canvas, a media altura */
+.ptc-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: var(--size-tap);
+    height: var(--size-tap);
+    border: 1px solid var(--color-line);
+    border-radius: 50%;
+    background: var(--color-bg);
+    color: var(--color-text);
+    transition: transform var(--transition-fast);
+}
+
+.ptc-arrow:active {
+    transform: translateY(-50%) scale(0.92);
+}
+
+.ptc-arrow svg {
+    width: 20px;
+    height: 20px;
+}
+
+.ptc-arrow--prev {
+    left: var(--spacing-sm);
+}
+
+.ptc-arrow--next {
+    right: var(--spacing-sm);
 }
 
 /* Donde la referencia pone sus dos números (00:00 … 03:33:09): acá, el
@@ -70,31 +110,3 @@
     text-align: right;
 }
 
-/* Los puntos de abajo, uno por hoja (como leaf-waves__dots): acá vive el
-   cambio de forma, no en el canvas, para que tocarlo en el celular no
-   cambie la hoja sin querer */
-.ptc-nav {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-xs);
-}
-
-.ptc-dot {
-    width: var(--size-tap);
-    height: var(--size-tap);
-    display: grid;
-    place-items: center;
-}
-
-.ptc-dot::before {
-    content: "";
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--color-track);
-    transition: background-color var(--transition-fast);
-}
-
-.ptc-dot[aria-pressed="true"]::before {
-    background: var(--color-text);
-}

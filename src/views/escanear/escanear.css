@@ -49,6 +49,22 @@
     background: var(--color-block-bg);
 }
 
+/* El loader ("Morph"), centrado, mientras la cámara arranca; se apaga en
+   cuanto hay video o hace falta otra cosa (permiso, reintentar) */
+.scan__frame .loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--color-text-muted);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+}
+
+.scan__frame[data-state="starting"] .loader {
+    opacity: 1;
+}
+
 /* El video aparece recién cuando la cámara está andando */
 .scan__video {
     width: 100%;
