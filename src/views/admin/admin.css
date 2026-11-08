@@ -400,6 +400,13 @@
     gap: var(--gap-sm);
 }
 
+.admin-form__progress {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
+    color: var(--color-text-muted);
+}
+
 /* ---------------------------------------- */
 /* Imprimir */
 /* ---------------------------------------- */

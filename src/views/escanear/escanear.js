@@ -23,6 +23,7 @@ import { linkedIds } from "../../store/collection.js";
 import { startQrCamera } from "../../camera/qr-camera.js";
 import { parseQrLink } from "../../utils/qr.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
+import { loader, bindLoader } from "../../components/loader/loader.js";
 import { arrow } from "../../utils/icons.js";
 
 export const title = "Conectar";
@@ -42,6 +43,7 @@ export async function render(root) {
 
       <div class="scan__middle reveal">
         <div class="scan__frame" data-frame data-state="starting">
+          ${loader({ size: 28, label: "Abriendo la cámara" })}
           <video class="scan__video" data-video playsinline muted autoplay></video>
           <span class="scan__corner scan__corner--tl" aria-hidden="true"></span>
           <span class="scan__corner scan__corner--tr" aria-hidden="true"></span>
@@ -62,6 +64,9 @@ export async function render(root) {
   const hint = root.querySelector("[data-hint]");
   const retry = root.querySelector("[data-retry]");
   const video = root.querySelector("[data-video]");
+  // Solo se ve mientras data-state="starting" (escanear.css); igual se anima
+  // todo el tiempo, como el video, para no tener que parar/arrancar con cada cambio
+  const stopLoader = bindLoader(frame).stop;
 
   root.querySelector("[data-simulate]").addEventListener("click", async () => {
     location.hash = `#/t/${getTerrario(await simulatedId()).qr_code}`;
@@ -96,7 +101,10 @@ export async function render(root) {
   retry.addEventListener("click", start);
   start();
 
-  return () => stop();
+  return () => {
+    stop();
+    stopLoader();
+  };
 }
 
 // El terrario de prueba: uno del catálogo al azar, entre los que todavía no se

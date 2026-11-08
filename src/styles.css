@@ -51,6 +51,7 @@
 @import url('./components/production-loop/production-loop.css');
 @import url('./components/share-sheet/share-sheet.css');
 @import url('./components/particles/particles.css');
+@import url('./components/loader/loader.css');
 
 /* ============================================
    VIEWS

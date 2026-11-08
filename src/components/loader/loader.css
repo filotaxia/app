@@ -1,0 +1,28 @@
+/* ============================================
+   Components — Loader
+   ============================================ */
+
+/* "Morph": el tamaño se da con --loader-size (loader.js); el color sigue al
+   texto de alrededor (currentColor), así vale para cualquier fondo */
+.loader {
+    display: inline-flex;
+    width: var(--loader-size, 32px);
+    height: var(--loader-size, 32px);
+    flex: none;
+}
+
+.loader__svg {
+    width: 100%;
+    height: 100%;
+    transform-origin: 50% 50%;
+}
+
+/* "Reducir movimiento": no gira ni cambia de forma, solo parpadea despacio */
+.loader--reduced .loader__svg {
+    animation: loader-pulse 1.4s var(--ease-standard) infinite;
+}
+
+@keyframes loader-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
