@@ -13,7 +13,8 @@
 //   care_log         cuidados hechos: [{ id, terrario_id, type: "riego" | "ventilacion", date }]
 //   bitacora         notas de cada terrario: [{ id, terrario_id, date, created_at, note, photo_id }]
 //                    (las fotos van aparte, en IndexedDB: store/photos.js)
-//   prefs            ajustes: notificaciones y apariencia ("system" | "light" | "dark"; claro por defecto)
+//   prefs            ajustes: notificaciones, apariencia ("system" | "light" | "dark"; claro por defecto)
+//                    y cómo se ve Colección (collection_view: "gallery" | "list")
 //   journey          pasos del recorrido que no se deducen de otros datos:
 //                    { ubicado, escuchado, cuidado } (ver store/journey.js)
 //   manifiesto_seen  true cuando ya vio (o salteó) el Manifiesto del primer escaneo
@@ -28,7 +29,7 @@ export const DEFAULTS = {
   my_terrario: null,
   care_log: [],
   bitacora: [],
-  prefs: { notifications: true, theme: "light" },
+  prefs: { notifications: true, theme: "light", collection_view: "gallery" },
   journey: {},
   manifiesto_seen: false,
   manifiesto_quote: null,

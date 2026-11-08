@@ -1,0 +1,168 @@
+/* ============================================
+   Components — Now Playing
+   ============================================ */
+
+/* El reproductor chico, mini o barra (now-playing.js). Lo que se mueve
+   —alto, posiciones, tamaños— lo escribe paint() en cada cuadro: una
+   transition acá sería una segunda opinión peleándose con esa. Lo que
+   queda es el material: superficies, texto y los estados de los botones.
+   Cuadrado, como todo en la app (la foto también); vidrio y borde fino
+   como la barra de navegación, porque flota sobre la página. */
+
+.np {
+    position: relative;
+    flex: none;
+    border: 1px solid var(--color-nav-glass-border);
+    background: var(--color-nav-glass);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    overflow: hidden;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .np {
+        background: var(--color-nav-bg);
+    }
+}
+
+/* La foto (o el brote, si no hay foto) */
+.np__art {
+    position: absolute;
+    overflow: hidden;
+    transition: scale var(--transition-fast);
+}
+
+.np__art .terrarium-art {
+    height: 100%;
+}
+
+/* Tocar la barra la "aprieta" un poco, como los botones */
+.np:has(.np__tap:active) .np__art {
+    scale: 0.96;
+}
+
+/* Nombre y "Filotaxia", centrados con la foto */
+.np__say {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-2xs);
+    min-width: 0;
+    pointer-events: none;
+}
+
+.np__title,
+.np__by {
+    font-size: var(--font-sm-size);
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.np__title {
+    color: var(--color-text);
+}
+
+.np__by {
+    font-size: var(--font-xs-size);
+    color: var(--color-text-muted);
+}
+
+/* La línea de lo escuchado, al pie de la barra. No se arrastra */
+.np__track {
+    position: absolute;
+    pointer-events: none;
+}
+
+.np__rail {
+    display: block;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--color-track);
+    overflow: hidden;
+}
+
+.np__run {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--color-text);
+}
+
+/* Lo que se toca para cambiar de tamaño: invisible */
+.np__tap {
+    position: absolute;
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+/* ⏮ ▶ ⏭: ubicados por su centro */
+.np__ops {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    translate: -50% -50%;
+}
+
+.np__op {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-text-muted);
+    transition: color var(--transition-fast), background-color var(--transition-fast), scale var(--transition-fast);
+}
+
+.np__op svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Los botones miden 24–30px: el área tocable llega a 44 de alto */
+.np__op::before {
+    content: "";
+    position: absolute;
+    inset: -10px 0;
+}
+
+.np__op:active {
+    scale: 0.96;
+}
+
+/* El play: el único lleno */
+.np__op--lead {
+    width: 30px;
+    height: 30px;
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+}
+
+.np__mark {
+    transform-origin: 50% 50%;
+}
+
+.np__op:focus-visible,
+.np__tap:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+@media (hover: hover) {
+    .np__op:hover {
+        color: var(--color-text);
+        background: var(--color-nav-hover-bg);
+    }
+
+    .np__op--lead:hover {
+        color: var(--color-inverse-text);
+        background: var(--color-inverse-hover);
+    }
+}

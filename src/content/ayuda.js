@@ -145,7 +145,7 @@ export const CARE_GUIDE = [
 // src/assets/images/guia/) y las tres etapas [título, texto]. Los textos de las
 // etapas son los de la web, acortados para leerlos en el celular.
 export const PROCESS_INTRO =
-  "Filotaxia es un arte que incluye naturaleza, ciencia y música, donde las bioemisiones de las plantas son traducidas en sonido a partir de una onda definida por la forma de sus hojas.";
+  "Las bioemisiones de las plantas son traducidas en sonido a partir de una onda definida por la forma de sus hojas.";
 
 export const PROCESS_PHOTOS = [
   { image: "src/assets/images/guia/proceso-01.jpg", alt: "Un terrario redondo de vidrio visto desde arriba, con suculentas y piedras" },

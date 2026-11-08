@@ -2,13 +2,12 @@
    Views — Guía
    ============================================ */
 
-/* De arriba hacia abajo: el proceso ("1 proceso / 3 etapas", como en la
-   página Música de filotaxia.com: frase grande, slider de fotos con una línea
-   que se llena y las tres etapas), "Filotaxia" (la animación de los 3
-   pasos para conectar, components/connect-loop) y las preguntas frecuentes. */
+/* De arriba hacia abajo: "Filotaxia" (la animación de los 3 pasos para
+   conectar, components/connect-loop) y las preguntas frecuentes. El proceso
+   ("1 proceso / 3 etapas") se mudó a la página Filotaxia (formas-ondas.css),
+   como su primera sección. */
 
-/* Cada sección separada por el mismo aire */
-.journey,
+/* Separación entre secciones */
 .guide-faq {
     margin-top: var(--spacing-5xl);
 }
@@ -20,119 +19,12 @@
     letter-spacing: var(--font-xl-tracking);
 }
 
-/* --- Proceso --- */
-.process {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-lg);
-    margin-top: var(--spacing-xl);
-}
-
-/* "1 proceso / 3 etapas": chico, en el color del texto (el h4 de la web) */
-.process__label {
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
-}
-
-/* La frase grande (el h3 de la web) */
-.process__intro {
-    font-size: var(--font-xl-size);
-    line-height: var(--font-xl-line);
-    letter-spacing: var(--font-xl-tracking);
-}
-
-/* Slider: llega hasta los bordes de la pantalla (se come el margen lateral),
-   cada foto se frena alineada con el texto y la siguiente asoma */
-.process__slider {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-lg);
-    margin-top: var(--spacing-lg);
-}
-
-.process__track {
-    display: flex;
-    gap: var(--spacing-sm);
-    margin-inline: calc(var(--gutter) * -1);
-    padding-inline: var(--gutter);
-    scroll-padding-inline: var(--gutter);
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-    overscroll-behavior-x: contain;
-    scrollbar-width: none;
-}
-
-.process__track::-webkit-scrollbar {
-    display: none;
-}
-
-.process__slide {
-    flex: 0 0 85%;
-    scroll-snap-align: start;
-}
-
-.process__photo {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    background: var(--color-block-bg);
-}
-
-/* La línea de progreso: fina, gris, y lo lleno en el color del texto, que
-   crece desde la izquierda (el JS le cambia el scaleX al deslizar) */
-.process__progress {
-    height: 2px;
-    background: var(--color-track);
-    overflow: hidden;
-}
-
-.process__bar {
-    display: block;
-    height: 100%;
-    background: var(--color-text);
-    transform: scaleX(0.18);
-    transform-origin: left;
-}
-
-/* Las tres etapas: "Etapa 1 / …" en el color del texto, el texto en gris.
-   Quedan apiladas en el mismo lugar (grid, una sola celda: el alto lo pone
-   la más alta) y solo se ve la activa; bindSlider (filotaxia.js) la cambia
-   según el scroll horizontal del slider de fotos, con fade. */
-.process__stages {
-    display: grid;
-    margin-top: var(--spacing-lg);
-}
-
-.process__stage {
-    grid-area: 1 / 1;
-    opacity: 0;
-    transition: opacity var(--transition-normal);
-    pointer-events: none;
-}
-
-.process__stage.is-active {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.process__stage-title {
-    margin-bottom: var(--spacing-sm);
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
-}
-
-/* El texto, del mismo tamaño que el texto chico del Manifiesto (15px) */
-.process__stage-text {
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
-    color: var(--color-text-muted);
-}
-
 /* --- "Filotaxia" (antes "Tu recorrido"): el título y, debajo, la animación de los 3 pasos --- */
 .journey {
     display: flex;
     flex-direction: column;
     gap: var(--gap-md);
+    margin-top: var(--spacing-xl);
 }
 
 /* Acá el cuadro es más alto: más aire arriba de la animación */
@@ -166,16 +58,3 @@
     color: var(--color-text-muted);
 }
 
-/* ============================================
-RESPONSIVE
-============================================ */
-
-@media (min-width: 768px) {
-    .view:has(.process) {
-        max-width: 560px;
-    }
-
-    .process__slide {
-        flex-basis: 420px;
-    }
-}

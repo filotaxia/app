@@ -146,6 +146,8 @@ async function render({ moveFocus, refresh = false }) {
   shell.toggleAttribute("data-nav", showNav);
   navEl.toggleAttribute("hidden", !showNav);
   headerEl.toggleAttribute("hidden", !view.header);
+  // El reproductor chico (layout/player-dock) se acomoda a la pantalla
+  window.dispatchEvent(new CustomEvent("filotaxia:chrome", { detail: { nav: showNav, section } }));
 
   // 3. Renderizar la nueva en un contenedor propio
   const viewRoot = document.createElement("div");

@@ -1,0 +1,46 @@
+/* ============================================
+   Layout — Player dock
+   ============================================ */
+
+/* Fijo justo arriba de la barra de navegación y con su mismo ancho (como el
+   mini reproductor de Spotify). El reproductor queda pegado abajo: cerrado
+   es una franja fina horizontal (foto chica, nombre y play) y al tocarlo
+   crece hacia arriba hasta la barra (con ⏮ ⏭ y la línea). Lo vacío del dock
+   deja pasar los toques a la página de abajo.
+   2px: el borde de la barra de navegación (mide --size-nav + 2). */
+
+.player-dock {
+    position: fixed;
+    left: var(--spacing-sm);
+    right: var(--spacing-sm);
+    bottom: calc(max(var(--spacing-md), env(safe-area-inset-bottom)) + var(--size-nav) + 2px + var(--spacing-sm));
+    z-index: var(--z-nav);
+    max-width: var(--size-nav-max);
+    margin-inline: auto;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    pointer-events: none;
+}
+
+.player-dock[hidden] {
+    display: none;
+}
+
+.player-dock .np {
+    pointer-events: auto;
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+
+/* Con el riel a la izquierda ya no hay barra abajo: queda al pie, a la
+   derecha de la columna de contenido */
+@media (min-width: 1024px) {
+    .player-dock {
+        left: calc(var(--size-rail) + var(--spacing-xl));
+        right: var(--spacing-xl);
+        bottom: var(--spacing-xl);
+    }
+}

@@ -8,8 +8,8 @@
 // que entonces suma el terrario a la colección (no hace falta cuenta) y sigue
 // directo a su pieza, el reproductor (views/escuchar).
 // El primero que se escanea pasa a ser "Mi terrario".
-// Sin escanear (por ejemplo, escribiendo #/terrario/03), un terrario que este
-// teléfono no tiene conectado muestra "Sin conectar" y no se suma.
+// Sin escanear (desde Colección, o escribiendo #/terrario/03) se ve igual:
+// cualquiera puede ver y escuchar cualquier terrario; solo no se suma.
 // Debajo de la historia, "Especificaciones", como en filotaxia.com: la ficha
 // técnica (modelo, ecosistema, plantas…) y, en la misma lista, tres filas
 // que son links, con una flecha: el próximo riego → Cuidados (o, si no es el
@@ -21,8 +21,8 @@
 // (terrario-secciones.js): Características (slider), Cómo funciona (la foto
 // cambia al tocar cada paso, con GSAP) y Preguntas frecuentes al final.
 
-import { getTerrario, codeOf } from "../../content/terrarios.js";
-import { isLinked, link, markScanned, linkedIds } from "../../store/collection.js";
+import { TERRARIOS, getTerrario, codeOf } from "../../content/terrarios.js";
+import { link, markScanned } from "../../store/collection.js";
 import { takeScanIntent } from "../../utils/scan-intent.js";
 import { claimIfFirst, myTerrarioId, lastCare } from "../../store/my-terrario.js";
 import { entries } from "../../store/bitacora.js";
@@ -52,11 +52,6 @@ export async function render(root, { params, from }) {
   // ¿Llegó escaneando su QR? Solo así se conecta y cuenta como
   // "Última conexión". Abrirla desde otra pantalla no cuenta.
   const scanned = takeScanIntent(terrario.id);
-
-  if (!scanned && !(await isLinked(terrario.id))) {
-    root.innerHTML = notConnected(terrario);
-    return;
-  }
 
   // Escaneo: se conecta y el QR lleva directo a la pieza (el reproductor).
   // replace(): la ficha no queda en el historial antes del reproductor.
@@ -92,7 +87,7 @@ export async function render(root, { params, from }) {
       </div>
 
       ${specs(terrario, [
-        isMine ? await careRow(terrario, today) : await collectionRow(),
+        isMine ? await careRow(terrario, today) : collectionRow(),
         ["Bitácora", notes.length === 1 ? "1 nota" : `${notes.length} notas`, `#/bitacora/${terrario.id}`],
         ["Pieza", formatTime(terrario.duration), `#/escuchar/${terrario.id}`, `Escuchar la pieza (${formatTime(terrario.duration)})`],
       ])}
@@ -157,26 +152,10 @@ async function careRow(terrario, today) {
   return ["Próximo riego", dueLabel(riego.daysLeft), "#/mi-terrario/cuidados"];
 }
 
-// Uno que no es el propio: cuántos terrarios hay conectados → la colección
-async function collectionRow() {
-  const count = (await linkedIds()).length;
-  return ["Mis terrarios", count === 1 ? "1 terrario" : `${count} terrarios`, "#/coleccion"];
-}
-
-// Un terrario que existe pero este teléfono no escaneó
-function notConnected(terrario) {
-  return `
-    <section class="screen terrario terrario--empty">
-      <div class="terrario__info reveal-stagger">
-        <p class="eyebrow">Terrario</p>
-        <h1 class="title" tabindex="-1">${escapeHTML(codeOf(terrario))}</h1>
-        <p class="lead">Escaneá el QR de su base para conectarlo y escuchar su pieza.</p>
-      </div>
-      <div class="screen__actions">
-        <a class="btn btn--primary" href="#/escanear">Conectar</a>
-      </div>
-    </section>
-  `;
+// Uno que no es el propio: cuántos terrarios hay → la colección
+function collectionRow() {
+  const count = TERRARIOS.filter((terrario) => terrario.status !== "retirado").length;
+  return ["Colección", count === 1 ? "1 terrario" : `${count} terrarios`, "#/coleccion"];
 }
 
 function notFound() {
