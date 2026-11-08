@@ -3,7 +3,7 @@
    ============================================ */
 
 // Textos que se arman a partir de datos: tiempos del reproductor,
-// fechas de grabación y el subtítulo de la colección.
+// fechas de grabación y la duración que escribe el panel.
 
 // 222 → "3:42"
 export function formatTime(seconds) {
@@ -21,10 +21,13 @@ export function formatDate(key) {
   return `${day}/${month}/${year}`;
 }
 
-export function pluralTerrarios(count) {
-  if (count === 0) return "Todavía no conectaste terrarios";
-  if (count === 1) return "1 terrario conectado";
-  return `${count} terrarios conectados`;
+// "2026-06-14" → { month: "Jun", day: "14" } (la columna de fecha de la
+// lista de Colección). Como formatDate: se corta el texto, sin new Date().
+const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+export function monthDay(key) {
+  const [, month, day] = key.split("-");
+  return { month: MONTHS[Number(month) - 1], day };
 }
 
 // "4:11" → 251 (lo que se escribe en el panel); también acepta solo segundos ("251").

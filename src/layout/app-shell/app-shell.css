@@ -19,6 +19,12 @@
     --view-pad-bottom: calc(var(--size-nav) + env(safe-area-inset-bottom) + var(--spacing-4xl));
 }
 
+/* Con el reproductor chico arriba de la barra (layout/player-dock): su alto
+   como barra (78) y su separación, así no tapa lo último de la página */
+.app-shell[data-nav][data-dock] {
+    --view-pad-bottom: calc(var(--size-nav) + env(safe-area-inset-bottom) + var(--spacing-4xl) + 78px + var(--spacing-sm));
+}
+
 .app-view {
     padding-bottom: var(--view-pad-bottom);
 }
@@ -86,6 +92,10 @@ RESPONSIVE
     .app-shell[data-nav] {
         --view-pad-bottom: var(--spacing-5xl);
         padding-left: var(--size-rail);
+    }
+
+    .app-shell[data-nav][data-dock] {
+        --view-pad-bottom: calc(var(--spacing-5xl) + 78px);
     }
 
     .app-shell[data-nav] .screen {

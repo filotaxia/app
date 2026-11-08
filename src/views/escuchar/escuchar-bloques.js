@@ -13,32 +13,26 @@
 //   Acerca de esta pieza.  su historia, la fecha de grabación y la duración
 //   Plantas. / Ondas.      el bloque de Mi terrario: las plantas y, con el
 //                          botón de la derecha, la onda de cada una
-//   Capas.                 las capas del terrario, con sus imágenes en movimiento
 //   Créditos.              quién hace la pieza: el sensor (Biodata) y Filotaxia
-//   Más terrarios.         los otros terrarios conectados en este teléfono
 //
 // Cada función devuelve HTML (o "" si no hay datos para ese bloque).
 // La partitura se conecta al reproductor con bindScore() (devuelve paint(time)).
 
 import { codeOf } from "../../content/terrarios.js";
 import { WAVE_NAMES } from "../../content/plantas.js";
-import { LAYERS } from "../../content/ayuda.js";
 import { LANES } from "../../audio/lanes.js";
 import { noteName } from "../../utils/midi.js";
-import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { plantsBlock } from "../../components/plants-block/plants-block.js";
 import { formatDate, formatTime } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
-import { icon, arrow } from "../../utils/icons.js";
+import { icon } from "../../utils/icons.js";
 
-export function sections({ terrario, lanes, others }) {
+export function sections({ terrario, lanes }) {
   return [
     scoreCard(terrario, lanes),
     aboutPiece(terrario),
     plantsCard(terrario),
-    layersCard(),
     creditsCard(),
-    moreCard(others),
   ].join("");
 }
 
@@ -229,30 +223,6 @@ function wavesCard(terrario) {
 }
 
 /* ---------------------------------------- */
-/* Las cuatro capas (como Videos relacionados) */
-
-// Fila que se desliza de costado. Los videos son los de las capas de filotaxia.com
-// (content/ayuda.js); loading="lazy" para no bajarlos hasta que se ven.
-function layersCard() {
-  return `
-    <section class="player-card player-card--rail" aria-labelledby="card-layers">
-      ${head(`<span id="card-layers">Capas.</span>`)}
-      <ul class="rail" role="list">
-        ${LAYERS.map(([name, material, , media], i) => `
-          <li class="rail__item">
-            <span class="rail__media">
-              <video src="${media}" muted loop playsinline autoplay aria-hidden="true"></video>
-              <span class="rail__badge">Capa${String(i + 1).padStart(2, "0")}/</span>
-            </span>
-            <span class="rail__name">${name}</span>
-            <span class="rail__detail">${material}</span>
-          </li>`).join("")}
-      </ul>
-    </section>
-  `;
-}
-
-/* ---------------------------------------- */
 /* Créditos */
 
 // Quién hace la pieza: el sensor que lee las plantas y Filotaxia
@@ -272,29 +242,6 @@ function creditsCard() {
           <li class="credits__row">
             <span class="credits__name">${escapeHTML(name)}</span>
             <span class="credits__role">${role}</span>
-          </li>`).join("")}
-      </ul>
-    </section>
-  `;
-}
-
-/* ---------------------------------------- */
-/* Más terrarios (como "Explorá…") */
-
-// Los otros terrarios conectados en este teléfono; si no hay, no se muestra
-function moreCard(others) {
-  if (!others.length) return "";
-  return `
-    <section class="player-card player-card--rail" aria-labelledby="card-more">
-      ${head(`<span id="card-more">Más terrarios.</span>`, `<a class="player-card__link" href="#/coleccion">Colección ${arrow()}</a>`)}
-      <ul class="rail rail--square" role="list">
-        ${others.map((other) => `
-          <li class="rail__item">
-            <a class="rail__link" href="#/escuchar/${other.id}">
-              <span class="rail__media">${terrariumArt({ photo: other.photo, size: "sm" })}</span>
-              <span class="rail__name">${escapeHTML(codeOf(other))}</span>
-              <span class="rail__detail">${formatTime(other.duration)}</span>
-            </a>
           </li>`).join("")}
       </ul>
     </section>

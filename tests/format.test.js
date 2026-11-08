@@ -4,7 +4,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { formatTime, formatDate, pluralTerrarios, parseDuration } from "../src/utils/format.js";
+import { formatTime, formatDate, monthDay, parseDuration } from "../src/utils/format.js";
 
 test("formatTime: segundos a m:ss", () => {
   assert.equal(formatTime(0), "0:00");
@@ -20,10 +20,10 @@ test("formatDate: YYYY-MM-DD a DD/MM/YYYY sin pasar por UTC", () => {
   assert.equal(formatDate("2026-01-01"), "01/01/2026");
 });
 
-test("pluralTerrarios", () => {
-  assert.equal(pluralTerrarios(0), "Todavía no conectaste terrarios");
-  assert.equal(pluralTerrarios(1), "1 terrario conectado");
-  assert.equal(pluralTerrarios(4), "4 terrarios conectados");
+test("monthDay: el mes corto en castellano y el día, sin pasar por UTC", () => {
+  assert.deepEqual(monthDay("2026-06-14"), { month: "Jun", day: "14" });
+  assert.deepEqual(monthDay("2026-01-01"), { month: "Ene", day: "01" });
+  assert.deepEqual(monthDay("2026-12-31"), { month: "Dic", day: "31" });
 });
 
 test("parseDuration lee m:ss (o solo segundos) y devuelve segundos", () => {

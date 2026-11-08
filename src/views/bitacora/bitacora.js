@@ -10,7 +10,6 @@
 // Las notas se guardan en el store y las fotos en IndexedDB (store/bitacora.js).
 
 import { getTerrario, codeOf } from "../../content/terrarios.js";
-import { isLinked } from "../../store/collection.js";
 import { entries, addEntry, removeEntry, photoURL } from "../../store/bitacora.js";
 import { openSheet } from "../../components/sheet/sheet.js";
 import { toast } from "../../components/toast/toast.js";
@@ -31,8 +30,8 @@ export const back = ({ from }) => (from && from !== "inicio" ? `#/${from}` : "#/
 export async function render(root, { params }) {
   const terrario = getTerrario(params.id);
 
-  // Un terrario que no está en la colección se ve primero en su ficha
-  if (!terrario || !(await isLinked(terrario.id))) {
+  // Un código que no existe va a la ficha, que dice "No encontramos…"
+  if (!terrario) {
     location.replace(`#/terrario/${params.id}`);
     return;
   }

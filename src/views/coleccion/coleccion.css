@@ -2,10 +2,121 @@
    Views — Colección
    ============================================ */
 
-/* Grilla de 2 columnas (3 desde 640): ilustración cuadrada,
-   el estado chico ("Conectado" o "Sin conectar") y el código
-   del terrario ("TR01") debajo. Los que no se conectaron se ven
-   atenuados y en gris (--locked). */
+/* El encabezado propio y la colección, en galería o en lista. El
+   reproductor chico de abajo es de todo el sitio (layout/player-dock). */
+
+/* --- Encabezado: como el header grande (título + bajada, el mismo aire
+   arriba), con el interruptor galería / lista al lado del punto de Ajustes --- */
+.collection-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-lg);
+    padding-top: calc(env(safe-area-inset-top) + var(--spacing-3xl));
+}
+
+.collection-head__title {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+.collection-head__title:focus {
+    outline: none;
+}
+
+.collection-head__subtitle {
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: var(--color-text-muted);
+}
+
+.collection-head__tools {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+/* --- El interruptor: una pastilla negra (siempre, como el punto de Ajustes
+   de al lado) con dos íconos (galería a la izquierda, lista a la derecha) y
+   el círculo blanco detrás del que está elegido. Prendido = lista --- */
+.view-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: var(--size-tap);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.view-toggle input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+}
+
+.view-toggle__track {
+    position: relative;
+    width: 60px;
+    height: 30px;
+    border-radius: 999px;
+    background: var(--color-text);
+}
+
+.view-toggle__thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--color-bg);
+    transition: transform 0.3s var(--ease-out);
+}
+
+/* Cada ícono, centrado donde se para el círculo (a la izquierda o a la derecha) */
+.view-toggle__icon {
+    position: absolute;
+    top: 8px;
+    width: 14px;
+    height: 14px;
+    stroke-width: 2;
+    transition: color 0.3s var(--ease-out);
+}
+
+.view-toggle__icon--grid {
+    left: 8px;
+    color: var(--color-text);
+}
+
+/* El que no está elegido queda sobre lo negro: claro y apagado */
+.view-toggle__icon--list {
+    right: 8px;
+    color: color-mix(in srgb, var(--color-bg) 60%, transparent);
+}
+
+.view-toggle input:checked + .view-toggle__track .view-toggle__thumb {
+    transform: translateX(30px);
+}
+
+.view-toggle input:checked + .view-toggle__track .view-toggle__icon--grid {
+    color: color-mix(in srgb, var(--color-bg) 60%, transparent);
+}
+
+.view-toggle input:checked + .view-toggle__track .view-toggle__icon--list {
+    color: var(--color-text);
+}
+
+.view-toggle input:focus-visible + .view-toggle__track {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+/* --- Galería: grilla de 2 columnas (3 desde 640): ilustración cuadrada,
+   el dato chico (la duración de la pieza) y el código
+   del terrario ("TR01") debajo. Todos se pueden abrir. --- */
 
 .collection {
     display: grid;
@@ -24,7 +135,7 @@
 }
 
 @media (hover: hover) {
-    a.collection__tile:hover .terrarium-art {
+    .collection__tile:hover .terrarium-art {
         transform: scale(0.98);
     }
 }
@@ -48,15 +159,84 @@
     font-weight: var(--font-weight-medium);
 }
 
-/* Sin conectar: la foto en gris y atenuada, el nombre en gris.
-   El texto "Sin conectar" lo dice con palabras, no solo con el color. */
-.collection__tile--locked .terrarium-art {
-    opacity: var(--opacity-disabled);
-    filter: grayscale(1);
+/* --- Lista: una fila por terrario, en un bloque gris cuadrado, sin borde.
+   Fecha | foto, nombre y la duración, y a la derecha › --- */
+.collection-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
 }
 
-.collection__tile--locked .collection__name {
+.collection-row {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-md);
+    padding: var(--spacing-md);
+    background: var(--color-block-bg);
+    transition: transform var(--transition-fast);
+}
+
+.collection-row:active {
+    transform: scale(0.98);
+}
+
+/* La fecha, con una línea fina a la derecha que la separa de la foto */
+.collection-row__date {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    width: 44px;
+    padding-right: var(--spacing-md);
+    border-right: 1px solid var(--color-line);
+}
+
+.collection-row__month {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
     color: var(--color-text-muted);
+}
+
+.collection-row__day {
+    font-size: 22px;
+    line-height: 26px;
+}
+
+.collection-row__thumb {
+    flex: none;
+    width: 48px;
+}
+
+.collection-row__text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xs);
+}
+
+.collection-row__name {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+.collection-row__status {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: var(--color-text-muted);
+}
+
+/* A la derecha, la flecha › (en todas, también en la propia) */
+.collection-row__end {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+}
+
+.collection-row__end svg {
+    width: 20px;
+    height: 20px;
 }
 
 /* ============================================

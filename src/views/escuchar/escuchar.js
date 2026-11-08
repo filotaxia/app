@@ -28,7 +28,7 @@
 //
 // Teclado: espacio = play/pausa · ← / → = −15 / +15 s (fuera de la barra).
 
-import { getTerrario, codeOf } from "../../content/terrarios.js";
+import { TERRARIOS, getTerrario, codeOf } from "../../content/terrarios.js";
 import { LAYERS } from "../../content/ayuda.js";
 import { linkedIds } from "../../store/collection.js";
 import { myTerrarioId } from "../../store/my-terrario.js";
@@ -62,10 +62,10 @@ const FALLBACK_VIDEO = LAYERS[0][3];
 export async function render(root, { params, from }) {
   const linked = await linkedIds();
 
-  // Sin id: el propio o el primero de la colección
+  // Sin id: el propio, el primero conectado o el primero del catálogo
   if (!params.id) {
     const mine = await myTerrarioId();
-    const id = linked.includes(mine) ? mine : linked[0];
+    const id = linked.includes(mine) ? mine : linked[0] ?? TERRARIOS[0]?.id;
     if (id) {
       location.replace(`#/escuchar/${id}`);
       return;
@@ -88,8 +88,6 @@ export async function render(root, { params, from }) {
 
 // Arma el reproductor de un terrario en root y devuelve la función que lo apaga
 async function renderPlayer(root, terrario, { back }) {
-  const linked = await linkedIds();
-  const others = linked.filter((id) => id !== terrario.id).map(getTerrario).filter(Boolean);
   const name = escapeHTML(codeOf(terrario));
   const lanes = await loadLanes(terrario);   // las dos secuencias MIDI (plantas y sustrato)
 
@@ -162,7 +160,7 @@ async function renderPlayer(root, terrario, { back }) {
     </div>
 
     <div class="player__sections">
-      ${sections({ terrario, lanes, others })}
+      ${sections({ terrario, lanes })}
     </div>
 
     ${scoreFull(terrario, lanes)}
