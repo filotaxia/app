@@ -92,7 +92,7 @@
     background: var(--color-text);
 }
 
-/* Lo que se toca para cambiar de tamaño: invisible */
+/* El link a la Pieza: invisible, cubre toda la barra */
 .np__tap {
     position: absolute;
     padding: 0;

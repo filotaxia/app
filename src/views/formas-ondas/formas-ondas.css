@@ -2,148 +2,10 @@
    Views — Formas y ondas
    ============================================ */
 
-/* Header propio de la página (header: false en formas-ondas.js): el mismo
-   encabezado de Mi terrario ("Filotaxia." + "Armonía en plantas." en gris,
-   mine__head/mine__title/mine__status de mi-terrario.css), acá arriba de
-   todo el contenido en vez del header fijo. */
-.art-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--gap-lg);
-    padding-top: calc(env(safe-area-inset-top) + var(--spacing-3xl));
-}
-
-.art-top__title,
-.art-top__status {
-    font-size: var(--font-xl-size);
-    line-height: var(--font-xl-line);
-    letter-spacing: var(--font-xl-tracking);
-}
-
-.art-top__title:focus {
-    outline: none;
-}
-
-.art-top__status {
-    color: var(--color-text-faint);
-}
-
-/* --- Proceso --- "1 proceso / 3 etapas", como en la página Música de
-   filotaxia.com (frase grande, slider de fotos con una línea que se llena
-   y las tres etapas). Mudado acá desde la Guía. */
-.process {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-lg);
-}
-
-/* "1 proceso / 3 etapas": chico, en el color del texto (el h4 de la web) */
-.process__label {
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
-}
-
-/* La frase grande (el h3 de la web) */
-.process__intro {
-    font-size: var(--font-xl-size);
-    line-height: var(--font-xl-line);
-    letter-spacing: var(--font-xl-tracking);
-}
-
-/* Slider: llega hasta los bordes de la pantalla (se come el margen lateral),
-   cada foto se frena alineada con el texto y la siguiente asoma */
-.process__slider {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-lg);
-    margin-top: var(--spacing-lg);
-}
-
-.process__track {
-    display: flex;
-    gap: var(--spacing-sm);
-    margin-inline: calc(var(--gutter) * -1);
-    padding-inline: var(--gutter);
-    scroll-padding-inline: var(--gutter);
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-    overscroll-behavior-x: contain;
-    scrollbar-width: none;
-}
-
-.process__track::-webkit-scrollbar {
-    display: none;
-}
-
-.process__slide {
-    flex: 0 0 85%;
-    scroll-snap-align: start;
-}
-
-.process__photo {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    background: var(--color-block-bg);
-}
-
-/* La línea de progreso: fina, gris, y lo lleno en el color del texto, que
-   crece desde la izquierda (el JS le cambia el scaleX al deslizar) */
-.process__progress {
-    height: 2px;
-    background: var(--color-track);
-    overflow: hidden;
-}
-
-.process__bar {
-    display: block;
-    height: 100%;
-    background: var(--color-text);
-    transform: scaleX(0.18);
-    transform-origin: left;
-}
-
-/* Las tres etapas: "Etapa 1 / …" en el color del texto, el texto en gris.
-   Quedan apiladas en el mismo lugar (grid, una sola celda: el alto lo pone
-   la más alta) y solo se ve la activa; bindSlider (formas-ondas.js) la
-   cambia según el scroll horizontal del slider de fotos, con fade. */
-.process__stages {
-    display: grid;
-    margin-top: var(--spacing-lg);
-}
-
-.process__stage {
-    grid-area: 1 / 1;
-    opacity: 0;
-    transition: opacity var(--transition-normal);
-    pointer-events: none;
-}
-
-.process__stage.is-active {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.process__stage-title {
-    margin-bottom: var(--spacing-sm);
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
-}
-
-/* El texto, del mismo tamaño que el texto chico del Manifiesto (15px) */
-.process__stage-text {
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
-    color: var(--color-text-muted);
-}
-
-/* Debajo del proceso, el nombre de la planta que se está mostrando (antes
-   vivía en el header fijo, ahora va acá al lado del dibujo) y
-   components/particles; abajo, el catálogo de suculentas en una grilla de
-   2 columnas, el nombre de cada una sobre su foto. */
-/* Proceso, hoja → onda y la planta: separadas por el mismo aire (este
-   margen + el espacio de .view entre secciones) */
+/* Debajo del hero (título, subtítulo y hoja → onda), el nombre de la planta
+   que se está mostrando y components/particles; abajo, el catálogo de
+   suculentas en una grilla de 2 columnas, el nombre de cada una sobre su
+   foto. El margen de acá arriba separa del hero (que llega hasta el borde) */
 .art {
     margin-top: var(--spacing-4xl);
     display: flex;
@@ -169,22 +31,53 @@
     color: var(--color-text-muted);
 }
 
-/* --- Hoja → onda --- entre el proceso y la planta: un cuadro oscuro
-   (--color-feature-bg: negro en claro, gris en oscuro, nunca blanco) a todo
-   el ancho, con el "antes / después" (compare / bindCompare,
-   formas-ondas.js) y debajo los cuatro botones de forma.
-   Lo que se mueve —la línea, el corte de la hoja, la perilla— lo escribe
-   el JS; acá queda el material. Cuadrado, como todo en la app; la perilla
-   es un círculo (como el play). Sin sombras: bordes finos. */
+/* --- Hoja → onda --- el header propio de la página (header: false en
+   formas-ondas.js): un cuadro oscuro de punta a punta (--color-feature-bg:
+   negro en claro, gris en oscuro, nunca blanco), con el título "Formas" y
+   su subtítulo arriba (formas-hero-top, + Ajustes) y, debajo, el "antes /
+   después" (compare / bindCompare, formas-ondas.js) y los cuatro botones
+   de forma. Lo que se mueve —la línea, el corte de la hoja, la perilla—
+   lo escribe el JS; acá queda el material. Cuadrado, como todo en la app;
+   la perilla es un círculo (como el play). Sin sombras: bordes finos. */
 .leafwave {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--gap-xl);
-    margin: var(--spacing-4xl) calc(var(--gutter) * -1) 0;
-    padding: var(--spacing-3xl) var(--gutter);
+    margin: 0 calc(var(--gutter) * -1);
+    padding: calc(env(safe-area-inset-top) + var(--spacing-xl)) var(--gutter) var(--spacing-3xl);
     background: var(--color-feature-bg);
     color: var(--color-feature-text);
+}
+
+.formas-hero-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--gap-lg);
+    width: 100%;
+    max-width: 320px;
+}
+
+.formas-hero-title {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+.formas-hero-title:focus {
+    outline: none;
+}
+
+.formas-hero-subtitle {
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: color-mix(in srgb, var(--color-feature-text) 70%, transparent);
+}
+
+.formas-hero-top .settings-link__dot {
+    background: var(--color-feature-text);
 }
 
 .cmp {
@@ -205,9 +98,10 @@
     outline-offset: 4px;
 }
 
-/* Las dos capas, del mismo tamaño y centradas igual: la hoja sobre claro
-   (antes) y la onda en blanco sobre negro (después). Colores fijos, iguales
-   en los dos temas, para que el cambio de una a la otra se lea siempre */
+/* Las dos capas, del mismo tamaño y centradas igual: las dos oscuras (la
+   hoja a la izquierda, la onda en blanco a la derecha). Colores fijos,
+   iguales en los dos temas, para que el cambio de una a la otra se lea
+   siempre */
 .cmp__layer {
     position: absolute;
     inset: 0;
@@ -215,10 +109,7 @@
     place-items: center;
 }
 
-.cmp__layer--before {
-    background: var(--color-feature-text);
-}
-
+.cmp__layer--before,
 .cmp__layer--after {
     background: var(--color-feature-bg);
 }
@@ -232,6 +123,7 @@
 
 .cmp__wave {
     width: 85%;
+    max-height: 55%;   /* por si el aspect-ratio de la base no alcanza: no se desborda del cuadro */
     color: var(--color-feature-text);
 }
 
@@ -243,14 +135,13 @@
     left: var(--spacing-md);
     font-size: var(--font-base-size);
     line-height: var(--font-base-line);
-    color: var(--color-feature-bg);
+    color: var(--color-feature-text);
     pointer-events: none;
 }
 
 .cmp__tag--after {
     left: auto;
     right: var(--spacing-md);
-    color: var(--color-feature-text);
 }
 
 .cmp__caption {
@@ -405,11 +296,5 @@ RESPONSIVE
 @media (min-width: 640px) {
     .shapes-catalog__list {
         grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (min-width: 768px) {
-    .process__slide {
-        flex-basis: 420px;
     }
 }

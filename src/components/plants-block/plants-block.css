@@ -9,6 +9,30 @@
         "title badge"
         "list  list";
     min-height: 0;
+    transition: transform var(--transition-fast);
+}
+
+.block--list:active {
+    transform: scale(0.98);
+}
+
+/* El título es un link a Filotaxia (#/formas-ondas) que cubre todo el
+   bloque (como Pieza en Mi terrario): el botón "Ondas" queda por encima,
+   con su propio z-index, para que no dispare la navegación */
+.plants__link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.plants__link:focus-visible {
+    outline: none;
+}
+
+.plants__link:focus-visible::after {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
 }
 
 .block__list {
@@ -40,6 +64,7 @@
    tocable, negra y del tamaño del botón "Escuchar". */
 .block__toggle {
     position: relative;
+    z-index: 2;
     display: inline-flex;
     align-items: center;
     min-height: 28px;

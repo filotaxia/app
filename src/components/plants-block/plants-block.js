@@ -7,7 +7,9 @@
 // "Plantas" (para volver) y, en lugar de la foto y la hoja, cada fila muestra
 // el dibujo de la onda con la que suena (según la forma de su hoja,
 // content/plantas.js). Las dos versiones ya están en el HTML; el CSS muestra
-// una u otra según data-view (ver bindPlants).
+// una u otra según data-view (ver bindPlants). El título es un link a
+// Filotaxia (#/formas-ondas, el catálogo de formas y ondas): todo el bloque
+// se puede tocar para ir, salvo el botón "Ondas" (como Pieza en Mi terrario).
 //
 //   plantsBlock(terrario)   → "" si el terrario no tiene plantas cargadas
 //   bindPlants(root)        → conecta el botón (después de insertar el HTML)
@@ -22,7 +24,9 @@ export function plantsBlock(terrario) {
   const hasWaves = plantas.some((planta) => planta.wave);
   return `
     <article class="block block--full block--list" data-plants data-view="plantas">
-      <h2 class="block__title" data-plants-title>Plantas.</h2>
+      <h2 class="block__title">
+        <a class="plants__link" href="#/formas-ondas" data-plants-title aria-label="Plantas: de la forma a la vibración">Plantas.</a>
+      </h2>
       ${hasWaves
         ? `<button class="block__badge block__toggle" type="button" aria-label="Ver ondas" data-plants-toggle>Ondas</button>`
         : ""}
