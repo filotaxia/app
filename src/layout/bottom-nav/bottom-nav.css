@@ -2,43 +2,46 @@
    Layout — Bottom Nav
    ============================================ */
 
-/* Mobile: barra flotante de vidrio (como la de Fitness de Apple), centrada
-   y separada de los bordes. Cinco ítems con ícono + label:
-   Mi terrario · Colección · Filotaxia · Manifiesto · Guía. Filotaxia (el
-   catálogo de formas y ondas, views/formas-ondas), la acción principal, va
-   en el centro con fondo negro; la sección activa lleva un fondo suave.
-   Desktop (>= 1024): riel vertical fijo a la izquierda.
+/* Mobile: una píldora compacta y flotante, de vidrio (bien notorio: blur +
+   transparencia) sobre #000 fijo — no sigue el tema, siempre negra, clara
+   u oscura la página —, centrada y angosta: se achica a lo que ocupan sus
+   íconos, no a todo el ancho. Solo íconos, sin label visible (el nombre va
+   en el aria-label del link). Cinco ítems: Mi terrario · Colección ·
+   Filotaxia · Manifiesto · Guía, y al final el reproductor (un botón, no
+   un link: muestra u oculta la franja/barra de components/now-playing —
+   layout/player-dock los conecta). La sección activa es un círculo blanco
+   (fijo), como un hueco en la barra.
+   Desktop (>= 1024): riel vertical fijo a la izquierda, con los colores de
+   siempre (sigue el tema) — este estilo nuevo es cosa del mobile.
 
    Es de lo poco redondeado de la app (el resto es cuadrado, como la web):
-   la barra 16px y el fondo de la sección activa 12px, que es 16 menos el
-   padding de 4, así las dos curvas quedan paralelas. */
+   acá del todo, en píldora (el radio es la mitad del alto). */
 
 .bottom-nav {
     position: fixed;
-    left: var(--spacing-sm);
-    right: var(--spacing-sm);
+    left: 50%;
     bottom: max(var(--spacing-md), env(safe-area-inset-bottom));
     z-index: var(--z-nav);
-    max-width: var(--size-nav-max);
-    margin-inline: auto;
+    translate: -50% 0;
+    width: max-content;
     padding: var(--spacing-xs);
-    border: 1px solid var(--color-nav-glass-border);
-    border-radius: 16px;
-    background: var(--color-nav-glass);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid color-mix(in srgb, var(--color-white) 18%, transparent);
+    border-radius: 9999px;
+    background: color-mix(in srgb, #000 55%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(220%);
+    backdrop-filter: blur(20px) saturate(220%);
 }
 
 /* Sin desenfoque (navegadores viejos o "reducir transparencia"): fondo sólido */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .bottom-nav {
-        background: var(--color-nav-bg);
+        background: #000;
     }
 }
 
 @media (prefers-reduced-transparency: reduce) {
     .bottom-nav {
-        background: var(--color-nav-bg);
+        background: #000;
     }
 }
 
@@ -49,19 +52,34 @@
 .bottom-nav__list {
     height: calc(var(--size-nav) - 2 * var(--spacing-xs));
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    align-items: stretch; /* cada ítem (y su pill) ocupa todo el alto de la barra */
+    grid-template-columns: repeat(5, var(--size-tap)) var(--spacing-md) var(--size-tap);
+    gap: var(--spacing-2xs);
+    align-items: center;
+    justify-items: center;
+}
+
+/* El separador entre las páginas y el reproductor: una rayita vertical,
+   discreta (color del texto inverso, atenuada) */
+.bottom-nav__sep {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bottom-nav__sep-line {
+    width: 1px;
+    height: 20px;
+    background: var(--color-white);
+    opacity: 0.3;
 }
 
 .bottom-nav__link {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-2xs);
-    border-radius: 12px;
-    color: var(--color-nav-text);
+    width: var(--size-tap);
+    height: var(--size-tap);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--color-white);
     transition: color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
 }
 
@@ -71,39 +89,16 @@
     stroke-width: 1.5;
 }
 
-/* Aire arriba y abajo del ícono (20px): la barra mantiene su alto */
-.bottom-nav__link > .bottom-nav__icon {
-    margin-block: var(--spacing-xs);
-}
-
-.bottom-nav__label {
-    font-size: var(--font-xs-size);
-    line-height: var(--font-xs-line);
-    font-weight: var(--font-weight-medium);
-}
-
-/* Filotaxia: el isotipo de la marca (las dos hojas, src/assets/images/marca/)
-   en lugar de un ícono de Lucide. Es un PNG usado como máscara, así toma
-   el color del texto como los demás íconos (blanco sobre el negro del
-   ítem). Es más ancho que alto. */
-.bottom-nav__logo {
-    display: block;
-    width: 26px;
-    background: currentColor;
-    mask: url("../../assets/images/marca/isotipo.png") center / contain no-repeat;
-}
-
-/* Sección activa: pill de fondo y texto negro */
+/* Sección activa: un círculo blanco fijo — el agujero claro en el vidrio negro */
 .bottom-nav__link[aria-current="page"] {
-    background: var(--color-nav-active-bg);
-    color: var(--color-nav-text-active);
+    background: var(--color-white);
+    color: var(--color-black);
 }
 
 /* Hover solo con mouse (en el celular quedaría pegado después de tocar) */
 @media (hover: hover) {
     .bottom-nav__link:not([aria-current="page"]):hover {
-        background: var(--color-nav-hover-bg);
-        color: var(--color-text);
+        background: color-mix(in srgb, var(--color-white) 15%, transparent);
     }
 }
 
@@ -111,28 +106,8 @@
     stroke-width: 2;
 }
 
-/* Filotaxia: la acción principal. Mismo tamaño y redondeo que la pill
-   activa, pero en negro (inverso), así se lee como el botón de la barra.
-   Va después de las reglas de hover/activo para ganarles. */
-.bottom-nav__link--main,
-.bottom-nav__link--main[aria-current="page"] {
-    background: var(--color-inverse-bg);
-    color: var(--color-inverse-text);
-}
-
-@media (hover: hover) {
-    .bottom-nav__link--main:not([aria-current="page"]):hover {
-        background: var(--color-inverse-hover);
-        color: var(--color-inverse-text);
-    }
-}
-
-.bottom-nav__link--main .bottom-nav__icon {
-    stroke-width: 2;
-}
-
-.bottom-nav__link--main:active {
-    transform: scale(0.96);
+.bottom-nav__link:active {
+    transform: scale(0.92);
 }
 
 /* El terrario de Mi terrario: dibujado con más zoom (viewBox recortado), así
@@ -148,23 +123,20 @@ RESPONSIVE
 ============================================ */
 
 @media (min-width: 1024px) {
-    /* Riel: vuelve a ser una columna sólida pegada al borde */
+    /* Riel: vuelve a ser una columna sólida pegada al borde, con los
+       colores de siempre (sigue el tema, no el inverso del mobile) */
     .bottom-nav {
         inset: 0 auto 0 0;
+        translate: none;
         width: var(--size-rail);
-        max-width: none;
-        margin: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: var(--gap-2xl);
         padding: var(--spacing-xl) var(--spacing-sm);
-        border: none;
         border-right: 1px solid var(--color-line);
         border-radius: 0;
         background: var(--color-nav-bg);
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
     }
 
     .bottom-nav__brand {
@@ -187,6 +159,21 @@ RESPONSIVE
     }
 
     .bottom-nav__link {
-        height: 76px;
+        width: 100%;
+        height: 56px;
+        border-radius: 12px;
+        color: var(--color-nav-text);
+    }
+
+    .bottom-nav__link[aria-current="page"] {
+        background: var(--color-nav-active-bg);
+        color: var(--color-nav-text-active);
+    }
+
+    @media (hover: hover) {
+        .bottom-nav__link:not([aria-current="page"]):hover {
+            background: var(--color-nav-hover-bg);
+            color: var(--color-text);
+        }
     }
 }

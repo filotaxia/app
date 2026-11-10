@@ -18,7 +18,8 @@
 //   #/filotaxia              la Guía: la experiencia paso a paso (antes, la hoja Ayuda
 //                            de Ajustes; en la barra se llama "Guía")
 //   #/formas-ondas           Filotaxia: el catálogo de suculentas (hoja, su onda, su
-//                            foto), la génesis del proyecto — el centro de la barra
+//                            foto), la génesis del proyecto; también se llega desde
+//                            la card "Plantas." (components/plants-block)
 //   #/manifiesto/04          introducción, una sola vez tras el primer escaneo
 //   #/manifiesto             la misma, desde la barra (termina en Mi terrario)
 //

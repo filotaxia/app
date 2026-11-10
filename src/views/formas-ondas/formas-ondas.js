@@ -2,16 +2,14 @@
    Views — Formas y ondas
    ============================================ */
 
-// Filotaxia (#/formas-ondas; el centro de la barra, con el isotipo de la
-// marca): la génesis del proyecto. Header propio (no el de app-header: acá
-// el título ocupa dos líneas, "De la forma / a la vibración", con Ajustes
-// a la derecha — settings-link, como en Escanear). Primera sección: el
-// proceso ("1 proceso / 3 etapas", mudado acá desde la Guía — ver
-// bindSlider más abajo). Después, "leafwave": un cuadro oscuro con un
-// "antes / después" (la hoja a la izquierda de la línea, su onda a la
-// derecha; arrastrar la línea pasa de una a la otra) y, abajo, cuatro
-// botones para elegir la forma de hoja — ver compare / bindCompare.
-// Debajo, el nombre de la planta que se está
+// Filotaxia (#/formas-ondas; se llega por la card "Plantas." o el rombo de
+// la barra): la génesis del proyecto. Header propio (no el de app-header):
+// título "Formas" + subtítulo + Ajustes, adentro del mismo cuadro oscuro
+// que "leafwave": un "antes / después" (la hoja a la izquierda de la
+// línea, su onda a la derecha; arrastrar la línea pasa de una a la otra) y,
+// abajo, cuatro botones para elegir la forma de hoja — ver compare /
+// bindCompare. El proceso ("1 proceso / 3 etapas") vive en la Guía.
+// Debajo del cuadro, el nombre de la planta que se está
 // mostrando ("Planta" de bajada, eyebrow) y components/particles: la hoja
 // hecha de puntos (se puede empujar y hacer explotar tocando); las flechas
 // ‹ › ya no recorren las cuatro formas únicas: recorren el catálogo de
@@ -22,51 +20,26 @@
 
 import { particles, bindParticles } from "../../components/particles/particles.js";
 import { PLANTAS, LEAVES, WAVE_NAMES } from "../../content/plantas.js";
-import { PROCESS, PROCESS_INTRO, PROCESS_PHOTOS } from "../../content/ayuda.js";
 import { escapeHTML } from "../../utils/html.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
 
 let currentIndex = 0;
 
-export const title = "Filotaxia";
+export const title = "Formas";
 export const header = false;
 
 export function render(root) {
   currentIndex = 0;
 
   root.innerHTML = `
-    <header class="art-top">
-      <div>
-        <h1 class="art-top__title" tabindex="-1">Filotaxia.</h1>
-        <p class="art-top__status">Armonía en plantas.</p>
-      </div>
-      ${settingsLink()}
-    </header>
-
-    <section class="process reveal" aria-labelledby="process-title">
-      <h2 class="process__label" id="process-title">1 proceso / ${PROCESS.length} etapas</h2>
-      <p class="process__intro">${escapeHTML(PROCESS_INTRO)}</p>
-
-      <div class="process__slider">
-        <ul class="process__track" data-process-track>
-          ${PROCESS_PHOTOS.map(({ image, alt }) => `
-            <li class="process__slide">
-              <img class="process__photo" src="${image}" alt="${escapeHTML(alt)}" loading="lazy" decoding="async">
-            </li>`).join("")}
-        </ul>
-        <div class="process__progress" aria-hidden="true"><span class="process__bar" data-process-bar></span></div>
-      </div>
-
-      <div class="process__stages" data-stages>
-        ${PROCESS.map(([name, text], i) => `
-          <div class="process__stage${i === 0 ? " is-active" : ""}" data-stage="${i}">
-            <h3 class="process__stage-title">Etapa ${i + 1} / ${escapeHTML(name)}</h3>
-            <p class="process__stage-text">${escapeHTML(text)}</p>
-          </div>`).join("")}
-      </div>
-    </section>
-
     <section class="leafwave reveal" aria-label="Cada forma de hoja y su onda">
+      <header class="formas-hero-top">
+        <div>
+          <h1 class="formas-hero-title" tabindex="-1">Formas</h1>
+          <p class="formas-hero-subtitle">De la forma a la vibración</p>
+        </div>
+        ${settingsLink()}
+      </header>
       ${compare(SHAPES[0])}
       <div class="cmp-shapes" role="group" aria-label="Forma de hoja">
         ${SHAPES.map((key, i) => `
@@ -101,7 +74,6 @@ export function render(root) {
     </section>
   `;
 
-  bindSlider(root);
   const stopCompare = bindCompare(root);
 
   const art = root.querySelector("[data-art]");
@@ -311,29 +283,4 @@ function bindCompare(root) {
     resize.disconnect();
     shapes.removeEventListener("click", onPick);
   };
-}
-
-// El slider del proceso: se desliza con el dedo (scroll nativo) y la línea
-// de abajo se llena a medida que avanza: arranca en 18% y llega al 100% al
-// final, como en filotaxia.com. La etapa que se lee debajo sigue el mismo
-// scroll: se reparten las fotos en PROCESS.length tercios iguales y, al
-// cruzar a otro, esa etapa se enciende (fade con CSS, .is-active).
-function bindSlider(root) {
-  const track = root.querySelector("[data-process-track]");
-  const bar = root.querySelector("[data-process-bar]");
-  const stages = [...root.querySelectorAll("[data-stage]")];
-  let current = 0;
-  const paint = () => {
-    const max = track.scrollWidth - track.clientWidth;
-    const progress = max > 0 ? track.scrollLeft / max : 0;
-    bar.style.transform = `scaleX(${0.18 + progress * 0.82})`;
-    const index = Math.min(stages.length - 1, Math.floor(progress * stages.length));
-    if (index !== current) {
-      stages[current].classList.remove("is-active");
-      stages[index].classList.add("is-active");
-      current = index;
-    }
-  };
-  track.addEventListener("scroll", paint, { passive: true });
-  paint();
 }

@@ -56,17 +56,25 @@
         <main id="view" class="app-view" tabindex="-1"></main>
 
         <!-- LAYOUT: Bottom-Nav (estructura de Pulso): Mi terrario · Colección · Filotaxia ·
-             Manifiesto · Guía; Filotaxia (el catálogo de formas y ondas, la génesis del
-             proyecto: views/formas-ondas) en el centro, en negro, con el isotipo de la
-             marca — antes era "Conectar" (el escáner); ahora se llega a él desde el botón
-             "Conectar" de Mi terrario o el QR chico del bloque Pieza, no desde la barra.
+             Manifiesto · Guía, y al final el reproductor (no navega). Probando un estilo
+             nuevo: la barra es siempre inversa al tema (negra en claro, blanca en oscuro
+             — --color-inverse-bg/-text, no sigue el tema como antes) y solo íconos, sin
+             label visible (aria-label en el link); la sección activa es un círculo del
+             color de la página (el inverso del inverso), no un fondo suave. Conectar (el
+             escáner, #/escanear) ya no está acá: se llega desde Mi terrario o el QR
+             chico del bloque Pieza. Filotaxia (el catálogo de formas y ondas:
+             views/formas-ondas) lleva un rombo, no ya el isotipo de la marca; también
+             se llega por la card "Plantas."
+             (components/plants-block). El reproductor (data-nav-player, conectado en
+             layout/player-dock) no es un link: muestra u oculta la franja/barra del
+             reproductor, que arranca invisible (ya no flota siempre arriba de la barra).
              Riel lateral en desktop. Ajustes está en el header. En todas las pantallas
              menos el splash y el Manifiesto del primer escaneo. -->
         <nav class="bottom-nav" aria-label="Secciones" data-nav hidden>
             <a class="bottom-nav__brand" href="#/mi-terrario">Filotaxia</a>
             <ul class="bottom-nav__list">
                 <li>
-                    <a class="bottom-nav__link" href="#/mi-terrario" data-route="mi-terrario">
+                    <a class="bottom-nav__link" href="#/mi-terrario" data-route="mi-terrario" aria-label="Mi terrario">
                         <!-- Mi terrario (#/mi-terrario). Ícono: un terrario propio, con el
                              trazo de Lucide: la pecera redonda del TR01,
                              la línea del sustrato y un brote adentro. El viewBox recorta el margen
@@ -80,11 +88,10 @@
                             <path d="M12 13c-1.8 0-3-1.2-3-3 1.8 0 3 1.2 3 3z" />
                             <path d="M12 12c1.8 0 3-1.2 3-3-1.8 0-3 1.2-3 3z" />
                         </svg>
-                        <span class="bottom-nav__label">Mi terrario</span>
                     </a>
                 </li>
                 <li>
-                    <a class="bottom-nav__link" href="#/coleccion" data-route="coleccion">
+                    <a class="bottom-nav__link" href="#/coleccion" data-route="coleccion" aria-label="Colección">
                         <!-- Lucide: layout-grid -->
                         <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -93,31 +100,29 @@
                             <rect width="7" height="7" x="14" y="14" rx="1" />
                             <rect width="7" height="7" x="3" y="14" rx="1" />
                         </svg>
-                        <span class="bottom-nav__label">Colección</span>
                     </a>
                 </li>
                 <li>
-                    <!-- Filotaxia (el catálogo de formas y ondas): la acción principal, en el
-                         centro y en negro. Ícono: el isotipo de Filotaxia (las dos hojas),
-                         como máscara: toma el color del texto -->
-                    <a class="bottom-nav__link bottom-nav__link--main" href="#/formas-ondas" data-route="formas-ondas">
-                        <span class="bottom-nav__icon bottom-nav__logo" aria-hidden="true"></span>
-                        <span class="bottom-nav__label">Filotaxia</span>
+                    <!-- Filotaxia (el catálogo de formas y ondas): un rombo -->
+                    <a class="bottom-nav__link" href="#/formas-ondas" data-route="formas-ondas" aria-label="Filotaxia">
+                        <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 3 20 12 12 21 4 12Z" />
+                        </svg>
                     </a>
                 </li>
                 <li>
-                    <a class="bottom-nav__link" href="#/manifiesto" data-route="manifiesto">
+                    <a class="bottom-nav__link" href="#/manifiesto" data-route="manifiesto" aria-label="Manifiesto">
                         <!-- Lucide: book-open -->
                         <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M12 7v14" />
                             <path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" />
                         </svg>
-                        <span class="bottom-nav__label">Manifiesto</span>
                     </a>
                 </li>
                 <li>
-                    <a class="bottom-nav__link" href="#/filotaxia" data-route="filotaxia">
+                    <a class="bottom-nav__link" href="#/filotaxia" data-route="filotaxia" aria-label="Guía">
                         <!-- Lucide: route (la Guía es "Tu recorrido": del primer paso al último) -->
                         <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -125,8 +130,25 @@
                             <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" />
                             <circle cx="18" cy="5" r="3" />
                         </svg>
-                        <span class="bottom-nav__label">Guía</span>
                     </a>
+                </li>
+                <li class="bottom-nav__sep" aria-hidden="true"><span class="bottom-nav__sep-line"></span></li>
+                <li>
+                    <!-- El reproductor (layout/player-dock): no navega, muestra u
+                         oculta la barra del reproductor (components/now-playing), que
+                         arranca invisible. Ícono Lucide: audio-lines (no "play": no
+                         pausa/reproduce, solo abre y cierra) -->
+                    <button class="bottom-nav__link" type="button" data-nav-player aria-label="Reproductor">
+                        <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M2 10v3" />
+                            <path d="M6 6v11" />
+                            <path d="M10 3v18" />
+                            <path d="M14 8v7" />
+                            <path d="M18 5v13" />
+                            <path d="M22 10v3" />
+                        </svg>
+                    </button>
                 </li>
             </ul>
         </nav>

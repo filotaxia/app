@@ -7,7 +7,9 @@
    así el address bar de mobile se esconde normalmente.
 
    El router pone data-nav en .app-shell cuando la barra está visible:
-   la vista deja lugar abajo solo en ese caso. */
+   la vista deja lugar abajo solo en ese caso. El reproductor chico
+   (layout/player-dock) NO suma más lugar: vive aparte, flotando con
+   position:fixed, y si se abre se superpone a la página, no la achica. */
 
 .app-shell {
     --view-pad-bottom: 0px;
@@ -17,12 +19,6 @@
 .app-shell[data-nav] {
     /* la barra flotante, su separación del borde y el área segura del iPhone */
     --view-pad-bottom: calc(var(--size-nav) + env(safe-area-inset-bottom) + var(--spacing-4xl));
-}
-
-/* Con el reproductor chico arriba de la barra (layout/player-dock): su alto
-   como barra (78) y su separación, así no tapa lo último de la página */
-.app-shell[data-nav][data-dock] {
-    --view-pad-bottom: calc(var(--size-nav) + env(safe-area-inset-bottom) + var(--spacing-4xl) + 78px + var(--spacing-sm));
 }
 
 .app-view {
@@ -92,10 +88,6 @@ RESPONSIVE
     .app-shell[data-nav] {
         --view-pad-bottom: var(--spacing-5xl);
         padding-left: var(--size-rail);
-    }
-
-    .app-shell[data-nav][data-dock] {
-        --view-pad-bottom: calc(var(--spacing-5xl) + 78px);
     }
 
     .app-shell[data-nav] .screen {

@@ -28,12 +28,10 @@
 //
 // Con id (#/manifiesto/04) era la introducción del primer escaneo; hoy el
 // QR lleva directo a la pieza y nada manda acá con id, pero la ruta sigue
-// andando por si se vuelve a usar. "Saltar" guarda
-// `manifiesto_seen` y sigue al reproductor de ese terrario; llegar a la 7
-// también lo guarda (ya lo vio todo).
-// También es una sección de la barra, sin id (#/manifiesto): ahí "Saltar"
-// es "Cerrar" (vuelve a Mi terrario). En la 7 siempre dice "Cerrar".
-// El terrario de la pantalla 7 lo elige pickTerrario.
+// andando por si se vuelve a usar. Ya no tiene "Saltar"/"Cerrar" ni el
+// contador de pantallas arriba: se sale por la barra de abajo (sin id) o
+// llegando a la 7, que guarda `manifiesto_seen` (ya lo vio todo) y ofrece
+// "Escuchar la pieza". El terrario de la pantalla 7 lo elige pickTerrario.
 //
 // La pantalla 1 apoya la cita abajo a la izquierda (como las cards de citas
 // de filotaxia.com); la 2, la 3 y la 4 llenan el alto (título arriba,
@@ -46,10 +44,11 @@
 // adentro de una pantalla (un punto, una capa, las hojas) frena el autoplay
 // del todo, porque la persona está explorando. Con "reducir movimiento" en el
 // teléfono no pasa sola.
-// A mano: con los botones redondos ‹ › de abajo, tocando una de las líneas de
-// arriba (va directo a esa pantalla) o con las flechas del teclado. Tocar la
-// pantalla en sí no la pasa. Deslizar o hacer scroll tampoco (overflow hidden
-// en el CSS; el JS la corre con scrollTo).
+// A mano: como las historias de Instagram, tocando la mitad derecha de la
+// pantalla (pasa a la próxima) o la izquierda (vuelve a la anterior);
+// también tocando una de las líneas de arriba (va directo a esa pantalla) o
+// con las flechas del teclado. Deslizar o hacer scroll no la pasa (overflow
+// hidden en el CSS; el JS la corre con scrollTo).
 
 import { get, set } from "../../store/store.js";
 import { linkedIds } from "../../store/collection.js";
@@ -111,7 +110,7 @@ const SLIDES = [
   // 4. Idioma: título arriba a la izquierda y las cuatro tarjetas grandes abajo,
   //    en igualdad (todavía no es tu terrario): primero las hojas y, a los 3 s,
   //    giran a sus ondas; los dos puntos que cambian la vista están en
-  //    manifiesto__nav, entre las flechas (leafWaveDots(), más abajo).
+  //    manifiesto__nav (leafWaveDots(), más abajo).
   `
     <p class="manifiesto__title">Cada planta.<br />Su propia onda.</p>
     ${leafWaves({ flip: true })}
@@ -163,9 +162,6 @@ export async function render(root, { params }) {
   await set("manifiesto_quote", quoteIndex);
   const quote = QUOTES[quoteIndex];
 
-  // "Saltar" / "Cerrar". Con id: viene del primer escaneo → sigue al reproductor
-  // de ese terrario. Sin id: se abrió desde la barra → vuelve a Mi terrario.
-  const exit = params.id ? `#/escuchar/${params.id}` : "#/mi-terrario";
   const last = SLIDES.length - 1;
 
   root.innerHTML = `
@@ -181,10 +177,6 @@ export async function render(root, { params }) {
               </button>
             </li>`).join("")}
         </ol>
-        <div class="manifiesto__meta">
-          <span class="eyebrow" data-count aria-hidden="true">01 / 0${SLIDES.length}</span>
-          <a class="text-link manifiesto__skip" href="${exit}" data-done data-skip-link>${params.id ? "Saltar" : "Cerrar"}</a>
-        </div>
       </div>
 
       <div class="manifiesto__track" data-track aria-roledescription="carrusel" aria-label="Manifiesto">
@@ -196,9 +188,7 @@ export async function render(root, { params }) {
       </div>
 
       <div class="manifiesto__nav">
-        <button class="manifiesto__arrow" type="button" data-prev aria-label="Pantalla anterior" disabled>${icon("chevron-left")}</button>
         <div class="manifiesto__nav-mid" data-nav-mid hidden>${leafWaveDots()}</div>
-        <button class="manifiesto__arrow" type="button" data-next aria-label="Pantalla siguiente">${icon("chevron-right")}</button>
       </div>
     </section>
   `;
@@ -208,9 +198,6 @@ export async function render(root, { params }) {
   const screen = root.querySelector(".manifiesto");
   const bars = [...root.querySelectorAll(".manifiesto__bar")];
   const fills = [...root.querySelectorAll("[data-fill]")];
-  const count = root.querySelector("[data-count]");
-  const prev = root.querySelector("[data-prev]");
-  const next = root.querySelector("[data-next]");
   const navMid = root.querySelector("[data-nav-mid]");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let current = 0;   // la pantalla a la que vamos (solo la cambia goTo)
@@ -220,14 +207,9 @@ export async function render(root, { params }) {
   const layerCycle = bindLayers(root);  // las barras de la pantalla 3
   const anatomyCycle = bindAnatomy(root); // los puntos de la pantalla 2
   bindProductionLoop(root);             // las partes de la pantalla 6
-  const skip = root.querySelector("[data-skip-link]");
 
-  // Última pantalla: llegar hasta acá cuenta como haberlo visto todo; arriba,
-  // "Cerrar" vuelve a Mi terrario (también en el primer escaneo: "Saltar" ya
-  // no tiene sentido, para escuchar está el botón de abajo)
+  // Última pantalla: llegar hasta acá cuenta como haberlo visto todo
   async function finish() {
-    skip.textContent = "Cerrar";
-    skip.setAttribute("href", "#/mi-terrario");
     await set("manifiesto_seen", true);
   }
 
@@ -259,7 +241,7 @@ export async function render(root, { params }) {
     paintBars(shown);
   }
 
-  // Pinta la pantalla actual: líneas de progreso, contador y flechas
+  // Pinta la pantalla actual: líneas de progreso y flechas
   // (no toca `current`: mientras desliza de la 1 a la 3 pasa por la 2, y eso
   // no tiene que cambiar a dónde vamos)
   function show(index) {
@@ -267,11 +249,8 @@ export async function render(root, { params }) {
     slides[index].dataset.seen = "";   // arranca su animación de entrada (una vez)
     paintBars(index);
     slides.forEach((slide, i) => slide.toggleAttribute("aria-hidden", i !== index));
-    count.textContent = `${String(index + 1).padStart(2, "0")} / ${String(SLIDES.length).padStart(2, "0")}`;
-    prev.disabled = index === 0;
-    next.disabled = index === last;
     // Pantalla 4: a los 3 s de verla, las hojas giran a sus ondas; sus dos
-    // puntos (entre las flechas) solo se ven en esta pantalla
+    // puntos (en manifiesto__nav) solo se ven en esta pantalla
     const isLanguage = !!slides[index].querySelector("[data-leaf-waves]");
     navMid.hidden = !isLanguage;
     if (isLanguage) waves.play(FLIP_AT_MS);
@@ -309,20 +288,24 @@ export async function render(root, { params }) {
   }
   document.addEventListener("visibilitychange", onVisibility);
 
-  // Tocar algo de adentro de una pantalla (un punto, una capa, las hojas,
-  // una parte de la Producción):
-  // está explorando, el autoplay se frena del todo. Va en la fase de captura
-  // porque los puntos de las hojas (leaf-waves) frenan su click.
+  // Como las historias de Instagram: tocar la mitad derecha de la pantalla
+  // pasa a la próxima, la izquierda vuelve a la anterior. Tocar algo de
+  // ADENTRO de una pantalla (un punto, una capa, las hojas, una parte de la
+  // Producción) no cambia de pantalla: lo frena del todo, está explorando.
+  // Va en la fase de captura porque esos controles frenan su click.
   track.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, [role='button']")) stopAutoplay();
+    if (event.target.closest("button, a, [role='button']")) {
+      stopAutoplay();
+      return;
+    }
+    const { left, width } = track.getBoundingClientRect();
+    goTo(current + (event.clientX - left < width / 2 ? -1 : 1));
   }, true);
 
-  prev.addEventListener("click", () => goTo(current - 1));
-  next.addEventListener("click", () => goTo(current + 1));
   // Las líneas de arriba llevan directo a su pantalla
   bars.forEach((bar) => bar.addEventListener("click", () => goTo(Number(bar.dataset.go))));
 
-  // Saltar / Cerrar / Escuchar la pieza: ya lo vio
+  // Escuchar la pieza: ya lo vio
   root.querySelectorAll("[data-done]").forEach((link) => {
     link.addEventListener("click", async (event) => {
       event.preventDefault();

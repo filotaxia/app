@@ -2,29 +2,30 @@
    Components — Now Playing
    ============================================ */
 
-// El reproductor chico de todo el sitio (lo monta layout/player-dock, fijo
-// sobre la barra de navegación). Portado a JS plano de un componente React
-// ("Sound"). Dos tamaños, y tocarlo pasa de uno al otro:
+// El reproductor chico de todo el sitio. Portado a JS plano de un
+// componente React ("Sound"). Dos estados:
 //
-//   mini   una franja fina a todo el ancho: foto chica, nombre y play (en
-//          casi todas las pantallas: barra + reproductor ocupaban mucho lugar)
-//   barra  un poco más alta: foto, nombre, ⏮ ▶ ⏭ y la línea al pie (en Colección)
+//   cerrado invisible, sin ocupar lugar: no hay nada que tocar acá — lo abre
+//           el ícono de play del bottom-nav (layout/player-dock conecta los dos)
+//   barra   foto, nombre, ⏮ ▶ ⏭ y la línea de lo escuchado
 //
-// Cada pantalla elige con cuál arranca (setCollapsible). Para ver la pieza
-// en grande está el reproductor de cada terrario (#/escuchar/:id).
+// Cada pantalla elige con cuál arranca (setCollapsible). Tocar la barra (en
+// cualquier lado menos los botones) lleva a la Pieza del terrario que suena
+// (#/escuchar/:id, el reproductor grande).
 //
 //   nowPlaying(terrario)                       → el HTML (en pausa)
 //   bindNowPlaying(root, { queue, collapsible })
-//     → { setCollapsible(bool), setQueue(queue), pause(), destroy() }
+//     → { toggleOpen(), setCollapsible(bool), setQueue(queue), pause(), destroy() }
 //
 // queue: los terrarios que se pueden pasar, el propio primero. ⏮ / ⏭ pasan al
 // anterior / siguiente (con uno solo, vuelven al principio de la pieza).
 //
-// UN SOLO NÚMERO ES EL ESTADO: `q` va de 0 (mini) a 1 (barra) y todo —alto,
-// tamaño de la foto y de los botones, dónde están— se calcula a partir de
-// él en paint(). Nada tiene transición propia: así se ve un solo objeto que
-// cambia y no varias piezas que se mueven a la vez. El ancho no cambia
-// nunca (el de la barra de navegación): crece solo hacia arriba.
+// UN SOLO NÚMERO ES EL ESTADO: `c` va de 0 (cerrado) a 1 (abierto, la
+// barra); todo —alto, opacidad, dónde están los botones— se calcula a
+// partir de él en paint(). Nada tiene transición propia: así se ve un solo
+// objeto que cambia y no varias piezas que se mueven a la vez. El ancho no
+// cambia nunca (el de la barra de navegación): crece solo hacia arriba,
+// desde cero (cerrado).
 //
 // El play no se cambia por la pausa: es el mismo dibujo (dos cuadriláteros)
 // y lo que se mueve son sus 8 puntos (markPath), con un "estirón" a mitad
@@ -38,16 +39,16 @@ import { terrariumArt } from "../terrarium-art/terrarium-art.js";
 import { escapeHTML } from "../../utils/html.js";
 import { icon } from "../../utils/icons.js";
 
-// --- Medidas (px). Un solo margen para los dos tamaños: el marco no se mueve ---
+// --- Medidas (px) ---
 const PAD = 10;
-const ART = [32, 40];              // la foto: mini · barra (cuadrada, sin redondeo)
-const H = [PAD + ART[0] + PAD, 78];   // el alto: mini · barra (con la línea al pie)
-const SIDE = 24;                   // ⏮ y ⏭ (solo en la barra)
+const ART = 40;                    // la foto, cuadrada, sin redondeo
+const H = PAD + 68;                 // el alto de la barra (con la línea al pie)
+const SIDE = 24;                    // ⏮ y ⏭
 const GAP = 5;
 const PLAY = 30;
 const RAIL_H = 3;
-const MS = 460;                    // cambiar de tamaño
-const MARK_MS = 300;               // play ↔ pausa
+const MS = 380;                     // abrir / cerrar
+const MARK_MS = 300;                // play ↔ pausa
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const mix = (a, b, t) => a + (b - a) * t;
@@ -82,7 +83,7 @@ export function nowPlaying(terrario) {
         <span class="np__rail"><span class="np__run" data-np-run></span></span>
       </span>
 
-      <button class="np__tap" type="button" data-np-tap aria-expanded="false" aria-label="Agrandar el reproductor"></button>
+      <a class="np__tap" data-np-tap aria-label="Ver la pieza"></a>
 
       <span class="np__ops" data-np-ops>
         <button class="np__op" type="button" data-np-prev aria-label="Terrario anterior">${icon("skip-back")}</button>
@@ -137,6 +138,7 @@ export function bindNowPlaying(root, { queue: firstQueue, collapsible = true }) 
     const terrario = queue[index];
     el.title.textContent = codeOf(terrario);
     el.art.innerHTML = terrariumArt({ size: "sm", photo: terrario.photo });
+    el.tap.href = `#/escuchar/${terrario.id}`;
     el.run.style.width = "0%";
 
     const notes = await lanesFor(terrario);
@@ -155,28 +157,27 @@ export function bindNowPlaying(root, { queue: firstQueue, collapsible = true }) 
     wantPlay = false;
   }
 
-  // --- Tamaño: "mini" o "bar" ---
-  let state = collapsible ? "mini" : "bar";
-  let q = state === "mini" ? 0 : 1;
+  // --- Estado: "closed" o "bar" ---
+  let state = collapsible ? "closed" : "bar";
+  let c = state === "closed" ? 0 : 1;
   let raf = 0;
 
   function go(next) {
     state = next;
-    el.tap.setAttribute("aria-expanded", String(state === "bar"));
-    el.tap.setAttribute("aria-label", state === "bar" ? "Achicar el reproductor" : "Agrandar el reproductor");
-    [el.prev, el.next].forEach((button) => { button.tabIndex = state === "bar" ? 0 : -1; });
+    const open = state === "bar";
+    [el.tap, el.prev, el.play, el.next].forEach((node) => { node.tabIndex = open ? 0 : -1; });
     cancelAnimationFrame(raf);
-    const to = state === "bar" ? 1 : 0;
+    const cTo = open ? 1 : 0;
     if (still) {
-      q = to;
+      c = cTo;
       paint();
       return;
     }
-    const from = q;
+    const cFrom = c;
     const t0 = performance.now();
     const step = (now) => {
       const k = Math.min(1, (now - t0) / MS);
-      q = mix(from, to, quart(k));
+      c = mix(cFrom, cTo, quart(k));
       paint();
       raf = k < 1 ? requestAnimationFrame(step) : 0;
     };
@@ -193,35 +194,32 @@ export function bindNowPlaying(root, { queue: firstQueue, collapsible = true }) 
   function paint() {
     const W = box.parentElement.clientWidth;
     if (!W) return;   // escondido (en el reproductor grande, por ejemplo)
-    const art = mix(ART[0], ART[1], q);
-    const h = mix(H[0], H[1], q);
+    const h = H * c;   // cerrado: alto 0, invisible; crece hacia arriba desde cero
 
     place(box, { width: W, height: h });
-    place(el.art, { left: PAD, top: PAD, width: art, height: art });
+    box.style.opacity = c;   // a h:0 el borde igual se ve (1px): se apaga del todo con esto
+    place(el.art, { left: PAD, top: PAD, width: ART, height: ART });
 
-    // ⏮ ▶ ⏭ a la derecha, centrados con la foto; en la mini, solo el play.
-    // Se ubican por su centro (el ancho de la fila cambia)
-    const side = SIDE * q;
-    const gap = GAP * q;
-    const row = side * 2 + PLAY + gap * 2;
-    place(el.ops, { left: W - PAD - row / 2, top: PAD + art / 2 });
-    el.ops.style.gap = `${gap}px`;
-    [el.prev, el.next].forEach((button) => {
-      place(button, { width: side, height: side });
-      button.style.opacity = q;
-      button.style.pointerEvents = q > 0.9 ? "auto" : "none";
-    });
+    // ⏮ ▶ ⏭ a la derecha, centrados con la foto. Se ubican por su centro
+    const row = SIDE * 2 + PLAY + GAP * 2;
+    place(el.ops, { left: W - PAD - row / 2, top: PAD + ART / 2 });
+    el.ops.style.gap = `${GAP}px`;
+    el.ops.style.opacity = c;
+    el.ops.style.pointerEvents = c > 0.9 ? "auto" : "none";
+    [el.prev, el.next].forEach((button) => { place(button, { width: SIDE, height: SIDE }); });
 
     // el nombre, al lado de la foto y centrado con ella
-    const sayLeft = PAD + art + 10;
-    place(el.say, { left: sayLeft, top: PAD, height: art, width: W - sayLeft - row - PAD - 8 });
+    const sayLeft = PAD + ART + 10;
+    place(el.say, { left: sayLeft, top: PAD, height: ART, width: Math.max(0, W - sayLeft - row - PAD - 8) });
+    el.say.style.opacity = c;
 
-    // la línea, al pie de la barra (en la mini no está)
-    place(el.track, { left: PAD, top: h - PAD - RAIL_H, width: W - PAD * 2 });
-    el.track.style.opacity = q;
+    // la línea, al pie de la barra
+    place(el.track, { left: PAD, top: h - PAD - RAIL_H, width: Math.max(0, W - PAD * 2) });
+    el.track.style.opacity = c;
 
-    // lo que se toca para cambiar de tamaño: toda la caja (los botones, encima)
+    // lo que se toca para ir a la Pieza: toda la caja (los botones, encima)
     place(el.tap, { left: 0, top: 0, width: W, height: h });
+    el.tap.style.pointerEvents = c > 0.9 ? "auto" : "none";
   }
 
   // --- Play ↔ pausa: t va de 0 (pausa) a 1 (play) ---
@@ -265,9 +263,7 @@ export function bindNowPlaying(root, { queue: firstQueue, collapsible = true }) 
     el.mark.style.transform = `rotate(${tip}deg) scale(${1 - 0.13 * goo}, ${1 + 0.11 * goo})`;
   }
 
-  // --- Controles ---
-  el.tap.addEventListener("click", () => go(state === "mini" ? "bar" : "mini"));
-
+  // --- Controles (el.tap es un link: lo abre el navegador solo) ---
   el.play.addEventListener("click", () => {
     if (player) player.toggle();
     else wantPlay = true;
@@ -298,9 +294,14 @@ export function bindNowPlaying(root, { queue: firstQueue, collapsible = true }) 
   load(0, false);
 
   return {
-    // La pantalla elige con qué tamaño arranca: true = mini (casi todas), false = barra (Colección)
+    // El ícono del bottom-nav: cerrado → abre (sin reproducir solo); abierto
+    // → cierra (sigue sonando si estaba sonando, solo se esconde)
+    toggleOpen() {
+      go(state === "closed" ? "bar" : "closed");
+    },
+    // La pantalla elige con qué estado arranca: true = cerrado (casi todas), false = barra (Colección)
     setCollapsible(value) {
-      go(value ? "mini" : "bar");
+      go(value ? "closed" : "bar");
     },
     // La cola cambió (por ejemplo, el primer escaneo eligió "Mi terrario").
     // Si está sonando algo, sigue; si no, pasa al primero de la nueva

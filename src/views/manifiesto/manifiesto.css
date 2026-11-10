@@ -4,16 +4,14 @@
 
 /* Pantalla completa: el carrusel (una pantalla por vez, se pasa tocando)
    ocupa todo el alto, desde arriba de todo, y encima flota la tira de
-   arriba: el progreso (una línea fina por pantalla), el contador y
-   "Saltar". Cada pantalla deja libre arriba --manifiesto-top, el
-   alto de esa tira, para que su contenido no quede debajo. En el primer
-   escaneo va sin barra; abierto desde la barra, deja lugar abajo para ella. */
+   arriba: el progreso (una línea fina por pantalla). Cada pantalla deja
+   libre arriba --manifiesto-top, el alto de esa tira, para que su
+   contenido no quede debajo. En el primer escaneo va sin barra; abierto
+   desde la barra, deja lugar abajo para ella. */
 
 .manifiesto {
-    /* aire de arriba (+ el notch) + la tira: línea de 2px, el gap y
-       "Cerrar" (texto de 22px con 12px de aire arriba y abajo) */
-    --manifiesto-top: calc(env(safe-area-inset-top) + var(--spacing-xl)
-        + 2px + var(--gap-sm) + var(--spacing-md) * 2 + var(--font-base-line));
+    /* aire de arriba (+ el notch) + la línea de progreso (2px) */
+    --manifiesto-top: calc(env(safe-area-inset-top) + var(--spacing-xl) + 2px);
     position: relative;
     height: 100dvh;
     padding-top: 0;
@@ -37,7 +35,7 @@ html:has(.manifiesto) body {
     outline: none;
 }
 
-/* --- Arriba: progreso, contador y Saltar (flota encima del carrusel) --- */
+/* --- Arriba: el progreso (flota encima del carrusel) --- */
 .manifiesto__top {
     position: absolute;
     top: calc(env(safe-area-inset-top) + var(--spacing-xl));
@@ -108,13 +106,6 @@ html:has(.manifiesto) body {
 .manifiesto.is-away .manifiesto__fill {
     animation-play-state: paused;
 }
-
-.manifiesto__meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
 
 /* --- Carrusel: sale del margen del contenedor para deslizar de borde a borde --- */
 .manifiesto__track {
@@ -798,18 +789,12 @@ html:has(.manifiesto) body {
     height: var(--icon-sm);
 }
 
-/* "Saltar" / "Cerrar": link de texto sin la línea de abajo */
-.manifiesto__skip {
-    border-bottom: none;
-}
-
-/* --- Abajo: dos botones redondos ‹ › para pasar de pantalla, uno en cada
-   borde (borde fino, el chevron en el color del texto). En el medio, solo
-   en la pantalla 4 (Idioma), los dos puntos de leafWaveDots() --- */
+/* --- Abajo: solo en la pantalla 4 (Idioma), los dos puntos de
+   leafWaveDots() (se navega tocando los costados, ver manifiesto.js) --- */
 .manifiesto__nav {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding-bottom: var(--spacing-sm);
 }
 
@@ -821,31 +806,6 @@ html:has(.manifiesto) body {
    pantalla le deja a la barra; las pantallas ganan ese alto) */
 .app-shell[data-nav] .manifiesto__nav {
     margin-bottom: calc(var(--spacing-2xl) * -1);
-}
-
-.manifiesto__arrow {
-    display: grid;
-    place-items: center;
-    width: var(--size-tap);
-    height: var(--size-tap);
-    border: 1px solid var(--color-line);
-    border-radius: 50%;
-    color: var(--color-text);
-    transition: opacity var(--transition-fast), transform var(--transition-fast);
-}
-
-.manifiesto__arrow:active:not(:disabled) {
-    transform: scale(0.92);
-}
-
-.manifiesto__arrow svg {
-    width: 20px;
-    height: 20px;
-}
-
-/* En la primera no hay "atrás" y en la última no hay "adelante" */
-.manifiesto__arrow:disabled {
-    opacity: 0.2;
 }
 
 /* ============================================
