@@ -135,11 +135,17 @@
 .journey {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
     gap: var(--gap-xl);
     margin: var(--spacing-xl) calc(var(--gutter) * -1) calc(var(--gap-xl) * -1);
-    padding: var(--spacing-3xl) var(--gutter) var(--spacing-2xl);
+    padding: var(--spacing-3xl) var(--gutter) var(--spacing-3xl);
     background: var(--color-inverse-surface);
     color: var(--color-inverse-text);
+}
+
+.journey .connect-loop__index {
+    align-self: center;
 }
 
 /* El dibujo y su copy ocupan el alto que sobra bajo el título,
