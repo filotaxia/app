@@ -6,22 +6,24 @@
    —alto, posiciones, tamaños— lo escribe paint() en cada cuadro: una
    transition acá sería una segunda opinión peleándose con esa. Lo que
    queda es el material: superficies, texto y los estados de los botones.
-   Cuadrado, como todo en la app (la foto también); vidrio y borde fino
-   como la barra de navegación, porque flota sobre la página. */
+   Cuadrado, como todo en la app (la foto también); vidrio negro y borde
+   fino como la barra de navegación, siempre oscuro (no sigue el tema:
+   clara u oscura la página, el vidrio es el mismo), porque flota sobre
+   la página igual que ella. */
 
 .np {
     position: relative;
     flex: none;
-    border: 1px solid var(--color-nav-glass-border);
-    background: var(--color-nav-glass);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid color-mix(in srgb, var(--color-white) 18%, transparent);
+    background: color-mix(in srgb, #000 55%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(220%);
+    backdrop-filter: blur(20px) saturate(220%);
     overflow: hidden;
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .np {
-        background: var(--color-nav-bg);
+        background: #000;
     }
 }
 
@@ -62,12 +64,12 @@
 }
 
 .np__title {
-    color: var(--color-text);
+    color: var(--color-white);
 }
 
 .np__by {
     font-size: var(--font-xs-size);
-    color: var(--color-text-muted);
+    color: color-mix(in srgb, var(--color-white) 60%, transparent);
 }
 
 /* La línea de lo escuchado, al pie de la barra. No se arrastra */
@@ -80,7 +82,7 @@
     display: block;
     height: 3px;
     border-radius: 999px;
-    background: var(--color-track);
+    background: color-mix(in srgb, var(--color-white) 25%, transparent);
     overflow: hidden;
 }
 
@@ -89,7 +91,7 @@
     width: 0;
     height: 100%;
     border-radius: 999px;
-    background: var(--color-text);
+    background: var(--color-white);
 }
 
 /* El link a la Pieza: invisible, cubre toda la barra */
@@ -117,7 +119,7 @@
     border: none;
     border-radius: 50%;
     background: transparent;
-    color: var(--color-text-muted);
+    color: color-mix(in srgb, var(--color-white) 60%, transparent);
     transition: color var(--transition-fast), background-color var(--transition-fast), scale var(--transition-fast);
 }
 
@@ -141,8 +143,8 @@
 .np__op--lead {
     width: 30px;
     height: 30px;
-    background: var(--color-inverse-bg);
-    color: var(--color-inverse-text);
+    background: var(--color-white);
+    color: var(--color-black);
 }
 
 .np__mark {
@@ -157,12 +159,12 @@
 
 @media (hover: hover) {
     .np__op:hover {
-        color: var(--color-text);
-        background: var(--color-nav-hover-bg);
+        color: var(--color-white);
+        background: color-mix(in srgb, var(--color-white) 15%, transparent);
     }
 
     .np__op--lead:hover {
-        color: var(--color-inverse-text);
-        background: var(--color-inverse-hover);
+        color: var(--color-black);
+        background: color-mix(in srgb, var(--color-white) 85%, transparent);
     }
 }
