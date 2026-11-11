@@ -266,7 +266,7 @@
     background: var(--color-block-bg);
     display: block;
     padding-top: var(--spacing-sm);
-    padding-bottom: calc(var(--font-sm-line) * 2 + var(--font-xs-line) + var(--spacing-sm) * 2);
+    padding-bottom: calc(var(--font-sm-line) * 2 + var(--font-xs-line) + var(--spacing-sm) * 1);
 }
 
 /* El nombre va en ese borde, abajo a la izquierda de la tarjeta */
