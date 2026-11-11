@@ -127,6 +127,12 @@
     color: var(--color-feature-text);
 }
 
+/* La onda cuadrada (vco-square.png) no queda centrada en su máscara
+   como las demás: se corre a la izquierda para compensar */
+.cmp__wave.leaf-wave__icon--square {
+    margin-left: -40px;
+}
+
 /* "hoja Puntiaguda" arriba a la izquierda, "onda Triangular" a la derecha.
    Cada uno va dentro de su capa, así la línea los corta igual que a la foto */
 .cmp__tag {
