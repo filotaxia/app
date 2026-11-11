@@ -15,7 +15,22 @@
 
 .plant-heading {
     display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--gap-lg);
+}
+
+.plant-heading__catalog {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+.plant-heading__current {
+    display: flex;
     flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
 }
 
 .plant-heading__name {

@@ -51,8 +51,11 @@ export function render(root) {
 
     <section class="art reveal" data-art>
       <header class="plant-heading">
-        <h3 class="plant-heading__name" data-plant-name>${escapeHTML(PLANTAS[currentIndex].name)}</h3>
-        <p class="plant-heading__label">Planta</p>
+        <h2 class="plant-heading__catalog">Catálogo</h2>
+        <div class="plant-heading__current">
+          <h3 class="plant-heading__name" data-plant-name>${escapeHTML(PLANTAS[currentIndex].name)}</h3>
+          <p class="plant-heading__label">Planta</p>
+        </div>
       </header>
       ${particles()}
     </section>
