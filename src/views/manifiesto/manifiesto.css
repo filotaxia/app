@@ -516,8 +516,9 @@ html:has(.manifiesto) body {
 /* Pantalla 5: el mecanismo paso a paso */
 /* ---------------------------------------- */
 
-/* Pantalla 5: título arriba (como anatomy/layers/split/production), los
-   pasos debajo */
+/* Pantalla 5: título arriba (como anatomy/layers/split/production); los
+   pasos quedan con su alto natural (no se estiran a llenar la pantalla:
+   con solo tres, separarlos más no suma), el aire que sobra queda abajo */
 .manifiesto__slide--mechanism {
     justify-content: flex-start;
     gap: var(--gap-lg);
@@ -696,9 +697,9 @@ html:has(.manifiesto) body {
 
 /* ---------------------------------------- */
 /* Pantalla 6: la Producción
-   Título arriba y, debajo, el cuadro de components/production-loop, con su
-   alto natural (el SVG mantiene su proporción, como en el resto del sitio):
-   no crece para llenar la pantalla, así queda parejo con las demás. */
+   Título arriba y, debajo, el cuadro de components/production-loop con su
+   alto natural (el SVG mantiene su proporción, como en el resto del sitio:
+   no se estira a llenar la pantalla), el aire que sobra queda abajo. */
 .manifiesto__slide--production {
     justify-content: flex-start;
     gap: var(--gap-lg);
