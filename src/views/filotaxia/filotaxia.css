@@ -143,9 +143,20 @@
 }
 
 .journey .connect-loop {
-    padding: 0;
+    position: relative;
+    padding: var(--spacing-md) var(--spacing-md) calc(var(--spacing-md) + var(--font-base-line) * 2 + var(--spacing-sm) + var(--spacing-lg));
+    border: 1px solid color-mix(in srgb, var(--color-inverse-text) 15%, transparent);
     background: none;
     color: inherit;
+}
+
+/* El copy ("(Paso01)" + su texto) va al pie del cuadro, no suelto debajo
+   del dibujo: el padding-bottom de acá arriba le deja el lugar fijo */
+.journey .connect-loop figcaption {
+    position: absolute;
+    left: var(--spacing-md);
+    right: var(--spacing-md);
+    bottom: var(--spacing-md);
 }
 
 /* --- Preguntas frecuentes (las clases .faq son de cuidados.css) ---
