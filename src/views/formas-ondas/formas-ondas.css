@@ -122,8 +122,8 @@
 }
 
 .cmp__wave {
-    width: 85%;
-    max-height: 55%;   /* por si el aspect-ratio de la base no alcanza: no se desborda del cuadro */
+    width: 265px;
+    max-height: auto;
     color: var(--color-feature-text);
 }
 
