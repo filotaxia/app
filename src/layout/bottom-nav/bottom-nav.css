@@ -23,6 +23,10 @@
     bottom: max(var(--spacing-md), env(safe-area-inset-bottom));
     z-index: var(--z-nav);
     translate: -50% 0;
+    /* como Instagram: arranca un poco más grande y se achica apenas se
+       empieza a scrollear (bottom-nav.js pone/saca .is-scrolled) */
+    scale: 1.08;
+    transition: scale var(--transition-normal);
     width: max-content;
     padding: var(--spacing-xs);
     border: 1px solid color-mix(in srgb, var(--color-white) 18%, transparent);
@@ -30,6 +34,10 @@
     background: color-mix(in srgb, #000 55%, transparent);
     -webkit-backdrop-filter: blur(20px) saturate(220%);
     backdrop-filter: blur(20px) saturate(220%);
+}
+
+.bottom-nav.is-scrolled {
+    scale: 0.92;
 }
 
 /* Sin desenfoque (navegadores viejos o "reducir transparencia"): fondo sólido */
@@ -110,6 +118,33 @@
     transform: scale(0.92);
 }
 
+/* El ícono del reproductor (audio-lines, 6 líneas) se mueve solo mientras
+   suena la pieza (player-dock.js pone/saca esta clase) — cada línea rebota
+   a su propio ritmo, como un ecualizador */
+.bottom-nav__link[data-nav-player].is-playing .bottom-nav__icon path {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: bottom-nav-eq 1s ease-in-out infinite;
+}
+
+.bottom-nav__link[data-nav-player].is-playing .bottom-nav__icon path:nth-child(1) { animation-duration: 0.9s; animation-delay: -0.1s; }
+.bottom-nav__link[data-nav-player].is-playing .bottom-nav__icon path:nth-child(2) { animation-duration: 1.15s; animation-delay: -0.6s; }
+.bottom-nav__link[data-nav-player].is-playing .bottom-nav__icon path:nth-child(3) { animation-duration: 0.8s; animation-delay: -0.3s; }
+.bottom-nav__link[data-nav-player].is-playing .bottom-nav__icon path:nth-child(4) { animation-duration: 1.05s; animation-delay: -0.8s; }
+.bottom-nav__link[data-nav-player].is-playing .bottom-nav__icon path:nth-child(5) { animation-duration: 0.95s; animation-delay: -0.2s; }
+.bottom-nav__link[data-nav-player].is-playing .bottom-nav__icon path:nth-child(6) { animation-duration: 1.1s; animation-delay: -0.5s; }
+
+@keyframes bottom-nav-eq {
+    0%, 100% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bottom-nav__link[data-nav-player].is-playing .bottom-nav__icon path {
+        animation: none;
+    }
+}
+
 /* El terrario de Mi terrario: dibujado con más zoom (viewBox recortado), así
    que lleva un trazo más fino para quedar igual que el resto. Tiene detalles
    chicos (las hojas del brote): no engorda cuando está activo. */
@@ -128,6 +163,7 @@ RESPONSIVE
     .bottom-nav {
         inset: 0 auto 0 0;
         translate: none;
+        scale: 1;   /* el riel no se achica: eso es cosa del mobile */
         width: var(--size-rail);
         display: flex;
         flex-direction: column;

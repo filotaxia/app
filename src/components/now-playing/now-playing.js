@@ -100,7 +100,7 @@ export function nowPlaying(terrario) {
   `;
 }
 
-export function bindNowPlaying(root, { queue: firstQueue, collapsible = true }) {
+export function bindNowPlaying(root, { queue: firstQueue, collapsible = true, onPlaying }) {
   const box = root.querySelector("[data-np]");
   const $ = (name) => box.querySelector(`[data-np-${name}]`);
   const el = {
@@ -232,6 +232,7 @@ export function bindNowPlaying(root, { queue: firstQueue, collapsible = true }) 
     playing = value;
     el.play.setAttribute("aria-pressed", String(playing));
     el.play.setAttribute("aria-label", playing ? "Pausar" : "Reproducir");
+    onPlaying?.(playing);
     cancelAnimationFrame(markRaf);
     const target = playing ? 0 : 1;
     if (still) {

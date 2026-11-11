@@ -14,6 +14,7 @@ import { get, subscribe } from "./store/store.js";
 import { applyTheme } from "./utils/theme.js";
 import { loadCatalog } from "./store/catalog.js";
 import { mountPlayerDock } from "./layout/player-dock/player-dock.js";
+import { bindBottomNav } from "./layout/bottom-nav/bottom-nav.js";
 import { startRouter } from "./router.js";
 
 applyTheme((await get("prefs")).theme);
@@ -21,6 +22,7 @@ subscribe("prefs", (prefs) => applyTheme(prefs.theme));
 
 await loadCatalog();
 await mountPlayerDock();
+bindBottomNav();
 startRouter(document.querySelector("#view"));
 
 if ("serviceWorker" in navigator) {

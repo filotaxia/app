@@ -49,9 +49,15 @@ export async function mountPlayerDock() {
   dock.innerHTML = nowPlaying(queue[0]);
   shell.append(dock);
 
-  const player = bindNowPlaying(dock, { queue, collapsible: true });
+  const navPlayer = document.querySelector("[data-nav-player]");
+  const player = bindNowPlaying(dock, {
+    queue,
+    collapsible: true,
+    // Mientras suena, el ícono del nav (el ecualizador) se anima solo (bottom-nav.css)
+    onPlaying: (playing) => navPlayer.classList.toggle("is-playing", playing),
+  });
 
-  document.querySelector("[data-nav-player]").addEventListener("click", () => player.toggleOpen());
+  navPlayer.addEventListener("click", () => player.toggleOpen());
 
   // El primer escaneo elige "Mi terrario": pasa a ser el primero de la cola
   subscribe("my_terrario", async () => player.setQueue(await buildQueue()));
