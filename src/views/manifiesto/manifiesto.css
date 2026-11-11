@@ -516,13 +516,21 @@ html:has(.manifiesto) body {
 /* Pantalla 5: el mecanismo paso a paso */
 /* ---------------------------------------- */
 
+/* Pantalla 5: título arriba (como anatomy/layers/split/production), los
+   pasos debajo */
+.manifiesto__slide--mechanism {
+    justify-content: flex-start;
+    gap: var(--gap-lg);
+    padding-top: calc(var(--manifiesto-top) + var(--spacing-xl));
+}
+
 /* Una línea de tiempo: número a la izquierda con una línea fina que baja
    hasta el paso siguiente; a la derecha, el gráfico y el texto.
    Cada paso entra --beat después del anterior (--step la pone el JS):
    para hacerlo todo más rápido o más lento, cambiá --beat. */
 .flow {
     --beat: 1.5s;
-    --flow-gap: var(--gap-lg);
+    --flow-gap: var(--gap-2xl);
     display: flex;
     flex-direction: column;
     gap: var(--flow-gap);
@@ -688,10 +696,9 @@ html:has(.manifiesto) body {
 
 /* ---------------------------------------- */
 /* Pantalla 6: la Producción
-   Título arriba y, debajo, el cuadro de components/production-loop
-   (plantas → Biodata → Microfreak y sustrato → Biodata → compu; tocar una
-   parte la explica) ocupando todo el alto que queda, como la foto de la 2 o las
-   tarjetas de la 4. */
+   Título arriba y, debajo, el cuadro de components/production-loop, con su
+   alto natural (el SVG mantiene su proporción, como en el resto del sitio):
+   no crece para llenar la pantalla, así queda parejo con las demás. */
 .manifiesto__slide--production {
     justify-content: flex-start;
     gap: var(--gap-lg);
@@ -699,17 +706,7 @@ html:has(.manifiesto) body {
 }
 
 .manifiesto__slide--production > .production-loop {
-    flex: 0 1 auto;
-    min-height: 0;
-    max-height: 300px;
-}
-
-/* El dibujo toma el alto que sobra y queda centrado en él (el SVG mantiene
-   su proporción); qué hace cada parte sigue al pie del cuadro */
-.manifiesto__slide--production .connect-loop__stage {
-    flex: 1;
-    min-height: 0;
-    height: 100%;
+    flex: 0 0 auto;
 }
 
 /* Hasta que se ve la pantalla, la animación espera en su primer cuadro:

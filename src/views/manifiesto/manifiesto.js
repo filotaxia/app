@@ -150,6 +150,7 @@ const SLIDE_LAYOUT = {
   1: "manifiesto__slide--anatomy",  // título arriba, terrario y su explicación abajo
   2: "manifiesto__slide--layers",   // barras arriba, número y texto abajo
   3: "manifiesto__slide--split",    // título arriba, tarjetas abajo
+  4: "manifiesto__slide--mechanism", // título arriba, los pasos abajo
   5: "manifiesto__slide--production", // título arriba, la animación abajo
   6: "manifiesto__slide--piece",    // la huella y el texto al centro, el botón abajo
 };
