@@ -50,7 +50,7 @@
 }
 
 .bottom-nav__list {
-    height: calc(var(--size-nav) - 2 * var(--spacing-xs));
+    height: auto;
     display: grid;
     grid-template-columns: repeat(5, var(--size-tap)) var(--spacing-md) var(--size-tap);
     gap: var(--spacing-2xs);
