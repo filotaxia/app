@@ -128,17 +128,24 @@
     letter-spacing: var(--font-xl-tracking);
 }
 
-/* --- "Filotaxia" (antes "Tu recorrido"): el título y, debajo, la animación de los 3 pasos --- */
+/* --- "Filotaxia" (antes "Tu recorrido"): un solo cuadro de punta a punta
+   (como .leafwave en Formas), con el título arriba y, debajo, la animación
+   de los 3 pasos. El fondo y el color salen de acá; el connect-loop de
+   adentro pierde los suyos para no duplicar el cuadro. */
 .journey {
     display: flex;
     flex-direction: column;
-    gap: var(--gap-md);
-    margin-top: var(--spacing-xl);
+    gap: var(--gap-xl);
+    margin: var(--spacing-xl) calc(var(--gutter) * -1) calc(var(--gap-xl) * -1);
+    padding: var(--spacing-3xl) var(--gutter) var(--spacing-4xl);
+    background: var(--color-inverse-surface);
+    color: var(--color-inverse-text);
 }
 
-/* Acá el cuadro es más alto: más aire arriba de la animación */
 .journey .connect-loop {
-    padding-top: var(--spacing-4xl);
+    padding: 0;
+    background: none;
+    color: inherit;
 }
 
 /* --- Preguntas frecuentes (las clases .faq son de cuidados.css) ---
