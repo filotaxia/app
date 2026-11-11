@@ -86,8 +86,12 @@ const PRODUCTION_LOOP_MS = 12000;
 export const nav = ({ params }) => !params.id;
 
 const SLIDES = [
-  // 1. Gancho: una cita del Manifiesto de filotaxia.com (libro + autor abajo)
+  // 1. Gancho: título como el header de las demás pantallas, arriba a la
+  //    izquierda, y la cita del Manifiesto de filotaxia.com abajo (libro + autor)
   ({ quote }) => `
+    <header class="manifiesto__intro">
+      <h1 class="manifiesto__intro-title" tabindex="-1">Manifiesto</h1>
+    </header>
     <figure class="manifiesto__quote">
       <blockquote class="manifiesto__big">“${quote.text}”</blockquote>
       <figcaption class="manifiesto__byline">
@@ -167,8 +171,6 @@ export async function render(root, { params }) {
 
   root.innerHTML = `
     <section class="screen manifiesto">
-      <h1 class="visually-hidden" tabindex="-1">Manifiesto</h1>
-
       <div class="manifiesto__top">
         <ol class="manifiesto__progress" aria-label="Pantallas">
           ${SLIDES.map((_, i) => `
@@ -290,15 +292,19 @@ export async function render(root, { params }) {
   document.addEventListener("visibilitychange", onVisibility);
 
   // Como las historias de Instagram: tocar la mitad derecha de la pantalla
-  // pasa a la próxima, la izquierda vuelve a la anterior. Tocar algo de
-  // ADENTRO de una pantalla (un punto, una capa, las hojas, una parte de la
-  // Producción) no cambia de pantalla: lo frena del todo, está explorando.
-  // Va en la fase de captura porque esos controles frenan su click.
+  // pasa a la próxima, la izquierda vuelve a la anterior. SIEMPRE cambia de
+  // pantalla al tocar, pase lo que pase adentro (un punto, una capa, una
+  // parte de la Producción): que la navegación nunca se sienta trabada
+  // importa más que dejar mirar quieta una explicación. La única excepción
+  // es un link de verdad (acá, "Escuchar la pieza"): ese sí hace lo suyo,
+  // sin cambiar de pantalla. Va en la fase de captura porque esos controles
+  // frenan su propio click.
   track.addEventListener("click", (event) => {
-    if (event.target.closest("button, a, [role='button']")) {
+    if (event.target.closest("a")) {
       stopAutoplay();
       return;
     }
+    if (event.target.closest("button, [role='button']")) stopAutoplay();
     const { left, width } = track.getBoundingClientRect();
     goTo(current + (event.clientX - left < width / 2 ? -1 : 1));
   }, true);
