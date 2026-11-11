@@ -131,6 +131,7 @@ html:has(.manifiesto) body {
     flex-direction: column;
     justify-content: center;
     gap: var(--gap-xl);
+    min-height: 100%;
     padding-top: var(--manifiesto-top);   /* debajo de la tira de arriba */
     padding-inline: var(--gutter);
     padding-bottom: var(--spacing-lg);
@@ -227,7 +228,6 @@ html:has(.manifiesto) body {
 .layers__bars {
     flex: 1;
     min-height: 260px;   /* tres franjas cerradas de 44 + una bien abierta */
-    max-height: 440px;
     display: flex;
     flex-direction: column;
     gap: var(--gap-xs);
@@ -341,7 +341,6 @@ html:has(.manifiesto) body {
 .manifiesto__slide--split > .leaf-waves-flip {
     flex: 1;
     min-height: 0;
-    max-height: 640px;
     margin-top: auto;
 }
 
