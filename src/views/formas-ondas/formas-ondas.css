@@ -44,7 +44,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: var(--gap-xl);
-    margin: 0 calc(var(--gutter) * -1);
+    margin: 0 calc(var(--gutter) * -1) calc(var(--gap-xl) * -1);
     padding: calc(env(safe-area-inset-top) + var(--spacing-3xl)) var(--gutter) var(--spacing-4xl);
     background: var(--color-feature-bg);
     color: var(--color-feature-text);
