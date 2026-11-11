@@ -107,8 +107,31 @@ async function homes(key) {
   const scale = Math.min((W - PAD * 2) / img.width, (H - PAD * 2) / img.height);
   const dw = img.width * scale;
   const dh = img.height * scale;
-  g.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
-  const { data } = g.getImageData(0, 0, W, H);
+  let dx = (W - dw) / 2;
+  let dy = (H - dh) / 2;
+  g.drawImage(img, dx, dy, dw, dh);
+  // Algunas fotos no traen la hoja centrada en su propio archivo (recorte
+  // parejo, hoja no): se mide el bounding box de lo opaco y, si hace falta,
+  // se vuelve a dibujar corrida para que la silueta quede centrada en el
+  // canvas, no el archivo.
+  let { data } = g.getImageData(0, 0, W, H);
+  let minX = W, maxX = -1, minY = H, maxY = -1;
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      if (data[(y * W + x) * 4 + 3] <= 128) continue;
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+  }
+  if (maxX >= minX) {
+    dx += CX - (minX + maxX) / 2;
+    dy += CY - (minY + maxY) / 2;
+    g.clearRect(0, 0, W, H);
+    g.drawImage(img, dx, dy, dw, dh);
+    data = g.getImageData(0, 0, W, H).data;
+  }
   const opaque = (x, y) => {
     const ix = Math.round(x);
     const iy = Math.round(y);
