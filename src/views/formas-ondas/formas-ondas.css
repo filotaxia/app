@@ -198,7 +198,7 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     width: 100%;
-    max-width: 320px;
+    max-width: 100%;
 }
 
 .cmp-shapes__option {
