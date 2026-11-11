@@ -42,10 +42,10 @@
 .leafwave {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--gap-xl);
-    margin: 0 calc(var(--gutter) * -1);
-    padding: calc(env(safe-area-inset-top) + var(--spacing-xl)) var(--gutter) var(--spacing-3xl);
+    margin: 0 calc(var(--gutter) * -1) calc(var(--gap-xl) * -1);
+    padding: calc(env(safe-area-inset-top) + var(--spacing-3xl)) var(--gutter) var(--spacing-4xl);
     background: var(--color-feature-bg);
     color: var(--color-feature-text);
 }
@@ -83,7 +83,7 @@
 .cmp {
     position: relative;
     width: 100%;
-    max-width: 320px;
+    max-width: 100%;
     aspect-ratio: 3 / 4;
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--color-feature-text) 15%, transparent);
@@ -122,9 +122,15 @@
 }
 
 .cmp__wave {
-    width: 85%;
-    max-height: 55%;   /* por si el aspect-ratio de la base no alcanza: no se desborda del cuadro */
+    width: 265px;
+    max-height: auto;
     color: var(--color-feature-text);
+}
+
+/* La onda cuadrada (vco-square.png) no queda centrada en su máscara
+   como las demás: se corre a la izquierda para compensar */
+.cmp__wave.leaf-wave__icon--square {
+    margin-left: -40px;
 }
 
 /* "hoja Puntiaguda" arriba a la izquierda, "onda Triangular" a la derecha.
@@ -193,28 +199,23 @@
     scale: 0.9;
 }
 
-/* Las cuatro formas: una fila de botones de borde fino; la elegida, llena */
+/* Las cuatro formas: una fila de botones separados, fondo gris oscuro; la elegida, llena */
 .cmp-shapes {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    gap: var(--gap-xs);
     width: 100%;
-    max-width: 320px;
+    max-width: 100%;
 }
 
 .cmp-shapes__option {
     min-height: var(--size-tap);
     padding: 0 var(--spacing-2xs);
-    border: 1px solid color-mix(in srgb, var(--color-feature-text) 25%, transparent);
-    border-left-width: 0;
-    background: none;
+    background: var(--color-gray-700);
     color: var(--color-feature-text);
     font: inherit;
     font-size: var(--font-xs-size);
     transition: background-color var(--transition-fast), color var(--transition-fast);
-}
-
-.cmp-shapes__option:first-child {
-    border-left-width: 1px;
 }
 
 .cmp-shapes__option[aria-pressed="true"] {
@@ -260,12 +261,12 @@
    lo que queda, sin cortarse */
 .shapes-catalog__photo {
     width: 100%;
-    aspect-ratio: 1;
+    aspect-ratio: auto;
     object-fit: contain;
     background: var(--color-block-bg);
     display: block;
     padding-top: var(--spacing-sm);
-    padding-bottom: calc(var(--font-sm-line) * 2 + var(--font-xs-line) + var(--spacing-sm) * 2);
+    padding-bottom: calc(var(--font-sm-line) * 2 + var(--font-xs-line) + var(--spacing-sm) * 1);
 }
 
 /* El nombre va en ese borde, abajo a la izquierda de la tarjeta */

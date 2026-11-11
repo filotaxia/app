@@ -131,6 +131,7 @@ html:has(.manifiesto) body {
     flex-direction: column;
     justify-content: center;
     gap: var(--gap-xl);
+    min-height: 100%;
     padding-top: var(--manifiesto-top);   /* debajo de la tira de arriba */
     padding-inline: var(--gutter);
     padding-bottom: var(--spacing-lg);
@@ -227,7 +228,6 @@ html:has(.manifiesto) body {
 .layers__bars {
     flex: 1;
     min-height: 260px;   /* tres franjas cerradas de 44 + una bien abierta */
-    max-height: 440px;
     display: flex;
     flex-direction: column;
     gap: var(--gap-xs);
@@ -341,7 +341,6 @@ html:has(.manifiesto) body {
 .manifiesto__slide--split > .leaf-waves-flip {
     flex: 1;
     min-height: 0;
-    max-height: 640px;
     margin-top: auto;
 }
 
@@ -517,13 +516,21 @@ html:has(.manifiesto) body {
 /* Pantalla 5: el mecanismo paso a paso */
 /* ---------------------------------------- */
 
+/* Pantalla 5: título arriba (como anatomy/layers/split/production); con
+   el gap entre pasos (--flow-gap) ya queda con buen alto, sin forzarlo */
+.manifiesto__slide--mechanism {
+    justify-content: flex-start;
+    gap: var(--gap-lg);
+    padding-top: calc(var(--manifiesto-top) + var(--spacing-xl));
+}
+
 /* Una línea de tiempo: número a la izquierda con una línea fina que baja
    hasta el paso siguiente; a la derecha, el gráfico y el texto.
    Cada paso entra --beat después del anterior (--step la pone el JS):
    para hacerlo todo más rápido o más lento, cambiá --beat. */
 .flow {
     --beat: 1.5s;
-    --flow-gap: var(--spacing-xl);
+    --flow-gap: var(--gap-2xl);
     display: flex;
     flex-direction: column;
     gap: var(--flow-gap);
@@ -689,10 +696,9 @@ html:has(.manifiesto) body {
 
 /* ---------------------------------------- */
 /* Pantalla 6: la Producción
-   Título arriba y, debajo, el cuadro de components/production-loop
-   (plantas → Biodata → Microfreak y sustrato → Biodata → compu; tocar una
-   parte la explica) ocupando todo el alto que queda, como la foto de la 2 o las
-   tarjetas de la 4. */
+   Título arriba y, debajo, el cuadro de components/production-loop con un
+   poco más de alto que el natural (el dibujo se centra en él, sin
+   estirarse: el SVG mantiene su proporción, como en el resto del sitio). */
 .manifiesto__slide--production {
     justify-content: flex-start;
     gap: var(--gap-lg);
@@ -700,16 +706,9 @@ html:has(.manifiesto) body {
 }
 
 .manifiesto__slide--production > .production-loop {
-    flex: 1;
-    min-height: 0;
-}
-
-/* El dibujo toma el alto que sobra y queda centrado en él (el SVG mantiene
-   su proporción); qué hace cada parte sigue al pie del cuadro */
-.manifiesto__slide--production .connect-loop__stage {
-    flex: 1;
-    min-height: 0;
-    height: 100%;
+    flex: 0 0 auto;
+    min-height: 480px;
+    justify-content: center;
 }
 
 /* Hasta que se ve la pantalla, la animación espera en su primer cuadro:
