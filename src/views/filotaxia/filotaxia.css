@@ -137,26 +137,20 @@
     flex-direction: column;
     gap: var(--gap-xl);
     margin: var(--spacing-xl) calc(var(--gutter) * -1) calc(var(--gap-xl) * -1);
-    padding: var(--spacing-3xl) var(--gutter) var(--spacing-4xl);
+    padding: var(--spacing-3xl) var(--gutter) var(--spacing-2xl);
     background: var(--color-inverse-surface);
     color: var(--color-inverse-text);
 }
 
+/* El dibujo y su copy ocupan el alto que sobra bajo el título,
+   centrados ahí (sin borde ni fondo propios: son del cuadro de arriba) */
 .journey .connect-loop {
-    position: relative;
-    padding: var(--spacing-md) var(--spacing-md) calc(var(--spacing-md) + var(--font-base-line) * 2 + var(--spacing-sm) + var(--spacing-lg));
-    border: 1px solid color-mix(in srgb, var(--color-inverse-text) 15%, transparent);
+    flex: 1;
+    min-height: 0;
+    justify-content: center;
+    padding: 0;
     background: none;
     color: inherit;
-}
-
-/* El copy ("(Paso01)" + su texto) va al pie del cuadro, no suelto debajo
-   del dibujo: el padding-bottom de acá arriba le deja el lugar fijo */
-.journey .connect-loop figcaption {
-    position: absolute;
-    left: var(--spacing-md);
-    right: var(--spacing-md);
-    bottom: var(--spacing-md);
 }
 
 /* --- Preguntas frecuentes (las clases .faq son de cuidados.css) ---
