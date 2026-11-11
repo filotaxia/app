@@ -56,14 +56,13 @@
     line-height: var(--font-base-line);
 }
 
-/* Etiqueta chica arriba a la derecha: texto plano, sin fondo
-   (como los chips, components/chip); pegada al título, más cerca que el
-   resto de las filas de la grilla */
+/* Etiqueta chica, centrada con el título (misma fila en los bloques
+   .block--full: "title badge"): texto plano, sin fondo (como los chips,
+   components/chip) */
 .block__badge {
     grid-area: badge;
-    align-self: start;
+    align-self: center;
     justify-self: start;
-    margin-top: calc(-1 * var(--spacing-2xs));
     font-size: var(--font-xs-size);
     line-height: var(--font-xs-line);
     color: var(--color-text);

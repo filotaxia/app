@@ -161,7 +161,7 @@
 }
 
 /* --- Lista: una fila por terrario, en un bloque gris cuadrado, sin borde.
-   Fecha | foto, nombre y la duración, y a la derecha › --- */
+   Foto, nombre y la duración, y a la derecha › --- */
 .collection-list {
     display: flex;
     flex-direction: column;
@@ -180,27 +180,6 @@
 
 .collection-row:active {
     transform: scale(0.98);
-}
-
-/* La fecha, con una línea fina a la derecha que la separa de la foto */
-.collection-row__date {
-    flex: none;
-    display: flex;
-    flex-direction: column;
-    width: 44px;
-    padding-right: var(--spacing-md);
-    border-right: 1px solid var(--color-line);
-}
-
-.collection-row__month {
-    font-size: var(--font-sm-size);
-    line-height: var(--font-sm-line);
-    color: var(--color-text-muted);
-}
-
-.collection-row__day {
-    font-size: 22px;
-    line-height: 26px;
 }
 
 .collection-row__thumb {

@@ -4,24 +4,31 @@
 
 // Guía (#/filotaxia, una sección de la barra), de arriba hacia abajo:
 //
-//   Proceso        "1 proceso / 3 etapas", como en la página Música de
-//                  filotaxia.com: frase grande, slider de fotos con una
-//                  línea que se llena y las tres etapas (ver bindSlider
-//                  más abajo). Vuelve acá, de primera: antes había pasado
-//                  un tiempo en Formas (views/formas-ondas).
+//   Cómo funciona  tres pasos 01/ 02/ 03/; al tocar uno, la foto de arriba
+//                  cambia con una animación de GSAP (la misma de la ficha,
+//                  de donde se movió: mismas clases .how, terrario.css). GSAP
+//                  se baja del CDN solo al entrar acá; si no llega (sin red) o
+//                  el teléfono pide menos movimiento, la foto cambia sin animación.
 //   Filotaxia      la animación de los 3 pasos para conectar el terrario
 //                  (components/connect-loop: el QR de su base → la cámara →
 //                  su pieza), la misma que Mi terrario cuando no hay terrario,
 //                  pero al revés del tema (negro en el claro), para que resalte.
+//   Proceso        "1 proceso / 3 etapas", como en la página Música de
+//                  filotaxia.com: frase grande, slider de fotos con una
+//                  línea que se llena y las tres etapas (ver bindSlider
+//                  más abajo).
 //   Preguntas      como el "Section FAQ" de filotaxia.com: "(PMF)" + una
 //                  frase grande y, a la derecha, "(Guía)" (faq-intro, acá
 //                  abajo); después, hasta 5 preguntas (de sonido y de
 //                  cuidados), que se abren con + (las mismas clases que
 //                  Cuidados, cuidados.css).
 
-import { SOUND_FAQ, CARE_FAQ, PROCESS, PROCESS_INTRO, PROCESS_PHOTOS } from "../../content/ayuda.js";
+import { SOUND_FAQ, CARE_FAQ, HOW_IT_WORKS, PROCESS, PROCESS_INTRO, PROCESS_PHOTOS } from "../../content/ayuda.js";
 import { connectLoop } from "../../components/connect-loop/connect-loop.js";
 import { escapeHTML } from "../../utils/html.js";
+import { arrow } from "../../utils/icons.js";
+
+const GSAP_URL = "https://cdn.jsdelivr.net/npm/gsap@3.12.5/+esm";
 
 export const title = "Guía";
 export const subtitle = "De la planta a la música";
@@ -29,6 +36,29 @@ export const header = true;
 
 export function render(root) {
   root.innerHTML = `
+    <section class="how reveal" aria-labelledby="how-title">
+      <h2 class="terrario__title" id="how-title">Cómo funciona</h2>
+      <div class="how__images">
+        ${HOW_IT_WORKS.map(({ image, alt }, i) => `
+          <img class="how__image${i === 0 ? " is-active" : ""}" src="${image}" alt="${escapeHTML(alt)}" loading="lazy" decoding="async">`).join("")}
+      </div>
+      <ol class="how__list">
+        ${HOW_IT_WORKS.map(({ text }, i) => `
+          <li>
+            <button class="how__step" type="button" aria-pressed="${i === 0}">
+              <span class="how__number">${String(i + 1).padStart(2, "0")}/</span>
+              <span class="how__text">${escapeHTML(text)}</span>
+              ${arrow()}
+            </button>
+          </li>`).join("")}
+      </ol>
+    </section>
+
+    <section class="journey reveal" aria-labelledby="journey-title">
+      <h2 class="guide-title" id="journey-title">Filotaxia</h2>
+      ${connectLoop({ inverse: true })}
+    </section>
+
     <section class="process reveal" aria-labelledby="process-title">
       <h2 class="process__label" id="process-title">1 proceso / ${PROCESS.length} etapas</h2>
       <p class="process__intro">${escapeHTML(PROCESS_INTRO)}</p>
@@ -52,11 +82,6 @@ export function render(root) {
       </div>
     </section>
 
-    <section class="journey reveal" aria-labelledby="journey-title">
-      <h2 class="guide-title" id="journey-title">Filotaxia</h2>
-      ${connectLoop({ inverse: true })}
-    </section>
-
     <section class="faq guide-faq reveal" aria-labelledby="faq-title">
       <div class="faq-intro">
         <p class="faq-intro__text" id="faq-title">
@@ -78,6 +103,44 @@ export function render(root) {
   `;
 
   bindSlider(root);
+  return bindHowItWorks(root.querySelector(".how"));
+}
+
+// --- Cómo funciona: la foto cambia al tocar un paso (de la ficha) ---
+function bindHowItWorks(section) {
+  const images = [...section.querySelectorAll(".how__image")];
+  const steps = [...section.querySelectorAll(".how__step")];
+  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let active = 0;
+  let gsap = null;
+
+  if (!calm) {
+    import(GSAP_URL)
+      .then((module) => { gsap = module.gsap; })
+      .catch(() => {});   // sin red: cambia sin animación
+  }
+
+  steps.forEach((step, index) => {
+    step.addEventListener("click", () => {
+      if (index === active) return;
+      const from = images[active];
+      const to = images[index];
+      steps[active].setAttribute("aria-pressed", "false");
+      step.setAttribute("aria-pressed", "true");
+      active = index;
+
+      from.classList.remove("is-active");
+      to.classList.add("is-active");
+
+      if (!gsap) return;
+      // La de antes se apaga; la nueva aparece bajando 24px, encima
+      gsap.killTweensOf(images);
+      gsap.to(from, { opacity: 0, duration: 0.4, ease: "power2.inOut" });
+      gsap.fromTo(to, { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" });
+    });
+  });
+
+  return () => gsap?.killTweensOf(images);
 }
 
 // El slider del proceso: se desliza con el dedo (scroll nativo) y la línea

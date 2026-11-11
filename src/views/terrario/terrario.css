@@ -34,16 +34,6 @@
     outline: none;
 }
 
-/* El código ("TR05") en grande: más que los títulos de sección (28px),
-   con el tracking cerrado de los números grandes */
-.terrario__code {
-    font-size: var(--num-lg-size);
-    line-height: var(--num-lg-line);
-    letter-spacing: var(--num-lg-tracking);
-    /* el tracking negativo come el borde izquierdo de la "T" */
-    margin-left: -2px;
-}
-
 .terrario__story {
     max-width: 420px;
     margin-top: var(--spacing-xs);

@@ -2,51 +2,51 @@
    Views — Cuidados
    ============================================ */
 
-/* Los bloques del terrario (components/block), la guía en pasos 01/ 02/ 03/
-   y las preguntas frecuentes que se abren (details nativo): filas con
-   línea fina y un + grande y negro que pasa a − al abrir, como en
+/* La guía (riego, luz, sustrato) usa las clases .how de terrario.css (la
+   foto cambia al tocar el paso, igual que "Cómo funciona" de la ficha);
+   acá quedan las preguntas frecuentes que se abren (details nativo): filas
+   con línea fina y un + grande y negro que pasa a − al abrir, como en
    filotaxia.com (inspo/proyecto-filotaxia/src/css/components/acordeon.css) */
 
-/* --- Guía: número chico a la izquierda, tema y texto --- */
-.guide,
 .faq {
     display: flex;
     flex-direction: column;
     gap: var(--gap-md);
 }
 
-.guide__list {
-    border-top: 1px solid var(--color-line);
-}
-
-.guide__item {
-    display: flex;
-    gap: var(--gap-md);
-    padding-block: var(--spacing-lg);
-    border-bottom: 1px solid var(--color-line);
-}
-
-.guide__index {
-    flex-shrink: 0;
-    padding-top: 5px;
-    font-size: var(--font-2xs-size);
-    line-height: var(--font-2xs-line);
-    letter-spacing: var(--font-xs-tracking);
-    color: var(--color-text-muted);
-    font-variant-numeric: tabular-nums;
-}
-
-.guide__topic {
-    margin-bottom: var(--spacing-xs);
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
-}
-
-.guide .lead {
-    max-width: 480px;
+/* Más aire entre la Guía y las preguntas (la misma separación que "Cómo
+   funciona" → Preguntas en la ficha, .how + .terrario .faq, terrario.css) */
+.care-faq {
+    margin-top: var(--spacing-3xl);
 }
 
 /* --- Preguntas frecuentes --- */
+/* La intro, como el "Section FAQ" de filotaxia.com: "(PMF)" + una frase
+   grande y, a la derecha, el nombre de la sección entre paréntesis — la
+   usan tanto Guía (filotaxia.js) como Cuidados. Después viene la línea del
+   primer .faq__item (.faq__item:first-of-type, acá abajo), así queda la
+   misma línea que separa la intro de la lista */
+.faq-intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+}
+
+.faq-intro__text {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+.faq-intro__pmf {
+    margin-right: var(--spacing-sm);
+}
+
+.faq-intro__label {
+    align-self: flex-end;
+    color: var(--color-text-muted);
+}
+
 .faq__item {
     border-bottom: 1px solid var(--color-line);
 }

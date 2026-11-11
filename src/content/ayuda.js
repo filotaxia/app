@@ -124,20 +124,30 @@ export const STEPS = [
 ];
 
 // Guía general de cuidados (views/cuidados): la misma para todos los
-// terrarios, no cambia según las plantas. [tema, texto]
+// terrarios, no cambia según las plantas. Misma forma que HOW_IT_WORKS (foto
+// + texto): la sección cambia la foto al tocar el paso, igual que "Cómo
+// funciona" en la ficha (mismas clases .how, terrario.css). Las fotos son
+// las de ficha/ (ya optimizadas), reusadas por lo que muestran: la jeringa
+// regando, el terrario junto a la ventana y el sustrato de cerca.
 export const CARE_GUIDE = [
-  [
-    "Riego",
-    "En general alcanza con regar cada 30 días. Antes, tocá el sustrato: si todavía está húmedo, esperá. Regá de a poco sobre el sustrato, no sobre las hojas; es mejor quedarse corto que pasarse.",
-  ],
-  [
-    "Luz",
-    "Un lugar con mucha luz natural indirecta, cerca de una ventana. Evitá el sol directo: a través del vidrio quema las hojas. Si las plantas se estiran hacia un lado, les falta luz.",
-  ],
-  [
-    "Sustrato",
-    "Tierra, perlita y arena gruesa sobre una rejilla de metal y piedra pómez: las capas están armadas para que el agua drene y el aire circule. No lo compactes ni lo mezcles; si ves agua acumulada en el fondo, dejá de regar hasta que se seque.",
-  ],
+  {
+    topic: "Riego",
+    text: "En general alcanza con regar cada 30 días. Antes, tocá el sustrato: si todavía está húmedo, esperá. Regá de a poco sobre el sustrato, no sobre las hojas; es mejor quedarse corto que pasarse.",
+    image: "src/assets/images/ficha/jeringa.jpg",
+    alt: "Una mano riega un terrario con una jeringa",
+  },
+  {
+    topic: "Luz",
+    text: "Un lugar con mucha luz natural indirecta, cerca de una ventana. Evitá el sol directo: a través del vidrio quema las hojas. Si las plantas se estiran hacia un lado, les falta luz.",
+    image: "src/assets/images/ficha/ventana.jpg",
+    alt: "Un terrario de vidrio con suculentas junto a una ventana",
+  },
+  {
+    topic: "Sustrato",
+    text: "Tierra, perlita y arena gruesa sobre una rejilla de metal y piedra pómez: las capas están armadas para que el agua drene y el aire circule. No lo compactes ni lo mezcles; si ves agua acumulada en el fondo, dejá de regar hasta que se seque.",
+    image: "src/assets/images/ficha/composicion.jpg",
+    alt: "Suculentas de hojas puntiagudas de un terrario, de cerca",
+  },
 ];
 
 // "1 proceso / 3 etapas" de la página Música de filotaxia.com (la Guía):
