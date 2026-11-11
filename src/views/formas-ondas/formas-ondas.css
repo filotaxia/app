@@ -193,10 +193,11 @@
     scale: 0.9;
 }
 
-/* Las cuatro formas: una fila de botones de borde fino; la elegida, llena */
+/* Las cuatro formas: una fila de botones separados, fondo gris oscuro; la elegida, llena */
 .cmp-shapes {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    gap: var(--gap-xs);
     width: 100%;
     max-width: 100%;
 }
@@ -204,17 +205,11 @@
 .cmp-shapes__option {
     min-height: var(--size-tap);
     padding: 0 var(--spacing-2xs);
-    border: 1px solid color-mix(in srgb, var(--color-feature-text) 25%, transparent);
-    border-left-width: 0;
-    background: none;
+    background: var(--color-gray-700);
     color: var(--color-feature-text);
     font: inherit;
     font-size: var(--font-xs-size);
     transition: background-color var(--transition-fast), color var(--transition-fast);
-}
-
-.cmp-shapes__option:first-child {
-    border-left-width: 1px;
 }
 
 .cmp-shapes__option[aria-pressed="true"] {
