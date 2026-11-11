@@ -23,7 +23,7 @@ import { linkedIds } from "../../store/collection.js";
 import { get, set } from "../../store/store.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
-import { formatTime, monthDay } from "../../utils/format.js";
+import { formatTime } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
 import { icon } from "../../utils/icons.js";
 
@@ -89,17 +89,11 @@ function tile(terrario, label) {
   `;
 }
 
-// Una fila de la lista: la fecha en que empezó a sonar, la foto, el nombre
-// y la duración; a la derecha, ›
+// Una fila de la lista: la foto, el nombre y la duración; a la derecha, ›
 function row(terrario, label) {
-  const { month, day } = monthDay(terrario.recorded);
   return `
     <li>
       <a class="collection-row" href="#/escuchar/${terrario.id}">
-        <span class="collection-row__date">
-          <span class="collection-row__month">${month}</span>
-          <span class="collection-row__day">${day}</span>
-        </span>
         <span class="collection-row__thumb">${terrariumArt({ size: "sm", photo: terrario.photo })}</span>
         <span class="collection-row__text">
           <span class="collection-row__name">${escapeHTML(codeOf(terrario))}</span>
