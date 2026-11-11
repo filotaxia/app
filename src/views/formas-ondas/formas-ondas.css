@@ -42,7 +42,7 @@
 .leafwave {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--gap-xl);
     margin: 0 calc(var(--gutter) * -1);
     padding: calc(env(safe-area-inset-top) + var(--spacing-xl)) var(--gutter) var(--spacing-3xl);
