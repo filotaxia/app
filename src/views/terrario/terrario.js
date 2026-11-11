@@ -18,8 +18,8 @@
 // Arriba, "← Mi terrario" o "← Colección" a la izquierda (como en Escuchar)
 // y Ajustes a la derecha.
 // Más abajo, como en la página del terrario en filotaxia.com
-// (terrario-secciones.js): Características (slider), Cómo funciona (la foto
-// cambia al tocar cada paso, con GSAP) y Preguntas frecuentes al final.
+// (terrario-secciones.js): Características (slider) y Preguntas frecuentes
+// al final ("Cómo funciona" se movió a Guía, primera sección).
 
 import { TERRARIOS, getTerrario, codeOf } from "../../content/terrarios.js";
 import { link, markScanned } from "../../store/collection.js";
@@ -34,7 +34,7 @@ import { nextCare, dueLabel } from "../../utils/care.js";
 import { todayKey } from "../../utils/dates.js";
 import { escapeHTML } from "../../utils/html.js";
 import { arrow } from "../../utils/icons.js";
-import { sections, bindSections, heading } from "./terrario-secciones.js";
+import { sections, heading } from "./terrario-secciones.js";
 
 export const title = ({ params }) => {
   const terrario = getTerrario(params.id);
@@ -79,7 +79,7 @@ export async function render(root, { params, from }) {
       <div class="terrario__art reveal">${terrariumArt({ photo: terrario.photo })}</div>
 
       <div class="terrario__info reveal-stagger">
-        <h1 class="title terrario__code" tabindex="-1">${escapeHTML(codeOf(terrario))}</h1>
+        <h1 class="title" tabindex="-1">${escapeHTML(codeOf(terrario))}</h1>
         <p class="terrario__story lead">
           Un ecosistema vivo que empezó a sonar el ${formatDate(terrario.recorded)}.
           ${escapeHTML(terrario.story)}
@@ -95,8 +95,6 @@ export async function render(root, { params, from }) {
       ${sections()}
     </article>
   `;
-
-  return bindSections(root);
 }
 
 // "Especificaciones": filas con la etiqueta chica a la izquierda y el dato a

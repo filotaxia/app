@@ -13,7 +13,14 @@
     display: flex;
     flex-direction: column;
     gap: var(--gap-lg);
-    margin-top: var(--spacing-xl);   /* mismo espacio bajo el header que .journey */
+    margin-top: var(--spacing-xl);
+}
+
+/* "Filotaxia" (.journey) cancela el aire de abajo con su margen negativo
+   (fondo negro de punta a punta); acá se lo devuelve, para que quede el
+   mismo aire que entre las demás secciones */
+.journey + .process {
+    padding-top: var(--spacing-xl);
 }
 
 /* "1 proceso / 3 etapas": chico, en el color del texto (el h4 de la web) */
@@ -159,31 +166,8 @@
     color: inherit;
 }
 
-/* --- Preguntas frecuentes (las clases .faq son de cuidados.css) ---
-   Como el "Section FAQ" de filotaxia.com: "(PMF)" + una frase grande, y a
-   la derecha "(Guía)" — después viene la línea del primer .faq__item
-   (.faq__item:first-of-type, cuidados.css), así queda la misma línea que
-   separa la intro de la lista */
-.faq-intro {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-sm);
-}
-
-.faq-intro__text {
-    font-size: var(--font-xl-size);
-    line-height: var(--font-xl-line);
-    letter-spacing: var(--font-xl-tracking);
-}
-
-.faq-intro__pmf {
-    margin-right: var(--spacing-sm);
-}
-
-.faq-intro__label {
-    align-self: flex-end;
-    color: var(--color-text-muted);
-}
+/* Preguntas frecuentes: las clases .faq y .faq-intro son de cuidados.css
+   (la intro "(PMF) frase grande (Guía)" la comparten Guía y Cuidados) */
 
 /* ============================================
 RESPONSIVE
