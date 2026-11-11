@@ -261,7 +261,7 @@
    lo que queda, sin cortarse */
 .shapes-catalog__photo {
     width: 100%;
-    aspect-ratio: 1;
+    aspect-ratio: auto;
     object-fit: contain;
     background: var(--color-block-bg);
     display: block;
