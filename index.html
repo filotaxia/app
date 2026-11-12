@@ -28,6 +28,20 @@
 <body>
     <a class="skip-link" href="#view">Saltar al contenido</a>
 
+    <!-- Loader de arranque (layout/boot): tapa la pantalla en blanco mientras
+         carga el catálogo (store/catalog.js, puede pedirle a Supabase) y
+         arranca el router. Una esfera de puntos conectados por líneas finas,
+         girando despacio (boot.js arma la red y la anima; main.js avisa
+         cuando ya se puede navegar, con "filotaxia:ready", y recién ahí se
+         saca, con un fade). -->
+    <div class="boot" data-boot role="status" aria-label="Cargando Filotaxia">
+        <svg class="boot__orb" data-boot-orb viewBox="0 0 240 240" aria-hidden="true"></svg>
+    </div>
+    <script type="module">
+        import { bindBoot } from "./src/layout/boot/boot.js";
+        bindBoot(document);
+    </script>
+
     <div class="app-shell" data-app-shell>
         <!-- LAYOUT: Header (solo en las vistas que lo piden: Terrarios, Cuidados, Bitácora, Ajustes).
              Ajustes a la derecha, como el avatar de Pulso (components/settings-link) -->
@@ -150,6 +164,16 @@
                             <path d="M22 10v3" />
                         </svg>
                     </button>
+                </li>
+                <!-- La píldora (layout/player-dock): oculta (ancho 0) hasta que se
+                     toca el ícono de arriba; ahí la barra se extiende y aparece la
+                     foto del terrario que suena con el play/pause encima, como un
+                     ícono más. Tocar la foto (afuera del play) lleva a la Pieza. -->
+                <li class="bottom-nav__pill" data-nav-pill>
+                    <a class="bottom-nav__pill-tap" data-pill-tap aria-label="Ver la pieza">
+                        <span class="bottom-nav__pill-art" data-pill-art aria-hidden="true"></span>
+                    </a>
+                    <button class="bottom-nav__pill-play" type="button" data-pill-play aria-label="Reproducir" aria-pressed="false"></button>
                 </li>
             </ul>
         </nav>

@@ -725,6 +725,14 @@ html:has(.manifiesto) body {
     animation-play-state: paused;
 }
 
+/* Y se frena de nuevo al salir: son muchas animaciones infinitas (cables,
+   notas, perilla, ondas, cabezal) como para dejarlas corriendo de fondo
+   para siempre; sin esto, seguían pesando en el celular aun lejos de acá,
+   justo cuando más se nota: al pasar a la pantalla siguiente. */
+.manifiesto__slide[aria-hidden] .production-loop * {
+    animation-play-state: paused;
+}
+
 /* ---------------------------------------- */
 /* Pantalla 7: la huella de tu pieza */
 /* ---------------------------------------- */

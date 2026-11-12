@@ -1,0 +1,50 @@
+/* ============================================
+   Layout — Boot
+   ============================================ */
+
+/* El loader de arranque (ver index.html): tapa toda la pantalla, del color
+   de fondo del tema (sigue a --color-bg, claro u oscuro), por encima de
+   todo lo demás. main.js le agrega .boot--out cuando la primera pantalla ya
+   está pintada: se apaga con fade y, al terminar, se saca del documento
+   (display: none) para que no quede un nodo fijo tapando nada. */
+.boot {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-boot);
+    display: grid;
+    place-items: center;
+    background: var(--color-bg);
+    color: var(--color-text);
+    transition: opacity var(--transition-normal);
+}
+
+.boot--out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.boot--done {
+    display: none;
+}
+
+.boot__orb {
+    width: 150px;
+    height: 150px;
+    overflow: visible;
+}
+
+/* La red: boot.js pone cx/cy/x1.../r/opacity en cada cuadro (la posición y
+   el tamaño cambian todo el tiempo, girando); acá solo el color de cada cosa. */
+.boot__link {
+    stroke: color-mix(in srgb, currentColor 24%, transparent);
+    stroke-width: 1;
+}
+
+.boot__node {
+    fill: currentColor;
+}
+
+/* La señal que recorre una arista: lo más claro del dibujo */
+.boot__signal {
+    fill: currentColor;
+}
