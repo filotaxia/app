@@ -145,10 +145,15 @@
 }
 
 /* Sin terrario: la animación de cómo conectarlo (components/connect-loop),
-   centrada en el alto que queda entre el título y el botón */
+   centrada en el alto que queda entre el título y el botón, de punta a
+   punta como en la Guía (la misma sección) */
 .mine__connect {
-    margin-top: auto;
+    margin: auto calc(var(--gutter) * -1) 0;
     padding-top: var(--spacing-2xl);
+}
+
+.mine__connect .connect-loop {
+    padding: var(--spacing-3xl) var(--gutter);
 }
 
 .mine--empty .screen__actions {
