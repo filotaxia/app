@@ -151,6 +151,16 @@
                         </svg>
                     </button>
                 </li>
+                <!-- La píldora (layout/player-dock): oculta (ancho 0) hasta que se
+                     toca el ícono de arriba; ahí la barra se extiende y aparece la
+                     foto del terrario que suena con el play/pause encima, como un
+                     ícono más. Tocar la foto (afuera del play) lleva a la Pieza. -->
+                <li class="bottom-nav__pill" data-nav-pill>
+                    <a class="bottom-nav__pill-tap" data-pill-tap aria-label="Ver la pieza">
+                        <span class="bottom-nav__pill-art" data-pill-art aria-hidden="true"></span>
+                    </a>
+                    <button class="bottom-nav__pill-play" type="button" data-pill-play aria-label="Reproducir" aria-pressed="false"></button>
+                </li>
             </ul>
         </nav>
     </div>

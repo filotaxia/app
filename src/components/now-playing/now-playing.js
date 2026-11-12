@@ -14,11 +14,14 @@
 // (#/escuchar/:id, el reproductor grande).
 //
 //   nowPlaying(terrario)                       → el HTML (en pausa)
-//   bindNowPlaying(root, { queue, collapsible })
-//     → { toggleOpen(), setCollapsible(bool), setQueue(queue), pause(), destroy() }
+//   bindNowPlaying(root, { queue, collapsible, onPlaying, onTrack })
+//     → { toggleOpen(), setCollapsible(bool), setQueue(queue), pause(), togglePlay(), destroy() }
 //
 // queue: los terrarios que se pueden pasar, el propio primero. ⏮ / ⏭ pasan al
 // anterior / siguiente (con uno solo, vuelven al principio de la pieza).
+// onTrack(terrario) avisa, cada vez que carga uno, cuál es (al armarse y al
+// pasar de terrario): lo usa la píldora del bottom-nav para su propia foto
+// y su link a la Pieza, sin tener que leer el estado de acá.
 //
 // UN SOLO NÚMERO ES EL ESTADO: `c` va de 0 (cerrado) a 1 (abierto, la
 // barra); todo —alto, opacidad, dónde están los botones— se calcula a
@@ -100,7 +103,7 @@ export function nowPlaying(terrario) {
   `;
 }
 
-export function bindNowPlaying(root, { queue: firstQueue, collapsible = true, onPlaying }) {
+export function bindNowPlaying(root, { queue: firstQueue, collapsible = true, onPlaying, onTrack }) {
   const box = root.querySelector("[data-np]");
   const $ = (name) => box.querySelector(`[data-np-${name}]`);
   const el = {
@@ -140,6 +143,7 @@ export function bindNowPlaying(root, { queue: firstQueue, collapsible = true, on
     el.art.innerHTML = terrariumArt({ size: "sm", photo: terrario.photo });
     el.tap.href = `#/escuchar/${terrario.id}`;
     el.run.style.width = "0%";
+    onTrack?.(terrario);
 
     const notes = await lanesFor(terrario);
     if (mine !== token) return;
@@ -265,10 +269,15 @@ export function bindNowPlaying(root, { queue: firstQueue, collapsible = true, on
   }
 
   // --- Controles (el.tap es un link: lo abre el navegador solo) ---
-  el.play.addEventListener("click", () => {
+  // togglePlay() es la misma acción del botón play, expuesta afuera: la usa
+  // el play del ícono-píldora del bottom-nav (layout/player-dock), que
+  // comparte este mismo reproductor
+  function togglePlay() {
     if (player) player.toggle();
     else wantPlay = true;
-  });
+  }
+
+  el.play.addEventListener("click", togglePlay);
 
   // ⏮: si ya pasaron unos segundos, vuelve al principio; si no, al anterior
   el.prev.addEventListener("click", () => {
@@ -317,6 +326,7 @@ export function bindNowPlaying(root, { queue: firstQueue, collapsible = true, on
     pause() {
       player?.pause();
     },
+    togglePlay,
     destroy() {
       token += 1;
       cancelAnimationFrame(raf);

@@ -20,13 +20,10 @@
 .bottom-nav {
     position: fixed;
     left: 50%;
-    bottom: max(var(--spacing-md), env(safe-area-inset-bottom));
+    bottom: max(var(--spacing-sm), env(safe-area-inset-bottom));
     z-index: var(--z-nav);
     translate: -50% 0;
-    /* como Instagram: arranca un poco más grande y se achica apenas se
-       empieza a scrollear (bottom-nav.js pone/saca .is-scrolled) */
-    scale: 1.08;
-    transition: scale var(--transition-normal);
+    scale: 1.08;   /* siempre en este tamaño, no se achica con el scroll */
     width: max-content;
     padding: var(--spacing-xs);
     border: 1px solid color-mix(in srgb, var(--color-white) 18%, transparent);
@@ -34,10 +31,6 @@
     background: color-mix(in srgb, #000 55%, transparent);
     -webkit-backdrop-filter: blur(20px) saturate(220%);
     backdrop-filter: blur(20px) saturate(220%);
-}
-
-.bottom-nav.is-scrolled {
-    scale: 0.92;
 }
 
 /* Sin desenfoque (navegadores viejos o "reducir transparencia"): fondo sólido */
@@ -60,7 +53,9 @@
 .bottom-nav__list {
     height: auto;
     display: grid;
-    grid-template-columns: repeat(5, var(--size-tap)) var(--spacing-md) var(--size-tap);
+    /* La última columna es la píldora: ancho 0 cerrada, así que no ocupa
+       lugar (ver bottom-nav__pill); "auto" la sigue al ancho que tenga */
+    grid-template-columns: repeat(5, var(--size-tap)) var(--spacing-md) var(--size-tap) auto;
     gap: var(--spacing-2xs);
     align-items: center;
     justify-items: center;
@@ -137,6 +132,64 @@
 @keyframes bottom-nav-eq {
     0%, 100% { transform: scaleY(0.4); }
     50% { transform: scaleY(1); }
+}
+
+/* --- La píldora del reproductor: cerrada no ocupa lugar (ancho 0); el
+   ícono de arriba la abre (layout/player-dock) y la barra se extiende a la
+   derecha para mostrarla. Adentro: la foto del terrario (de punta a punta,
+   recortada en círculo) y, encima, el play/pause. */
+.bottom-nav__pill {
+    position: relative;
+    width: 0;
+    height: var(--size-tap);
+    margin-left: calc(var(--spacing-2xs) * -1);
+    border-radius: 50%;
+    overflow: hidden;
+    opacity: 0;
+    transition: width var(--transition-normal), opacity var(--transition-normal), margin-left var(--transition-normal);
+}
+
+.bottom-nav__pill.is-open {
+    width: var(--size-tap);
+    margin-left: 0;
+    opacity: 1;
+}
+
+.bottom-nav__pill-tap,
+.bottom-nav__pill-art {
+    position: absolute;
+    inset: 0;
+    display: block;
+}
+
+.bottom-nav__pill-play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--color-white);
+    background: color-mix(in srgb, #000 40%, transparent);
+}
+
+.bottom-nav__pill-play svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+/* Con la píldora cerrada, nada de adentro se puede tocar (ancho 0 ya alcanza
+   para los punteros de mouse, pero el teclado la saltea igual) */
+.bottom-nav__pill:not(.is-open) .bottom-nav__pill-tap,
+.bottom-nav__pill:not(.is-open) .bottom-nav__pill-play {
+    visibility: hidden;
+}
+
+/* La píldora es cosa de la barra flotante del celular (se estira al lado
+   del ícono); en el riel del escritorio no hay dónde estirarla, así que no
+   se muestra (el reproductor grande sigue estando en Colección) */
+@media (min-width: 1024px) {
+    .bottom-nav__pill {
+        display: none;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
