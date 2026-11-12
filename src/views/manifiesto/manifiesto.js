@@ -44,11 +44,12 @@
 // adentro de una pantalla (un punto, una capa, las hojas) frena el autoplay
 // del todo, porque la persona está explorando. Con "reducir movimiento" en el
 // teléfono no pasa sola.
-// A mano: como las historias de Instagram, tocando la mitad derecha de la
-// pantalla (pasa a la próxima) o la izquierda (vuelve a la anterior);
-// también tocando una de las líneas de arriba (va directo a esa pantalla) o
-// con las flechas del teclado. Deslizar o hacer scroll no la pasa (overflow
-// hidden en el CSS; el JS la corre con scrollTo).
+// A mano: tocando una franja angosta a los costados, de todo el alto
+// (derecha pasa a la próxima, izquierda vuelve a la anterior; NAV_ZONE, más
+// abajo): el centro queda libre para los puntos, las capas, las hojas o las
+// partes de la Producción. También tocando una de las líneas de arriba (va
+// directo a esa pantalla) o con las flechas del teclado. Deslizar o hacer
+// scroll no la pasa (overflow hidden en el CSS; el JS la corre con scrollTo).
 
 import { get, set } from "../../store/store.js";
 import { linkedIds } from "../../store/collection.js";
@@ -291,22 +292,30 @@ export async function render(root, { params }) {
   }
   document.addEventListener("visibilitychange", onVisibility);
 
-  // Como las historias de Instagram: tocar la mitad derecha de la pantalla
-  // pasa a la próxima, la izquierda vuelve a la anterior. SIEMPRE cambia de
-  // pantalla al tocar, pase lo que pase adentro (un punto, una capa, una
-  // parte de la Producción): que la navegación nunca se sienta trabada
-  // importa más que dejar mirar quieta una explicación. La única excepción
-  // es un link de verdad (acá, "Escuchar la pieza"): ese sí hace lo suyo,
-  // sin cambiar de pantalla. Va en la fase de captura porque esos controles
-  // frenan su propio click.
+  // Como las historias de Instagram, pero solo en los bordes: tocar una
+  // franja angosta a la derecha (todo el alto) pasa a la próxima, la de la
+  // izquierda vuelve a la anterior. El centro queda libre para lo que haya
+  // adentro (los puntos de la 2, las capas de la 3, las hojas de la 4, las
+  // partes de la Producción en la 6): tocar un control de esos nunca cambia
+  // de pantalla, pase lo que pase, solo frena el autoplay (la persona está
+  // explorando). La única excepción es un link de verdad (acá, "Escuchar la
+  // pieza"): ese hace lo suyo. Va en la fase de captura porque esos
+  // controles frenan su propio click.
+  const NAV_ZONE = 64; // px, ancho de cada franja (prev a la izquierda, next a la derecha)
+
   track.addEventListener("click", (event) => {
     if (event.target.closest("a")) {
       stopAutoplay();
       return;
     }
-    if (event.target.closest("button, [role='button']")) stopAutoplay();
+    if (event.target.closest("button, [role='button']")) {
+      stopAutoplay();
+      return;
+    }
     const { left, width } = track.getBoundingClientRect();
-    goTo(current + (event.clientX - left < width / 2 ? -1 : 1));
+    const x = event.clientX - left;
+    if (x < NAV_ZONE) goTo(current - 1);
+    else if (x > width - NAV_ZONE) goTo(current + 1);
   }, true);
 
   // Las líneas de arriba llevan directo a su pantalla
