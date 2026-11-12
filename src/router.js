@@ -86,11 +86,13 @@ let isFirstRender = true;
 let currentRoute = "";  // la ruta de la pantalla actual
 let previousRoute = ""; // y la de la anterior (ctx.from)
 
+// Devuelve la promesa del primer render (main.js la espera para sacar el
+// loader de arranque recién cuando la primera pantalla ya está pintada)
 export function startRouter(container) {
   outlet = container;
   window.addEventListener("hashchange", () => render({ moveFocus: true }));
   window.addEventListener("filotaxia:refresh", () => render({ moveFocus: false, refresh: true }));
-  render({ moveFocus: false });
+  return render({ moveFocus: false });
 }
 
 // "#/terrario/04" → "terrario/04"

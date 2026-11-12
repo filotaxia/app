@@ -28,6 +28,20 @@
 <body>
     <a class="skip-link" href="#view">Saltar al contenido</a>
 
+    <!-- Loader de arranque (layout/boot): tapa la pantalla en blanco mientras
+         carga el catálogo (store/catalog.js, puede pedirle a Supabase) y
+         arranca el router. Una esfera de puntos conectados por líneas finas,
+         girando despacio (boot.js arma la red y la anima; main.js avisa
+         cuando ya se puede navegar, con "filotaxia:ready", y recién ahí se
+         saca, con un fade). -->
+    <div class="boot" data-boot role="status" aria-label="Cargando Filotaxia">
+        <svg class="boot__orb" data-boot-orb viewBox="0 0 240 240" aria-hidden="true"></svg>
+    </div>
+    <script type="module">
+        import { bindBoot } from "./src/layout/boot/boot.js";
+        bindBoot(document);
+    </script>
+
     <div class="app-shell" data-app-shell>
         <!-- LAYOUT: Header (solo en las vistas que lo piden: Terrarios, Cuidados, Bitácora, Ajustes).
              Ajustes a la derecha, como el avatar de Pulso (components/settings-link) -->

@@ -22,6 +22,7 @@
 /* ============================================
    LAYOUT
    ============================================ */
+@import url('./layout/boot/boot.css');
 @import url('./layout/app-shell/app-shell.css');
 @import url('./layout/header/header.css');
 @import url('./layout/bottom-nav/bottom-nav.css');
