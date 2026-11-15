@@ -183,7 +183,7 @@ export function particles() {
       </div>
       <div class="ptc-info">
         <p class="ptc-info__item">
-          <span class="ptc-info__caption">forma</span>
+          <span class="ptc-info__caption">hoja</span>
           <span class="ptc-info__leaf" data-leaf-name>${leaf.label}</span>
         </p>
         <p class="ptc-info__item ptc-info__item--end">

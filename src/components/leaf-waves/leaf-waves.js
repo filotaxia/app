@@ -11,8 +11,8 @@
 //                                           su onda en negro ("onda / Triangular").
 //                                           Los dos puntos para elegir la vista (hojas ·
 //                                           ondas) van aparte: leafWaveDots() — en el
-//                                           Manifiesto se ponen entre las flechas de
-//                                           abajo, no accá arriba. Conectarlos con
+//                                           Manifiesto se ponen junto al título, no
+//                                           sobre la tarjeta. Conectarlos con
 //                                           bindLeafWaves(root) después de insertar los dos HTML.
 //   leafWaves({ active: ["puntiaguda"] }) → esas en negro sólido, el resto atenuado
 //                                           (para la ficha de un terrario)
@@ -44,8 +44,8 @@ export function leafWaves({ active = [], flip = false } = {}) {
 }
 
 // Los dos puntos que eligen la vista (hojas · ondas) de leafWaves({ flip: true }).
-// Van aparte porque en el Manifiesto no quedan sobre la tarjeta: se ponen en
-// el medio de las flechas de abajo (manifiesto__nav).
+// Van aparte porque en el Manifiesto no quedan sobre la tarjeta: se ponen al
+// lado del título, alineados abajo (manifiesto__title-row, manifiesto.css).
 export function leafWaveDots() {
   return `
     <div class="leaf-waves__dots" role="group" aria-label="Vista">

@@ -2,6 +2,144 @@
    Views — Formas y ondas
    ============================================ */
 
+/* --- Encabezado: como el de Colección (coleccion.css, mismo aire para la
+   barra de estado), pero sin el interruptor --- */
+.formas-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--gap-lg);
+    padding-top: calc(env(safe-area-inset-top) + var(--spacing-3xl));
+}
+
+.formas-head__title {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+.formas-head__title:focus {
+    outline: none;
+}
+
+.formas-head__subtitle {
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: var(--color-text-muted);
+}
+
+/* --- Proceso --- "1 proceso / 3 etapas", como en la página Música de
+   filotaxia.com (frase grande, slider de fotos con una línea que se llena
+   y las tres etapas). De vuelta acá (pasó un tiempo en la Guía,
+   filotaxia.js), justo debajo del encabezado (mismo aire que Colección). */
+.process {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+    margin-top: var(--spacing-xl);
+}
+
+/* "1 proceso / 3 etapas": chico, en el color del texto (el h4 de la web) */
+.process__label {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+/* La frase grande (el h3 de la web) */
+.process__intro {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
+/* Slider: llega hasta los bordes de la pantalla (se come el margen lateral),
+   cada foto se frena alineada con el texto y la siguiente asoma */
+.process__slider {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+    margin-top: var(--spacing-lg);
+}
+
+.process__track {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter);
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+}
+
+.process__track::-webkit-scrollbar {
+    display: none;
+}
+
+.process__slide {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+}
+
+.process__photo {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    background: var(--color-block-bg);
+}
+
+/* La línea de progreso: fina, gris, y lo lleno en el color del texto, que
+   crece desde la izquierda (el JS le cambia el scaleX al deslizar) */
+.process__progress {
+    height: 2px;
+    background: var(--color-track);
+    overflow: hidden;
+}
+
+.process__bar {
+    display: block;
+    height: 100%;
+    background: var(--color-text);
+    transform: scaleX(0.18);
+    transform-origin: left;
+}
+
+/* Las tres etapas: "Etapa 1 / …" en el color del texto, el texto en gris.
+   Quedan apiladas en el mismo lugar (grid, una sola celda: el alto lo pone
+   la más alta) y solo se ve la activa; bindSlider (formas-ondas.js) la
+   cambia según el scroll horizontal del slider de fotos, con fade. */
+.process__stages {
+    display: grid;
+    margin-top: var(--spacing-lg);
+}
+
+.process__stage {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    pointer-events: none;
+}
+
+.process__stage.is-active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.process__stage-title {
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+/* El texto, del mismo tamaño que el texto chico del Manifiesto (15px) */
+.process__stage-text {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    color: var(--color-text-muted);
+}
+
 /* Debajo del hero (título, subtítulo y hoja → onda), el nombre de la planta
    que se está mostrando y components/particles; abajo, el catálogo de
    suculentas en una grilla de 2 columnas, el nombre de cada una sobre su
@@ -19,65 +157,34 @@
 }
 
 .plant-heading__name {
+    margin-top: var(--spacing-xs);
     font-size: var(--font-xl-size);
     line-height: var(--font-xl-line);
     letter-spacing: var(--font-xl-tracking);
 }
 
 .plant-heading__label {
-    margin-top: var(--spacing-xs);
     font-size: var(--font-sm-size);
     line-height: var(--font-sm-line);
     color: var(--color-text-muted);
 }
 
-/* --- Hoja → onda --- el header propio de la página (header: false en
-   formas-ondas.js): un cuadro oscuro de punta a punta (--color-feature-bg:
-   negro en claro, gris en oscuro, nunca blanco), con el título "Formas" y
-   su subtítulo arriba (formas-hero-top, + Ajustes) y, debajo, el "antes /
-   después" (compare / bindCompare, formas-ondas.js) y los cuatro botones
-   de forma. Lo que se mueve —la línea, el corte de la hoja, la perilla—
-   lo escribe el JS; acá queda el material. Cuadrado, como todo en la app;
-   la perilla es un círculo (como el play). Sin sombras: bordes finos. */
+/* --- Hoja → onda --- un cuadro oscuro de punta a punta (--color-feature-bg:
+   negro en claro, gris en oscuro, nunca blanco): el "antes / después"
+   (compare / bindCompare, formas-ondas.js) y los cuatro botones de forma.
+   Lo que se mueve —la línea, el corte de la hoja, la perilla— lo escribe
+   el JS; acá queda el material. Cuadrado, como todo en la app; la perilla
+   es un círculo (como el play). Sin sombras: bordes finos.
+   Va después del Proceso: el margen de arriba es el aire entre los dos. */
 .leafwave {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: var(--gap-xl);
-    margin: 0 calc(var(--gutter) * -1) calc(var(--gap-xl) * -1);
-    padding: calc(env(safe-area-inset-top) + var(--spacing-3xl)) var(--gutter) var(--spacing-4xl);
+    margin: var(--spacing-xl) calc(var(--gutter) * -1) calc(var(--gap-xl) * -1);
+    padding: var(--spacing-3xl) var(--gutter) var(--spacing-4xl);
     background: var(--color-feature-bg);
     color: var(--color-feature-text);
-}
-
-.formas-hero-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--gap-lg);
-    width: 100%;
-    max-width: 320px;
-}
-
-.formas-hero-title {
-    font-size: var(--font-xl-size);
-    line-height: var(--font-xl-line);
-    letter-spacing: var(--font-xl-tracking);
-}
-
-.formas-hero-title:focus {
-    outline: none;
-}
-
-.formas-hero-subtitle {
-    margin-top: var(--spacing-xs);
-    font-size: var(--font-sm-size);
-    line-height: var(--font-sm-line);
-    color: color-mix(in srgb, var(--color-feature-text) 70%, transparent);
-}
-
-.formas-hero-top .settings-link__dot {
-    background: var(--color-feature-text);
 }
 
 .cmp {
@@ -266,7 +373,7 @@
     background: var(--color-block-bg);
     display: block;
     padding-top: var(--spacing-sm);
-    padding-bottom: calc(var(--font-sm-line) * 2 + var(--font-xs-line) + var(--spacing-sm) * 1);
+    padding-bottom: calc(var(--font-sm-line) * 2 + var(--spacing-sm));
 }
 
 /* El nombre va en ese borde, abajo a la izquierda de la tarjeta */
@@ -284,12 +391,6 @@
     color: var(--color-text);
 }
 
-.shapes-catalog__leaf {
-    font-size: var(--font-xs-size);
-    line-height: var(--font-xs-line);
-    color: var(--color-text-muted);
-}
-
 /* ============================================
 RESPONSIVE
 ============================================ */
@@ -297,5 +398,11 @@ RESPONSIVE
 @media (min-width: 640px) {
     .shapes-catalog__list {
         grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .process__slide {
+        flex-basis: 420px;
     }
 }

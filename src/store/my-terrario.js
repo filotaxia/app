@@ -2,11 +2,13 @@
    Store — My Terrario
    ============================================ */
 
-// El terrario propio y sus cuidados.
+// El terrario que se ve en Mi terrario, y sus cuidados. No son terrarios
+// propios (es una instalación: cualquiera escanea cualquiera): "Mi terrario"
+// es el último escaneado o tocado desde la Colección, no el primero para
+// siempre — setMyTerrario reemplaza al anterior cada vez.
 //
 //   await myTerrarioId()               → "04" o null
 //   await setMyTerrario("04")
-//   await claimIfFirst("04")           → true si era el primero y pasó a ser el propio
 //   await lastCare("04", "riego")      → "YYYY-MM-DD" del último riego (o del día
 //                                        en que se escaneó, si nunca se registró)
 //   await logCare("04", "riego")       → registra el cuidado hoy
@@ -22,12 +24,6 @@ export async function myTerrarioId() {
 
 export async function setMyTerrario(id) {
   await set("my_terrario", id);
-}
-
-export async function claimIfFirst(id) {
-  if (await get("my_terrario")) return false;
-  await set("my_terrario", id);
-  return true;
 }
 
 export async function lastCare(terrarioId, type) {

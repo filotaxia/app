@@ -21,7 +21,6 @@ import { CARE_GUIDE, CARE_FAQ } from "../../content/ayuda.js";
 import { getTerrario, codeOf } from "../../content/terrarios.js";
 import { myTerrarioId, lastCare } from "../../store/my-terrario.js";
 import { markStep } from "../../store/journey.js";
-import { block } from "../../components/block/block.js";
 import { nextCare, dueLabel } from "../../utils/care.js";
 import { todayKey } from "../../utils/dates.js";
 import { escapeHTML } from "../../utils/html.js";
@@ -42,10 +41,8 @@ export async function render(root) {
   markStep("cuidado");   // paso 04 del recorrido (views/filotaxia)
 
   root.innerHTML = `
-    ${terrario ? await riegoBlock(terrario) : ""}
-
     <section class="how reveal" aria-labelledby="guide-title">
-      <h2 class="guide-title" id="guide-title">Guía</h2>
+      <h2 class="guide-title" id="guide-title">Cuatro fundamentos para cuidar el terrario.</h2>
       <div class="how__images">
         ${CARE_GUIDE.map(({ image, alt }, i) => `
           <img class="how__image${i === 0 ? " is-active" : ""}" src="${image}" alt="${escapeHTML(alt)}" loading="lazy" decoding="async">`).join("")}
@@ -61,6 +58,8 @@ export async function render(root) {
           </li>`).join("")}
       </ol>
     </section>
+
+    ${terrario ? await riegoBlock(terrario) : ""}
 
     <section class="faq care-faq reveal" aria-labelledby="faq-title">
       <div class="faq-intro">
@@ -125,17 +124,25 @@ function bindGuide(section) {
 }
 
 // Riego del terrario propio: cuándo toca
+// Una bolita por día del ciclo (5 por fila): las ya pasadas desde el último
+// riego, rellenas; el resto, solo el borde — así se ve de un vistazo qué
+// tan cerca está el día ideal de volver a regar (atrasado: quedan todas
+// rellenas, dueLabel() lo dice abajo igual, "Hace N días").
 async function riegoBlock(terrario) {
   const { care } = terrario;
   const riego = nextCare({ last: await lastCare(terrario.id, "riego"), every: care.riego_days, today: todayKey() });
+  const done = Math.min(care.riego_days, Math.max(0, care.riego_days - riego.daysLeft));
+  const dots = Array.from({ length: care.riego_days }, (_, i) =>
+    `<span class="riego-grid__dot${i < done ? " is-done" : ""}"></span>`
+  ).join("");
   return `
     <div class="blocks reveal">
-      ${block({
-        title: "Riego",
-        badge: `Cada ${care.riego_days} días`,
-        value: dueLabel(riego.daysLeft),
-        full: true,
-      })}
+      <article class="block block--full block--riego">
+        <h2 class="block__title">Riego.</h2>
+        <span class="block__badge">(Cada ${care.riego_days} días)</span>
+        <div class="riego-grid" role="img" aria-label="${escapeHTML(dueLabel(riego.daysLeft))} para el próximo riego">${dots}</div>
+        <p class="riego-grid__label">${escapeHTML(dueLabel(riego.daysLeft))}</p>
+      </article>
     </div>
   `;
 }

@@ -3,12 +3,16 @@
    ============================================ */
 
 // Filotaxia (#/formas-ondas; se llega por la card "Plantas." o el rombo de
-// la barra): la génesis del proyecto. Header propio (no el de app-header):
-// título "Formas" + subtítulo + Ajustes, adentro del mismo cuadro oscuro
-// que "leafwave": un "antes / después" (la hoja a la izquierda de la
-// línea, su onda a la derecha; arrastrar la línea pasa de una a la otra) y,
-// abajo, cuatro botones para elegir la forma de hoja — ver compare /
-// bindCompare. El proceso ("1 proceso / 3 etapas") vive en la Guía.
+// la barra): la génesis del proyecto. Primero, el header propio (no el de
+// app-header, header: false): título "Formas" + subtítulo + Ajustes, igual
+// que el de Colección (coleccion.css) pero plano, afuera de cualquier
+// cuadro — así el foco, al entrar, cae en "Formas". Después, "1 proceso /
+// 3 etapas" (de vuelta acá, antes vivía en la Guía): frase grande, slider
+// de fotos con una línea que se llena y las tres etapas (ver bindSlider
+// más abajo). Después, "leafwave": el cuadro oscuro con el "antes /
+// después" (la hoja a la izquierda de la línea, su onda a la derecha;
+// arrastrar la línea pasa de una a la otra) y, abajo, cuatro botones para
+// elegir la forma de hoja — ver compare / bindCompare.
 // Debajo del cuadro, el nombre de la planta que se está
 // mostrando ("Planta" de bajada, eyebrow) y components/particles: la hoja
 // hecha de puntos (se puede empujar y hacer explotar tocando); las flechas
@@ -20,6 +24,7 @@
 
 import { particles, bindParticles } from "../../components/particles/particles.js";
 import { PLANTAS, LEAVES, WAVE_NAMES } from "../../content/plantas.js";
+import { PROCESS, PROCESS_INTRO, PROCESS_PHOTOS } from "../../content/ayuda.js";
 import { escapeHTML } from "../../utils/html.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
 
@@ -32,14 +37,38 @@ export function render(root) {
   currentIndex = 0;
 
   root.innerHTML = `
+    <header class="formas-head">
+      <div>
+        <h1 class="formas-head__title" tabindex="-1">Formas</h1>
+        <p class="formas-head__subtitle">De la forma a la vibración</p>
+      </div>
+      ${settingsLink()}
+    </header>
+
+    <section class="process reveal" aria-labelledby="process-title">
+      <h2 class="process__label" id="process-title">1 proceso / ${PROCESS.length} etapas</h2>
+      <p class="process__intro">${escapeHTML(PROCESS_INTRO)}</p>
+
+      <div class="process__slider">
+        <ul class="process__track" data-process-track>
+          ${PROCESS_PHOTOS.map(({ image, alt }) => `
+            <li class="process__slide">
+              <img class="process__photo" src="${image}" alt="${escapeHTML(alt)}" loading="lazy" decoding="async">
+            </li>`).join("")}
+        </ul>
+        <div class="process__progress" aria-hidden="true"><span class="process__bar" data-process-bar></span></div>
+      </div>
+
+      <div class="process__stages" data-stages>
+        ${PROCESS.map(([name, text], i) => `
+          <div class="process__stage${i === 0 ? " is-active" : ""}" data-stage="${i}">
+            <h3 class="process__stage-title">Etapa ${i + 1} / ${escapeHTML(name)}</h3>
+            <p class="process__stage-text">${escapeHTML(text)}</p>
+          </div>`).join("")}
+      </div>
+    </section>
+
     <section class="leafwave reveal" aria-label="Cada forma de hoja y su onda">
-      <header class="formas-hero-top">
-        <div>
-          <h1 class="formas-hero-title" tabindex="-1">Formas</h1>
-          <p class="formas-hero-subtitle">De la forma a la vibración</p>
-        </div>
-        ${settingsLink()}
-      </header>
       ${compare(SHAPES[0])}
       <div class="cmp-shapes" role="group" aria-label="Forma de hoja">
         ${SHAPES.map((key, i) => `
@@ -51,22 +80,21 @@ export function render(root) {
 
     <section class="art reveal" data-art>
       <header class="plant-heading">
-        <h3 class="plant-heading__name" data-plant-name>${escapeHTML(PLANTAS[currentIndex].name)}</h3>
         <p class="plant-heading__label">Planta</p>
+        <h3 class="plant-heading__name" data-plant-name>${escapeHTML(PLANTAS[currentIndex].name)}</h3>
       </header>
       ${particles()}
     </section>
 
     <section class="shapes-catalog reveal" aria-label="El catálogo">
       <ul class="shapes-catalog__list">
-        ${PLANTAS.map(({ name, leaf, photo }, i) => `
+        ${PLANTAS.map(({ name, photo }, i) => `
           <li>
             <button class="shapes-catalog__item" type="button" data-index="${i}"
               aria-label="Ver la hoja de ${escapeHTML(name)} en el dibujo de puntos">
               <img class="shapes-catalog__photo" src="src/assets/images/plantas/${photo}" alt="" loading="lazy" decoding="async">
               <span class="shapes-catalog__caption">
                 <span class="shapes-catalog__name">${escapeHTML(name)}</span>
-                <span class="shapes-catalog__leaf">${escapeHTML(LEAVES[leaf].label)}</span>
               </span>
             </button>
           </li>`).join("")}
@@ -74,6 +102,7 @@ export function render(root) {
     </section>
   `;
 
+  bindSlider(root);
   const stopCompare = bindCompare(root);
 
   const art = root.querySelector("[data-art]");
@@ -283,4 +312,29 @@ function bindCompare(root) {
     resize.disconnect();
     shapes.removeEventListener("click", onPick);
   };
+}
+
+// El slider del proceso: se desliza con el dedo (scroll nativo) y la línea
+// de abajo se llena a medida que avanza: arranca en 18% y llega al 100% al
+// final, como en filotaxia.com. La etapa que se lee debajo sigue el mismo
+// scroll: se reparten las fotos en PROCESS.length tercios iguales y, al
+// cruzar a otro, esa etapa se enciende (fade con CSS, .is-active).
+function bindSlider(root) {
+  const track = root.querySelector("[data-process-track]");
+  const bar = root.querySelector("[data-process-bar]");
+  const stages = [...root.querySelectorAll("[data-stage]")];
+  let current = 0;
+  const paint = () => {
+    const max = track.scrollWidth - track.clientWidth;
+    const progress = max > 0 ? track.scrollLeft / max : 0;
+    bar.style.transform = `scaleX(${0.18 + progress * 0.82})`;
+    const index = Math.min(stages.length - 1, Math.floor(progress * stages.length));
+    if (index !== current) {
+      stages[current].classList.remove("is-active");
+      stages[index].classList.add("is-active");
+      current = index;
+    }
+  };
+  track.addEventListener("scroll", paint, { passive: true });
+  paint();
 }

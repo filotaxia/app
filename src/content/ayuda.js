@@ -126,27 +126,37 @@ export const STEPS = [
 // Guía general de cuidados (views/cuidados): la misma para todos los
 // terrarios, no cambia según las plantas. Misma forma que HOW_IT_WORKS (foto
 // + texto): la sección cambia la foto al tocar el paso, igual que "Cómo
-// funciona" en la ficha (mismas clases .how, terrario.css). Las fotos son
-// las de ficha/ (ya optimizadas), reusadas por lo que muestran: la jeringa
-// regando, el terrario junto a la ventana y el sustrato de cerca.
+// funciona" en la ficha (mismas clases .how, terrario.css). Los 4 textos son
+// los de la sección "Cuidados" de filotaxia.com/src/pages/terrarios.html
+// (data-text de cada h2, tal cual están ahí — el de Ubicación habla de
+// ventilación, así está en la web). Las fotos son las de esa misma sección
+// (sq5, sq10, sq9, sq11): jeringa.jpg y ventana.jpg ya estaban en ficha/;
+// pinza.jpg también (es sq11, ya recortada en horizontal para HOW_IT_WORKS);
+// ubicacion.jpg es nueva, sq9 a 800px.
 export const CARE_GUIDE = [
   {
     topic: "Riego",
-    text: "En general alcanza con regar cada 30 días. Antes, tocá el sustrato: si todavía está húmedo, esperá. Regá de a poco sobre el sustrato, no sobre las hojas; es mejor quedarse corto que pasarse.",
+    text: "Regar demasiado ahoga, regar poco reseca: lo ideal es encontrar un ritmo constante. Deja que la tierra se seque entre cada riego para que respire.",
     image: "src/assets/images/ficha/jeringa.jpg",
     alt: "Una mano riega un terrario con una jeringa",
   },
   {
     topic: "Luz",
-    text: "Un lugar con mucha luz natural indirecta, cerca de una ventana. Evitá el sol directo: a través del vidrio quema las hojas. Si las plantas se estiran hacia un lado, les falta luz.",
+    text: "Necesitan un equilibrio entre sol directo y sombra, evitando los extremos que las debilitan. Una ventana luminosa o un espacio bien iluminado favorece su crecimiento armónico.",
     image: "src/assets/images/ficha/ventana.jpg",
     alt: "Un terrario de vidrio con suculentas junto a una ventana",
   },
   {
-    topic: "Sustrato",
-    text: "Tierra, perlita y arena gruesa sobre una rejilla de metal y piedra pómez: las capas están armadas para que el agua drene y el aire circule. No lo compactes ni lo mezcles; si ves agua acumulada en el fondo, dejá de regar hasta que se seque.",
-    image: "src/assets/images/ficha/composicion.jpg",
-    alt: "Suculentas de hojas puntiagudas de un terrario, de cerca",
+    topic: "Ubicación",
+    text: "El aire en movimiento renueva y fortalece. Una buena ventilación evita enfermedades y ayuda a que la planta respire sin tensiones. No se trata de un viento fuerte, sino de una brisa que acaricia.",
+    image: "src/assets/images/ficha/ubicacion.jpg",
+    alt: "Un terrario de vidrio con suculentas sobre un estante, entre libros",
+  },
+  {
+    topic: "Mantenimiento",
+    text: "Cada planta tiene un nivel de cuidado distinto: algunas requieren atención diaria, otras apenas pequeños gestos. Entender esa dificultad es parte del vínculo.",
+    image: "src/assets/images/ficha/pinza.jpg",
+    alt: "Una mano acomoda las plantas de un terrario con una pinza",
   },
 ];
 
@@ -232,6 +242,32 @@ export const SOUND_FAQ = [
   [
     "¿El sonido sale directamente de la planta?",
     "No es un sonido audible de la planta en sí, sino una traducción de su actividad eléctrica a datos musicales, que después se procesan en sintetizadores.",
+  ],
+];
+
+// Preguntas del Manifiesto de filotaxia.com (no las de Cuidados: la ficha
+// repite el "(PMF)" pero no las mismas 5 preguntas, para no duplicar texto
+// entre la ficha y Cuidados). Van en la ficha (terrario-secciones.js).
+export const MANIFESTO_FAQ = [
+  [
+    "¿Cuál es el propósito de Filotaxia?",
+    "En Filotaxia creemos que el futuro es vegetal. Mientras la inteligencia artificial y la tecnología avanzan a un ritmo galopante, los seres humanos estaremos cada vez más interpelados por su impacto. Nuestro proyecto busca ofrecer un contrapunto: un espacio de conexión directa con la naturaleza. A través de los terrarios y la biosonificación, invitamos a escuchar a las plantas y redescubrir lo que siempre estuvo ahí. Es una manera de detenerse, observar y tener un momento de armonía con lo vivo en medio de un mundo cada vez más digital.",
+  ],
+  [
+    "¿Qué significa “armonía en plantas”?",
+    "Se refiere a la relación entre las formas, patrones y ritmos presentes en la naturaleza y cómo estos pueden expresarse también en vibraciones sonoras. La armonía surge al conectar lo visual con lo auditivo, mostrando que ambos lenguajes son parte de un mismo fenómeno vital.",
+  ],
+  [
+    "¿Por qué transformar hojas y formas en música?",
+    "Porque las plantas no solo son organismos vivos, también son portadoras de patrones universales. Al traducir esos patrones en sonido, hacemos audible una parte de la vida que normalmente solo percibimos con la vista, creando un puente entre arte, ciencia y percepción sensorial.",
+  ],
+  [
+    "¿Qué papel cumple la tecnología en el proyecto?",
+    "La tecnología es el puente que hace posible la biosonificación y la traducción de formas en sonido. Sin embargo, no reemplaza a la planta: solo amplifica lo que ya existe. La naturaleza sigue siendo la protagonista; la tecnología ayuda a escucharla de otra manera.",
+  ],
+  [
+    "¿Cuál es la intención del manifiesto?",
+    "El manifiesto busca invitar a reflexionar sobre la conexión entre humanos y naturaleza. No se trata solo de producir música experimental, sino de generar conciencia sobre los ritmos ocultos de la vida, y cómo al observarlos podemos encontrar nuevas formas de relación con el mundo natural.",
   ],
 ];
 

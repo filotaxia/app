@@ -106,7 +106,7 @@
 }
 
 .ptc-info__wave {
-    color: var(--color-text-muted);
+    color: var(--color-text);
     text-align: right;
 }
 

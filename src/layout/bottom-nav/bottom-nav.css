@@ -23,7 +23,9 @@
     bottom: max(var(--spacing-sm), env(safe-area-inset-bottom));
     z-index: var(--z-nav);
     translate: -50% 0;
-    scale: 1.08;   /* siempre en este tamaño, no se achica con el scroll */
+    scale: 1;   /* siempre en este tamaño, no se achica con el scroll — más
+                   chica que antes (era 1.08) para que, con la píldora del
+                   reproductor abierta, la barra no quede pegada a los bordes */
     width: max-content;
     padding: var(--spacing-xs);
     border: 1px solid color-mix(in srgb, var(--color-white) 18%, transparent);
@@ -55,7 +57,7 @@
     display: grid;
     /* La última columna es la píldora: ancho 0 cerrada, así que no ocupa
        lugar (ver bottom-nav__pill); "auto" la sigue al ancho que tenga */
-    grid-template-columns: repeat(5, var(--size-tap)) var(--spacing-md) var(--size-tap) auto;
+    grid-template-columns: repeat(5, var(--size-tap)) var(--spacing-sm) var(--size-tap) auto;
     gap: var(--spacing-2xs);
     align-items: center;
     justify-items: center;
@@ -195,6 +197,64 @@
 @media (prefers-reduced-motion: reduce) {
     .bottom-nav__link[data-nav-player].is-playing .bottom-nav__icon path {
         animation: none;
+    }
+}
+
+/* --- El nombre de la página: una sola píldora que viaja de ícono en ícono
+   (no una etiqueta fija por ícono) y se achica o agranda a lo que mide la
+   palabra. Mismo vidrio que la barra (no una píldora blanca aparte, para que
+   se vea como una extensión de ella). Aparece al tocar o pasar el mouse por
+   un ícono (bottom-nav.js, lee el aria-label de cada [data-route]/reproductor)
+   y se esconde al salir. Antes de la primera vez que se posiciona no desliza
+   desde el borde (bottom-nav.js saca el truco con data-ready). */
+.bottom-nav__tip {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + var(--spacing-sm));
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--color-white) 18%, transparent);
+    background: color-mix(in srgb, #000 55%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(220%);
+    backdrop-filter: blur(20px) saturate(220%);
+    color: var(--color-white);
+    font-family: var(--font-base);
+    font-size: var(--font-2xs-size);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), width 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 160ms ease;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .bottom-nav__tip {
+        background: #000;
+    }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    .bottom-nav__tip {
+        background: #000;
+    }
+}
+
+.bottom-nav__tip[data-ready="false"] {
+    transition: opacity 160ms ease;
+}
+
+.bottom-nav__tip.is-on {
+    opacity: 1;
+}
+
+/* Cosa de la barra flotante del celular; el riel de escritorio no la usa */
+@media (min-width: 1024px) {
+    .bottom-nav__tip {
+        display: none;
     }
 }
 

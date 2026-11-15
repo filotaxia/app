@@ -128,7 +128,7 @@
 .collection__tile {
     display: flex;
     flex-direction: column;
-    gap: var(--gap-md);
+    gap: var(--gap-xs);
 }
 
 .collection__tile .terrarium-art {
@@ -139,19 +139,6 @@
     .collection__tile:hover .terrarium-art {
         transform: scale(0.98);
     }
-}
-
-.collection__meta {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2xs);
-}
-
-.collection__status {
-    font-size: var(--font-2xs-size);
-    line-height: var(--font-2xs-line);
-    letter-spacing: var(--font-xs-tracking);
-    color: var(--color-text-muted);
 }
 
 .collection__name {

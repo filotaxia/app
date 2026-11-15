@@ -19,13 +19,10 @@
         "recipiente": "Vidrio"
       },
       "plants": [
-        "Haworthia Attenuata",
-        "Haworthia Fasciata",
-        "Haworthia Venosa"
+        "Haworthia Attenuata"
       ],
       "waves": [
-        "triangle",
-        "sine"
+        "triangle"
       ],
       "care": {
         "temp": [
@@ -60,8 +57,12 @@
       "midi_plantas": null,
       "midi_sustrato": null,
       "specs": null,
-      "plants": [],
-      "waves": [],
+      "plants": [
+        "Haworthia Attenuata"
+      ],
+      "waves": [
+        "triangle"
+      ],
       "care": {
         "temp": [
           18,
@@ -95,8 +96,12 @@
       "midi_plantas": null,
       "midi_sustrato": null,
       "specs": null,
-      "plants": null,
-      "waves": null,
+      "plants": [
+        "Haworthia Attenuata"
+      ],
+      "waves": [
+        "triangle"
+      ],
       "care": {
         "temp": [
           18,
@@ -130,8 +135,12 @@
       "midi_plantas": null,
       "midi_sustrato": null,
       "specs": null,
-      "plants": null,
-      "waves": null,
+      "plants": [
+        "Haworthia Attenuata"
+      ],
+      "waves": [
+        "triangle"
+      ],
       "care": {
         "temp": [
           18,
@@ -156,7 +165,7 @@
       "id": "05",
       "qr_code": "nwkbr2",
       "model": "TR05",
-      "status": "publicado",
+      "status": "retirado",
       "recorded": "2026-09-12",
       "duration": 264,
       "story": "Una suculenta que casi no se mueve. Su pieza avanza como sus raíces: de a poco y hacia abajo.",
