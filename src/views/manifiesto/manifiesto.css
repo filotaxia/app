@@ -214,6 +214,10 @@ html:has(.manifiesto) body {
     color: var(--color-text);
 }
 
+.manifiesto__author {
+    color: var(--color-text);
+}
+
 /* Pantalla 3: las cuatro capas. Arriba cuatro franjas horizontales
    apiladas, como las capas del terrario (plantas arriba, piedras abajo),
    ocupando el alto que queda: la encendida se abre (más alta y a color)
@@ -334,16 +338,24 @@ html:has(.manifiesto) body {
     min-height: calc(var(--font-base-line) * 3);
     font-size: var(--font-base-size);
     line-height: var(--font-base-line);
-    color: var(--color-text-muted);
+    color: var(--color-text);
 }
 
-/* Pantalla 4: título grande arriba a la izquierda y, debajo, las tarjetas
+/* Pantalla 4: título arriba a la izquierda, con los dos puntos de
+   leafWaveDots() a su derecha, alineados abajo; debajo, las tarjetas
    ocupando todo el alto que queda (dos filas iguales). En pantallas muy
    altas la grilla no pasa de 640px, así las tarjetas no se estiran de más. */
 .manifiesto__slide--split {
     justify-content: flex-start;
     gap: var(--gap-lg);
     padding-top: calc(var(--manifiesto-top) + var(--spacing-xl));
+}
+
+.manifiesto__title-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--gap-md);
 }
 
 .manifiesto__slide--split > .leaf-waves-flip {
@@ -517,7 +529,7 @@ html:has(.manifiesto) body {
 .anatomy__text {
     font-size: var(--font-base-size);
     line-height: var(--font-base-line);
-    color: var(--color-text-muted);
+    color: var(--color-text);
 }
 
 /* ---------------------------------------- */
@@ -804,24 +816,6 @@ html:has(.manifiesto) body {
     height: var(--icon-sm);
 }
 
-/* --- Abajo: solo en la pantalla 4 (Idioma), los dos puntos de
-   leafWaveDots() (se navega tocando los costados, ver manifiesto.js) --- */
-.manifiesto__nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-bottom: var(--spacing-sm);
-}
-
-.manifiesto__nav-mid {
-    display: flex;
-}
-
-/* Con la barra de abajo: más cerca de ella (bajan sobre el aire que la
-   pantalla le deja a la barra; las pantallas ganan ese alto) */
-.app-shell[data-nav] .manifiesto__nav {
-    margin-bottom: calc(var(--spacing-2xl) * -1);
-}
 
 /* ============================================
 RESPONSIVE

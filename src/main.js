@@ -20,10 +20,13 @@ import { get, subscribe } from "./store/store.js";
 import { applyTheme } from "./utils/theme.js";
 import { loadCatalog } from "./store/catalog.js";
 import { mountPlayerDock } from "./layout/player-dock/player-dock.js";
+import { mountBottomNavTips } from "./layout/bottom-nav/bottom-nav.js";
 import { startRouter } from "./router.js";
 
 applyTheme((await get("prefs")).theme);
 subscribe("prefs", (prefs) => applyTheme(prefs.theme));
+
+mountBottomNavTips();
 
 await loadCatalog();
 await mountPlayerDock();

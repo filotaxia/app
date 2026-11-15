@@ -9,6 +9,7 @@
 // no está en la barra) y bloques:
 //
 //   (foto)              la foto del terrario a todo el ancho; lleva a su ficha
+//                       (el "+" arriba a la derecha avisa que la foto lleva ahí)
 //   Bitácora. | Pieza.  la bitácora lleva a su pantalla (views/bitacora); Pieza
 //                       (la duración) lleva al reproductor y tiene el QR chico
 //                       arriba a la derecha, que abre el escaneo
@@ -52,6 +53,7 @@ export async function render(root) {
       <div class="blocks reveal-stagger">
         <a class="block block--full block--photo" href="#/terrario/${terrario.id}" aria-label="Ver la ficha de ${escapeHTML(codeOf(terrario))}">
           ${terrariumArt({ photo: terrario.photo })}
+          <span class="block__info-chip" aria-hidden="true"></span>
         </a>
         ${block({
           title: "Bitácora",

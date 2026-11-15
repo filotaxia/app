@@ -9,13 +9,19 @@
 //                        Recipiente resistente · QR integrado · Composición
 //                        única. Se desliza con el dedo (scroll-snap); la
 //                        siguiente tarjeta asoma a la derecha
-//   Preguntas frecuentes las de cuidados, con el mismo estilo que Cuidados
+//   Preguntas frecuentes mismo layout "(PMF)" + frase grande que Cuidados y
+//                        Guía (faq-intro, filotaxia.css), pero otras preguntas
+//                        (MANIFESTO_FAQ, no CARE_FAQ): Cuidados ya cubre el
+//                        cuidado, acá van las del Manifiesto de filotaxia.com
+//                        (de qué va el proyecto), así no se repite el mismo
+//                        texto en las dos pantallas. El chip de la derecha
+//                        lleva el código del terrario en vez de "(Cuidados)"
 //
 // "Cómo funciona" (tres pasos, la foto cambia con GSAP al tocar uno) se movió
 // a Guía, como primera sección (views/filotaxia/filotaxia.js): mismas clases
 // .how, terrario.css.
 
-import { FEATURES, CARE_FAQ } from "../../content/ayuda.js";
+import { FEATURES, MANIFESTO_FAQ } from "../../content/ayuda.js";
 import { escapeHTML } from "../../utils/html.js";
 
 // Título de sección, con el mismo tamaño que el título de las pantallas
@@ -24,10 +30,10 @@ export function heading(id, title) {
   return `<h2 class="terrario__title" id="${id}">${title}</h2>`;
 }
 
-export function sections() {
+export function sections(code) {
   return `
     ${features()}
-    ${faq()}
+    ${faq(code)}
   `;
 }
 
@@ -49,14 +55,22 @@ function features() {
   `;
 }
 
-// --- Preguntas frecuentes: las mismas clases que Cuidados (cuidados.css) ---
+// --- Preguntas frecuentes: la misma intro "(PMF)" + frase grande que
+// Cuidados y Guía (faq-intro, filotaxia.css), pero con las del Manifiesto
+// (MANIFESTO_FAQ, de qué va el proyecto) en vez de las de cuidado, que ya
+// están en Cuidados. El chip de la derecha lleva el código del terrario ---
 
-function faq() {
+function faq(code) {
   return `
     <section class="faq reveal" aria-labelledby="faq-title">
-      ${heading("faq-title", "Preguntas frecuentes")}
+      <div class="faq-intro">
+        <p class="faq-intro__text" id="faq-title">
+          <span class="chip faq-intro__pmf">(PMF)</span>Los terrarios son una conexión entre arte, ciencia y naturaleza: las preguntas más frecuentes sobre el proyecto.
+        </p>
+        <p class="chip faq-intro__label" aria-hidden="true">(${escapeHTML(code)})</p>
+      </div>
       <div>
-        ${CARE_FAQ.map(([question, answer]) => `
+        ${MANIFESTO_FAQ.map(([question, answer]) => `
           <details class="faq__item">
             <summary class="faq__question">
               ${escapeHTML(question)}

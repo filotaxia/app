@@ -11,7 +11,7 @@
 //                  plantas: se encienden solos uno por vez (como las capas
 //                  de la 3) y tocar uno lo explica y frena el autoplay
 //   3. Capas       el terrario por dentro: cuatro franjas horizontales, una por
-//                  capa (con su imagen en movimiento), y debajo "/Capa01" y
+//                  capa (con su imagen en movimiento), y debajo "(Capa01)" y
 //                  el texto de la capa encendida; pasan solas
 //   4. Idioma      cada forma de hoja → su onda (components/leaf-waves)
 //   5. Mecanismo   01 / 02 / 03, de la planta a la nota, con un gráfico por paso
@@ -96,8 +96,8 @@ const SLIDES = [
     <figure class="manifiesto__quote">
       <blockquote class="manifiesto__big">“${quote.text}”</blockquote>
       <figcaption class="manifiesto__byline">
-        <cite class="manifiesto__cite">/${quote.book}</cite>
-        <span>${quote.author}</span>
+        <cite class="manifiesto__cite">${quote.book}</cite>
+        <span class="manifiesto__author">⎯ ${quote.author}</span>
       </figcaption>
     </figure>
   `,
@@ -112,12 +112,15 @@ const SLIDES = [
     <p class="manifiesto__title">Un terrario.<br />Cuatro capas.</p>
     ${layers()}
   `,
-  // 4. Idioma: título arriba a la izquierda y las cuatro tarjetas grandes abajo,
-  //    en igualdad (todavía no es tu terrario): primero las hojas y, a los 3 s,
-  //    giran a sus ondas; los dos puntos que cambian la vista están en
-  //    manifiesto__nav (leafWaveDots(), más abajo).
+  // 4. Idioma: título a la izquierda y, a su derecha, alineados abajo, los
+  //    dos puntos que cambian la vista (leafWaveDots()); debajo, las cuatro
+  //    tarjetas grandes, en igualdad (todavía no es tu terrario): primero
+  //    las hojas y, a los 3 s, giran a sus ondas.
   `
-    <p class="manifiesto__title">Cada planta.<br />Su propia onda.</p>
+    <div class="manifiesto__title-row">
+      <p class="manifiesto__title">Cada planta.<br />Su propia forma.</p>
+      ${leafWaveDots()}
+    </div>
     ${leafWaves({ flip: true })}
   `,
   // 5. Mecanismo: paso a paso, cada uno con su gráfico (ver mechanism() más abajo)
@@ -139,7 +142,7 @@ const SLIDES = [
     <div class="manifiesto__quote">
       <p class="manifiesto__big">Esta pieza nació de esta planta, en este momento exacto.</p>
       <p class="manifiesto__byline">
-        <span class="manifiesto__cite">/${escapeHTML(codeOf(terrario))}</span>
+        <span class="manifiesto__cite">(${escapeHTML(codeOf(terrario))})</span>
         <span>Grabada el ${formatDate(terrario.recorded)}</span>
       </p>
     </div>
@@ -190,10 +193,6 @@ export async function render(root, { params }) {
             ${typeof slide === "function" ? slide({ terrario, quote }) : slide}
           </section>`).join("")}
       </div>
-
-      <div class="manifiesto__nav">
-        <div class="manifiesto__nav-mid" data-nav-mid hidden>${leafWaveDots()}</div>
-      </div>
     </section>
   `;
 
@@ -202,7 +201,6 @@ export async function render(root, { params }) {
   const screen = root.querySelector(".manifiesto");
   const bars = [...root.querySelectorAll(".manifiesto__bar")];
   const fills = [...root.querySelectorAll("[data-fill]")];
-  const navMid = root.querySelector("[data-nav-mid]");
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   let current = 0;   // la pantalla a la que vamos (solo la cambia goTo)
   let shown = 0;     // la que se ve (la cambia show)
@@ -253,11 +251,8 @@ export async function render(root, { params }) {
     slides[index].dataset.seen = "";   // arranca su animación de entrada (una vez)
     paintBars(index);
     slides.forEach((slide, i) => slide.toggleAttribute("aria-hidden", i !== index));
-    // Pantalla 4: a los 3 s de verla, las hojas giran a sus ondas; sus dos
-    // puntos (en manifiesto__nav) solo se ven en esta pantalla
-    const isLanguage = !!slides[index].querySelector("[data-leaf-waves]");
-    navMid.hidden = !isLanguage;
-    if (isLanguage) waves.play(FLIP_AT_MS);
+    // Pantalla 4: a los 3 s de verla, las hojas giran a sus ondas
+    if (slides[index].querySelector("[data-leaf-waves]")) waves.play(FLIP_AT_MS);
     // Pantalla 2: los puntos se encienden solos uno por vez, solo mientras se ve
     if (slides[index].querySelector("[data-anatomy]")) anatomyCycle.play();
     else anatomyCycle.stop();
@@ -301,6 +296,12 @@ export async function render(root, { params }) {
   // explorando). La única excepción es un link de verdad (acá, "Escuchar la
   // pieza"): ese hace lo suyo. Va en la fase de captura porque esos
   // controles frenan su propio click.
+  //
+  // El borde manda sobre cualquier control: algunas partes de la Producción
+  // (pantalla 6, "ableton") quedan cerca del borde derecho del dibujo, así
+  // que su área tocable entra en esta franja — sin este orden, tocar ahí
+  // para pasar de pantalla la elegía a ella en cambio y frenaba el autoplay,
+  // y daba la sensación de que costaba avanzar de la 6 a la 7.
   const NAV_ZONE = 64; // px, ancho de cada franja (prev a la izquierda, next a la derecha)
 
   track.addEventListener("click", (event) => {
@@ -308,14 +309,19 @@ export async function render(root, { params }) {
       stopAutoplay();
       return;
     }
-    if (event.target.closest("button, [role='button']")) {
-      stopAutoplay();
-      return;
-    }
     const { left, width } = track.getBoundingClientRect();
     const x = event.clientX - left;
-    if (x < NAV_ZONE) goTo(current - 1);
-    else if (x > width - NAV_ZONE) goTo(current + 1);
+    if (x < NAV_ZONE) {
+      goTo(current - 1);
+      return;
+    }
+    if (x > width - NAV_ZONE) {
+      goTo(current + 1);
+      return;
+    }
+    if (event.target.closest("button, [role='button']")) {
+      stopAutoplay();
+    }
   }, true);
 
   // Las líneas de arriba llevan directo a su pantalla
@@ -398,13 +404,13 @@ function spotInfo(spot) {
   if (spot.kind === "capa") {
     const [name, , text] = LAYERS[spot.layer];
     return `
-      <p class="anatomy__name">/${name}</p>
+      <p class="anatomy__name">(${name})</p>
       <p class="anatomy__text">${text}</p>
     `;
   }
   const planta = getPlanta(spot.name);
   return `
-    <p class="anatomy__name">/${escapeHTML(planta.name)}</p>
+    <p class="anatomy__name">(${escapeHTML(planta.name)})</p>
     <p class="anatomy__text">${planta.wave
       ? `Hoja ${planta.leafLabel.toLowerCase()}: suena con una onda ${WAVE_NAMES[planta.wave].toLowerCase()}.`
       : "Una de las plantas del terrario."}</p>
@@ -457,7 +463,7 @@ function bindAnatomy(root) {
 // Arriba, una franja horizontal por capa, apiladas como en el terrario
 // (plantas arriba, piedras abajo), con su imagen en movimiento: la capa
 // encendida se abre (más alta y a color) y muestra su nombre centrado.
-// Debajo de las franjas, su número ("/Capa01") y el texto que la
+// Debajo de las franjas, su número ("(Capa01)") y el texto que la
 // explica. Tocar una franja la abre.
 //
 // Cada franja es una caja con un botón que la cubre entera (para tocarla)
@@ -479,7 +485,7 @@ function layers() {
           </div>`).join("")}
       </div>
       <div class="layers__info">
-        <p class="layers__number" data-layer-number aria-hidden="true">/Capa01</p>
+        <p class="layers__number" data-layer-number aria-hidden="true">(Capa01)</p>
         <p class="layers__text" data-layer-text>${text}</p>
       </div>
     </div>
@@ -506,7 +512,7 @@ function bindLayers(root) {
     const [, , text] = LAYERS[index];
     bars.forEach((bar, i) => bar.classList.toggle("is-open", i === index));
     hits.forEach((hit, i) => hit.setAttribute("aria-pressed", String(i === index)));
-    number.textContent = `/Capa${pad(index + 1)}`;
+    number.textContent = `(Capa${pad(index + 1)})`;
     copy.textContent = text;
     if (!reduceMotion) {
       [number, copy].forEach((el) => el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, easing: "ease-out" }));

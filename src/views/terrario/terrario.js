@@ -7,7 +7,11 @@
 // el link /t/<código> (views/qr) marca que llegó escaneando y abre la ficha,
 // que entonces suma el terrario a la colección (no hace falta cuenta) y sigue
 // directo a su pieza, el reproductor (views/escuchar).
-// El primero que se escanea pasa a ser "Mi terrario".
+// No son terrarios propios (es una instalación: cualquiera escanea
+// cualquiera, en el momento), así que no hay un "primero" que se queda para
+// siempre: CADA escaneo pasa a ser "Mi terrario" (store/my-terrario.js,
+// setMyTerrario), reemplazando al anterior. Tocar una tarjeta de Colección
+// hace lo mismo (views/coleccion/coleccion.js).
 // Sin escanear (desde Colección, o escribiendo #/terrario/03) se ve igual:
 // cualquiera puede ver y escuchar cualquier terrario; solo no se suma.
 // Debajo de la historia, "Especificaciones", como en filotaxia.com: la ficha
@@ -24,7 +28,7 @@
 import { TERRARIOS, getTerrario, codeOf } from "../../content/terrarios.js";
 import { link, markScanned } from "../../store/collection.js";
 import { takeScanIntent } from "../../utils/scan-intent.js";
-import { claimIfFirst, myTerrarioId, lastCare } from "../../store/my-terrario.js";
+import { setMyTerrario, myTerrarioId, lastCare } from "../../store/my-terrario.js";
 import { entries } from "../../store/bitacora.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
@@ -56,11 +60,10 @@ export async function render(root, { params, from }) {
   // Escaneo: se conecta y el QR lleva directo a la pieza (el reproductor).
   // replace(): la ficha no queda en el historial antes del reproductor.
   if (scanned) {
-    const isNew = await link(terrario.id);
+    await link(terrario.id);
     await markScanned(terrario.id);
-    const claimed = await claimIfFirst(terrario.id);
-    if (claimed) toast(`${codeOf(terrario)} es tu terrario`);
-    else if (isNew) toast(`${codeOf(terrario)} se sumó a tus terrarios`);
+    await setMyTerrario(terrario.id);
+    toast(`${codeOf(terrario)} es tu terrario`);
     location.replace(`#/escuchar/${terrario.id}`);
     return;
   }
@@ -92,7 +95,7 @@ export async function render(root, { params, from }) {
         ["Pieza", formatTime(terrario.duration), `#/escuchar/${terrario.id}`, `Escuchar la pieza (${formatTime(terrario.duration)})`],
       ])}
 
-      ${sections()}
+      ${sections(codeOf(terrario))}
     </article>
   `;
 }

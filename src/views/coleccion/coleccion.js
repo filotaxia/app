@@ -4,8 +4,11 @@
 
 // Colección (#/coleccion): todos los terrarios de
 // Filotaxia, como la página "Terrarios" de filotaxia.com (los del catálogo de Supabase).
-// Cualquiera puede escuchar cualquiera: todos abren su reproductor. Escanear
-// solo conecta el que tenés enfrente (el primero pasa a ser "Mi terrario").
+// No son terrarios propios (es una instalación: cualquiera escanea
+// cualquiera, en el momento): tocar una tarjeta hace que ese terrario pase a
+// ser "Mi terrario" (setMyTerrario, reemplaza al anterior) y abre esa
+// pantalla (#/mi-terrario) — lo mismo que hace escanear su QR. Desde ahí, la
+// card "Pieza" lleva a escucharlo.
 // Un terrario retirado solo aparece si este teléfono ya lo tenía conectado.
 //
 // El encabezado es propio (header: false): "Colección" y cuántos hay;
@@ -20,6 +23,7 @@
 
 import { TERRARIOS, codeOf } from "../../content/terrarios.js";
 import { linkedIds } from "../../store/collection.js";
+import { setMyTerrario } from "../../store/my-terrario.js";
 import { get, set } from "../../store/store.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
@@ -63,7 +67,7 @@ export async function render(root) {
     list.className = view === "list" ? "collection-list reveal-stagger" : "collection reveal-stagger";
     list.innerHTML = view === "list"
       ? [...visible].sort((a, b) => b.recorded.localeCompare(a.recorded)).map((t) => row(t, labelOf(t))).join("")
-      : visible.map((t) => tile(t, labelOf(t))).join("");
+      : visible.map((t) => tile(t)).join("");
   };
   paint();
 
@@ -72,18 +76,27 @@ export async function render(root) {
     paint();
     await set("prefs", { ...(await get("prefs")), collection_view: view });
   });
+
+  // Tocar una tarjeta: ese terrario pasa a ser "Mi terrario" (delegado en la
+  // lista, no en cada tarjeta: paint() la vuelve a armar al cambiar de vista)
+  list.addEventListener("click", async (event) => {
+    const card = event.target.closest("[data-terrario-id]");
+    if (!card) return;
+    event.preventDefault();
+    await setMyTerrario(card.dataset.terrarioId);
+    location.hash = "#/mi-terrario";
+  });
 }
 
-// Cada tarjeta lleva a su reproductor
-function tile(terrario, label) {
+// Cada tarjeta pasa el terrario a "Mi terrario" y abre esa pantalla (como
+// escanear su QR); desde ahí, la card "Pieza" lleva a escucharlo. Solo el
+// nombre acá (sin la duración: la lista sí la muestra, ver row())
+function tile(terrario) {
   return `
     <li>
-      <a class="collection__tile" href="#/escuchar/${terrario.id}">
+      <a class="collection__tile" href="#/mi-terrario" data-terrario-id="${terrario.id}">
         ${terrariumArt({ size: "sm", photo: terrario.photo })}
-        <span class="collection__meta">
-          <span class="collection__status">${label}</span>
-          <span class="collection__name">${escapeHTML(codeOf(terrario))}</span>
-        </span>
+        <span class="collection__name">${escapeHTML(codeOf(terrario))}</span>
       </a>
     </li>
   `;
@@ -93,7 +106,7 @@ function tile(terrario, label) {
 function row(terrario, label) {
   return `
     <li>
-      <a class="collection-row" href="#/escuchar/${terrario.id}">
+      <a class="collection-row" href="#/mi-terrario" data-terrario-id="${terrario.id}">
         <span class="collection-row__thumb">${terrariumArt({ size: "sm", photo: terrario.photo })}</span>
         <span class="collection-row__text">
           <span class="collection-row__name">${escapeHTML(codeOf(terrario))}</span>
