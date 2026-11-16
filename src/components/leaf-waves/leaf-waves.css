@@ -77,14 +77,14 @@
    Dorso: la onda, en negro (en tema oscuro, gris: --color-feature-bg).
    Giran cuando cambia data-face ("hoja" → "onda"), cada una un poco después que la anterior
    (--i). Los dos puntos que eligen la vista van aparte (leafWaveDots(), más
-   abajo: en el Manifiesto quedan en manifiesto__nav, entre las flechas). */
+   abajo: en el Manifiesto quedan abajo del todo, centrados). */
 .leaf-waves-flip {
     display: flex;
     flex-direction: column;
 }
 
 /* Los dos puntos (components/leaf-waves): sueltos, para ponerlos donde haga
-   falta — en el Manifiesto, centrados entre las flechas de manifiesto__nav */
+   falta — en el Manifiesto, centrados abajo del todo (manifiesto__dots-center) */
 .leaf-waves__dots {
     display: flex;
 }

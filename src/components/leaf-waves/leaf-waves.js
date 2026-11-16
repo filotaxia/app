@@ -11,7 +11,7 @@
 //                                           su onda en negro ("onda / Triangular").
 //                                           Los dos puntos para elegir la vista (hojas ·
 //                                           ondas) van aparte: leafWaveDots() — en el
-//                                           Manifiesto se ponen junto al título, no
+//                                           Manifiesto se ponen abajo del todo, no
 //                                           sobre la tarjeta. Conectarlos con
 //                                           bindLeafWaves(root) después de insertar los dos HTML.
 //   leafWaves({ active: ["puntiaguda"] }) → esas en negro sólido, el resto atenuado
@@ -44,8 +44,10 @@ export function leafWaves({ active = [], flip = false } = {}) {
 }
 
 // Los dos puntos que eligen la vista (hojas · ondas) de leafWaves({ flip: true }).
-// Van aparte porque en el Manifiesto no quedan sobre la tarjeta: se ponen al
-// lado del título, alineados abajo (manifiesto__title-row, manifiesto.css).
+// Van aparte porque en el Manifiesto no quedan sobre la tarjeta: se ponen
+// abajo del todo, centrados (manifiesto__dots-center, manifiesto.css) —
+// no al lado del título: ahí, pegados al borde, los tapaba la franja de
+// "pasar de pantalla" (manifiesto__nav).
 export function leafWaveDots() {
   return `
     <div class="leaf-waves__dots" role="group" aria-label="Vista">

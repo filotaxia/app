@@ -91,16 +91,6 @@ html:has(.manifiesto) body {
     transform: scaleX(1);
 }
 
-/* Pantalla 8: fondo negro (.manifiesto__slide--connect), así que la tira
-   de arriba se invierte (clara) para seguir viéndose */
-.manifiesto--dark-top .manifiesto__line {
-    background: color-mix(in srgb, var(--color-feature-text) 30%, transparent);
-}
-
-.manifiesto--dark-top .manifiesto__fill {
-    background: var(--color-feature-text);
-}
-
 @keyframes manifiesto-fill {
     to {
         transform: scaleX(1);
@@ -124,14 +114,37 @@ html:has(.manifiesto) body {
     min-height: 0;
     margin-inline: calc(var(--gutter) * -1);
     /* No se mueve con el dedo, la ruedita ni el trackpad (overflow hidden):
-       se pasa de pantalla con los botones ‹ ›, las líneas de arriba o las
-       flechas, y el JS lo desliza con scrollTo. touch-action: manipulation
-       saca la demora del doble toque. Sin barra de scroll: la saca base.css
-       para toda la app */
+       se pasa de pantalla con las franjas .manifiesto__nav, las líneas de
+       arriba o las flechas, y el JS lo desliza con scrollTo. touch-action:
+       manipulation saca la demora del doble toque. Sin barra de scroll: la
+       saca base.css para toda la app */
     overflow: hidden;
     overscroll-behavior: none;
     touch-action: manipulation;
     scroll-snap-type: x mandatory;
+}
+
+/* Las dos franjas que pasan de pantalla (derecha → próxima, izquierda →
+   anterior): botones de verdad, hermanos del track y por encima (z-index),
+   no una zona calculada por coordenadas al tocar — así nada de adentro del
+   carrusel (ni siquiera un control pegado al borde, como "ableton" en la
+   Producción) puede quedar por encima y tapar el paso de pantalla. Van del
+   alto completo pero angostas: el centro queda libre para lo de adentro de
+   cada pantalla. Sin dibujo propio (como las historias de Instagram). */
+.manifiesto__nav {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 64px;
+    z-index: 1;
+}
+
+.manifiesto__nav--prev {
+    left: 0;
+}
+
+.manifiesto__nav--next {
+    right: 0;
 }
 
 /* Cada pantalla centra su contenido en el alto disponible */
@@ -351,27 +364,26 @@ html:has(.manifiesto) body {
     color: var(--color-text);
 }
 
-/* Pantalla 4: título arriba a la izquierda, con los dos puntos de
-   leafWaveDots() a su derecha, alineados abajo; debajo, las tarjetas
-   ocupando todo el alto que queda (dos filas iguales). En pantallas muy
-   altas la grilla no pasa de 640px, así las tarjetas no se estiran de más. */
+/* Pantalla 4: título arriba, las tarjetas ocupando todo el alto que queda
+   (dos filas iguales) y, abajo del todo, centrados, los dos puntos de
+   leafWaveDots() (hoja · onda) — no al lado del título: ahí, pegados al
+   borde derecho, quedaban debajo de la franja de "pasar de pantalla"
+   (.manifiesto__nav) y no se podían tocar. En pantallas muy altas la
+   grilla no pasa de 640px, así las tarjetas no se estiran de más. */
 .manifiesto__slide--split {
     justify-content: flex-start;
     gap: var(--gap-lg);
     padding-top: calc(var(--manifiesto-top) + var(--spacing-xl));
 }
 
-.manifiesto__title-row {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: var(--gap-md);
-}
-
 .manifiesto__slide--split > .leaf-waves-flip {
     flex: 1;
     min-height: 0;
-    margin-top: auto;
+}
+
+.manifiesto__dots-center {
+    display: flex;
+    justify-content: center;
 }
 
 .manifiesto__slide--split .leaf-waves {
@@ -764,43 +776,15 @@ html:has(.manifiesto) body {
 /* ---------------------------------------- */
 /* Pantalla 8: Filotaxia / Armonía en plantas
    Mismo layout que la Producción: título arriba y, debajo, el cuadro de
-   components/connect-loop (el QR de su base → la cámara → su pieza). */
+   components/connect-loop (el QR de su base → la cámara → su pieza).
+   Fondo normal (blanco en claro), como el resto de las pantallas: ni el
+   cuadro ni el botón "Escuchar la pieza" necesitan colores al revés del
+   tema (.btn--primary ya es el pill negro de siempre). */
 .manifiesto__slide--connect {
     justify-content: flex-start;
     gap: var(--gap-lg);
     padding-top: calc(var(--manifiesto-top) + var(--spacing-xl));
-    background: var(--color-feature-bg);
-    color: var(--color-feature-text);
 }
-
-/* La segunda línea, en gris claro (no el gris oscuro de .manifiesto__title-muted,
-   pensado para fondo blanco) */
-.manifiesto__slide--connect .manifiesto__title-muted {
-    color: color-mix(in srgb, currentColor 60%, transparent);
-}
-
-/* El cuadro de connect-loop, del mismo negro que el fondo de la pantalla
-   (toda la pantalla 8 es un solo color oscuro), con el dibujo y los
-   textos en claro */
-.manifiesto__slide--connect .connect-loop {
-    --loop-bg: #000;
-    --loop-muted: color-mix(in srgb, currentColor 60%, transparent);
-    color: var(--color-feature-text);
-}
-
-/* El botón "Escuchar la pieza", blanco acá (al revés que en el resto de
-   la app): sobre fondo oscuro, el negro de siempre (.btn--primary) desaparece */
-.manifiesto__slide--connect .manifiesto__listen {
-    background: #fff;
-    color: #000;
-}
-
-@media (hover: hover) {
-    .manifiesto__slide--connect .manifiesto__listen:hover {
-        background: var(--color-gray-200);
-    }
-}
-
 
 /* Misma pausa que la Producción: el loop es CSS puro (--loop, 12s) y sigue
    pesando lejos de esta pantalla si no se frena */

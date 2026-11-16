@@ -9,24 +9,20 @@
 // no está en la barra) y bloques:
 //
 //   (foto)              la foto del terrario a todo el ancho; lleva a su ficha
-//                       (el "+" arriba a la derecha avisa que la foto lleva ahí)
-//   Bitácora. | Pieza.  la bitácora lleva a su pantalla (views/bitacora); Pieza
-//                       (la duración) lleva al reproductor y tiene el QR chico
-//                       arriba a la derecha, que abre el escaneo
+//   Modelo. | Pieza.    Modelo también lleva a la ficha (el detalle completo);
+//                       Pieza (la duración) lleva al reproductor y tiene el
+//                       QR chico arriba a la derecha, que abre el escaneo
 //   Plantas.            (si el terrario las tiene cargadas; el botón "Ondas" muestra sus ondas)
 //   Cuidados.           (lleva a la subpágina: riego, guía y preguntas frecuentes)
 
 import { getTerrario, codeOf } from "../../content/terrarios.js";
 import { CARE_FAQ } from "../../content/ayuda.js";
 import { myTerrarioId } from "../../store/my-terrario.js";
-import { entries } from "../../store/bitacora.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
 import { block, digits } from "../../components/block/block.js";
 import { plantsBlock, bindPlants } from "../../components/plants-block/plants-block.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
 import { connectLoop } from "../../components/connect-loop/connect-loop.js";
-import { dueLabel } from "../../utils/care.js";
-import { todayKey, daysBetween } from "../../utils/dates.js";
 import { formatTime } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
 import { icon, arrow } from "../../utils/icons.js";
@@ -41,9 +37,6 @@ export async function render(root) {
     return;
   }
 
-  const today = todayKey();
-  const notes = await entries(terrario.id);
-
   root.innerHTML = `
     <section class="screen mine">
       ${head("Filotaxia.", "Armonía en plantas.")}
@@ -53,20 +46,19 @@ export async function render(root) {
       <div class="blocks reveal-stagger">
         <a class="block block--full block--photo" href="#/terrario/${terrario.id}" aria-label="Ver la ficha de ${escapeHTML(codeOf(terrario))}">
           ${terrariumArt({ photo: terrario.photo })}
-          <span class="block__info-chip" aria-hidden="true"></span>
         </a>
         ${block({
-          title: "Bitácora",
-          badge: notes.length ? `Última: ${dueLabel(-daysBetween(notes[0].date, today)).toLowerCase()}` : "Notas y fotos",
-          value: notes.length === 1 ? "1 nota" : `${notes.length} notas`,
-          href: `#/bitacora/${terrario.id}`,
+          title: "Modelo",
+          badge: "Detalle",
+          value: "Abierto",
+          href: `#/terrario/${terrario.id}`,
         })}
         ${pieceBlock(terrario)}
         ${plantsBlock(terrario)}
         ${block({
           title: "Cuidados",
           badge: `${CARE_FAQ.length} preguntas`,
-          value: "Cómo cuidarlo.",
+          value: "Fundamentos.",
           action: `<span class="block__go">${arrow()}</span>`,
           full: true,
           href: "#/mi-terrario/cuidados",

@@ -21,9 +21,13 @@
 // le pasa el mando de las flechas a esta vista, ver particles.js); tocar
 // una planta del catálogo va directo a ella. Debajo del dibujo, su forma y
 // su onda; y al final, el catálogo.
+//
+// Desde la card "Plantas." (components/plants-block) se llega directo acá
+// (#/formas-ondas/catalogo/haworthia-attenuata: data-anchor="catalogo" en
+// esta sección) con esa planta ya elegida, en vez de la primera del catálogo.
 
 import { particles, bindParticles } from "../../components/particles/particles.js";
-import { PLANTAS, LEAVES, WAVE_NAMES } from "../../content/plantas.js";
+import { PLANTAS, LEAVES, WAVE_NAMES, indexBySlug } from "../../content/plantas.js";
 import { PROCESS, PROCESS_INTRO, PROCESS_PHOTOS } from "../../content/ayuda.js";
 import { escapeHTML } from "../../utils/html.js";
 import { settingsLink } from "../../components/settings-link/settings-link.js";
@@ -33,8 +37,9 @@ let currentIndex = 0;
 export const title = "Formas";
 export const header = false;
 
-export function render(root) {
-  currentIndex = 0;
+export function render(root, ctx) {
+  const found = ctx?.params.plant ? indexBySlug(ctx.params.plant) : -1;
+  currentIndex = found >= 0 ? found : 0;
 
   root.innerHTML = `
     <header class="formas-head">
@@ -79,7 +84,7 @@ export function render(root) {
       </div>
     </section>
 
-    <section class="art reveal" data-art>
+    <section class="art reveal" data-art data-anchor="catalogo">
       <header class="plant-heading">
         <p class="plant-heading__label">Planta</p>
         <h3 class="plant-heading__name" data-plant-name>${escapeHTML(PLANTAS[currentIndex].name)}</h3>

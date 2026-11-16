@@ -56,3 +56,19 @@ export function getPlanta(name) {
   const leaf = LEAVES[planta.leaf];
   return { ...planta, photo: PHOTO_DIR + planta.photo, leafLabel: leaf.label, wave: leaf.wave };
 }
+
+// "Haworthia Attenuata" → "haworthia-attenuata" (para armar el link a su
+// lugar en el catálogo, #/formas-ondas/catalogo/:slug)
+export function plantSlug(name) {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+// Índice en PLANTAS de la que tiene ese slug (-1 si no está)
+export function indexBySlug(slug) {
+  return PLANTAS.findIndex((p) => plantSlug(p.name) === slug);
+}

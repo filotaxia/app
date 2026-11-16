@@ -39,6 +39,8 @@
     margin-top: var(--spacing-xs);
     font-size: var(--font-sm-size);
     line-height: 20px;
+    /* más oscuro que el gris de ".lead": ahora arranca con "TR03" */
+    color: var(--color-text);
 }
 
 /* --- Especificaciones: filas separadas por líneas finas --- */
