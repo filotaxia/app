@@ -215,14 +215,16 @@ export const LAYERS = [
 // moverlos). Tiene su propio archivo, tr01-por-dentro.jpg (el recorte viejo):
 // los puntos están medidos sobre ese recorte, así que tr01.jpg (la de la
 // colección, centrada en el terrario) puede cambiar sin moverlos.
+// Sin el punto de la capa "Plantas" (layer 0): ya están los de cada planta
+// con su propio nombre, y repetirlo como capa era redundante. El primero
+// (Piedras) es el que se ve por defecto al abrir la pantalla.
 export const INSIDE_TERRARIUM = {
   image: "src/assets/images/terrarios/tr01-por-dentro.jpg",
   alt: "El terrario TR01: una pecera redonda de vidrio con suculentas, piedras y sustrato",
   spots: [
-    { kind: "capa", layer: 0, x: 45, y: 37 },
+    { kind: "capa", layer: 3, x: 52, y: 78 },
     { kind: "capa", layer: 1, x: 28, y: 72 },
     { kind: "capa", layer: 2, x: 74, y: 73 },
-    { kind: "capa", layer: 3, x: 52, y: 78 },
     { kind: "planta", name: "Haworthia Attenuata", x: 38, y: 60 },
     { kind: "planta", name: "Haworthia Fasciata", x: 68, y: 48 },
     { kind: "planta", name: "Haworthia Venosa", x: 57, y: 55 },

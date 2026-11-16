@@ -31,7 +31,7 @@ import { formatTime } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
 import { icon, arrow } from "../../utils/icons.js";
 
-export const title = "Mi terrario";
+export const title = "Terrario";
 
 export async function render(root) {
   const terrario = getTerrario(await myTerrarioId());

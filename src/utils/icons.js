@@ -40,6 +40,7 @@ const PATHS = {
   "skip-forward": `<path d="m5 4 10 8-10 8z"/><path d="M19 5v14"/>`,
   "square-play": `<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9.5 8.5v7l6-3.5z"/>`,
   "sun": `<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>`,
+  "switch": `<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>`,
   "thermometer": `<path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>`,
   "wave-sawtooth": `<path d="M2 18 12 6v12L22 6v12"/>`,
   "wave-sine": `<path d="M2 12c1.7-4.7 3.3-7 5-7s3.3 2.3 5 7 3.3 7 5 7 3.3-2.3 5-7"/>`,

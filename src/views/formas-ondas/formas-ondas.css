@@ -187,11 +187,19 @@
     color: var(--color-feature-text);
 }
 
+/* El título de la sección, arriba del cuadro antes/después: mismo tamaño
+   que el título de la página (formas-head__title) */
+.leafwave__title {
+    font-size: var(--font-xl-size);
+    line-height: var(--font-xl-line);
+    letter-spacing: var(--font-xl-tracking);
+}
+
 .cmp {
     position: relative;
     width: 100%;
     max-width: 100%;
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 1 / 1;
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--color-feature-text) 15%, transparent);
     touch-action: pan-y;

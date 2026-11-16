@@ -142,9 +142,9 @@ function specs(terrario, links) {
 // de otro lado (el reproductor, Ajustes), a la sección de este terrario.
 // La misma regla que el reproductor (views/escuchar).
 function backTo(from = "", isMine) {
-  if (from.startsWith("mi-terrario")) return { href: "#/mi-terrario", label: "Mi terrario" };
+  if (from.startsWith("mi-terrario")) return { href: "#/mi-terrario", label: "Terrario" };
   if (from === "coleccion") return { href: "#/coleccion", label: "Colección" };
-  return isMine ? { href: "#/mi-terrario", label: "Mi terrario" } : { href: "#/coleccion", label: "Colección" };
+  return isMine ? { href: "#/mi-terrario", label: "Terrario" } : { href: "#/coleccion", label: "Colección" };
 }
 
 // El terrario propio: cuándo toca el próximo riego → la subpágina de cuidados

@@ -2,7 +2,7 @@
    Views — Manifiesto
    ============================================ */
 
-// Introducción a la biosonificación en siete pantallas, para que la pieza
+// Introducción a la biosonificación en ocho pantallas, para que la pieza
 // se escuche como lo que es (y no como ruido al azar):
 //
 //   1. Gancho      una cita de filotaxia.com, distinta cada vez que se abre
@@ -20,11 +20,17 @@
 //                  (components/production-loop): el de las plantas va al
 //                  Microfreak (ahí le damos una voz a cada planta) y el del
 //                  sustrato, a la compu (Ableton); tocar una parte la explica
-//   7. Prueba      la huella de TU pieza: sus notas reales (audio/score.js)
-//                  en un piano roll que un cabezal recorre, con nombre y fecha;
-//                  abajo, "Escuchar la pieza" lleva a su reproductor (#/escuchar).
-//                  (Antes había una pantalla más con el reproductor adentro: en el
-//                  celular hacía lento al Manifiesto, así que se sacó.)
+//   7. Prueba      la huella de TU pieza: dos piano rolls (uno por Biodata,
+//                  audio/lanes.js: Planta y Sustrato, como la Partitura de
+//                  Escuchar) con un cabezal que los recorre, y debajo, la
+//                  misma pieza como una onda de audio (no otra partitura:
+//                  las dos secuencias MIDI mezcladas en una sola)
+//   8. Filotaxia   la animación de conectar (components/connect-loop), toda
+//                  la pantalla en negro; abajo, "Escuchar la pieza" lleva a
+//                  su reproductor (#/escuchar) y guarda `manifiesto_seen`
+//                  (ya lo vio todo). (Antes la 7 tenía una pantalla más con
+//                  el reproductor adentro: en el celular hacía lento al
+//                  Manifiesto, así que se sacó.)
 //
 // Con id (#/manifiesto/04) era la introducción del primer escaneo; hoy el
 // QR lleva directo a la pieza y nada manda acá con id, pero la ruta sigue
@@ -58,9 +64,10 @@ import { TERRARIOS, getTerrario, codeOf } from "../../content/terrarios.js";
 import { QUOTES, nextQuoteIndex } from "../../content/citas.js";
 import { LAYERS, INSIDE_TERRARIUM } from "../../content/ayuda.js";
 import { getPlanta, WAVE_NAMES } from "../../content/plantas.js";
-import { buildScore, seedFrom } from "../../audio/score.js";
+import { LANES, loadLanes } from "../../audio/lanes.js";
 import { leafWaves, leafWaveDots, bindLeafWaves } from "../../components/leaf-waves/leaf-waves.js";
 import { productionLoop, bindProductionLoop } from "../../components/production-loop/production-loop.js";
+import { connectLoop } from "../../components/connect-loop/connect-loop.js";
 import { formatDate } from "../../utils/format.js";
 import { escapeHTML } from "../../utils/html.js";
 import { icon } from "../../utils/icons.js";
@@ -132,20 +139,26 @@ const SLIDES = [
   //    (plantas → Microfreak, sustrato → compu); tocar una parte la explica
   //    (components/production-loop)
   `
-    <p class="manifiesto__title">Producción.<br />Una voz por planta.</p>
+    <p class="manifiesto__title">Señales bioeléctricas.<br />Notas MIDI.</p>
     ${productionLoop()}
   `,
   // 7. Prueba: depende del terrario, por eso es una función (ver render).
-  //    Abajo, el botón negro que lleva a escuchar su pieza
+  //    El título arriba, como el resto de las pantallas; el botón para
+  //    escuchar la pieza se movió a la pantalla 8 (la última).
+  ({ terrario, lanes }) => `
+    <p class="manifiesto__big">Dos secuencias.<br>Una pieza final.</p>
+    ${pieceGraphic(terrario, lanes)}
+  `,
+  // 8. Filotaxia / Armonía en plantas: el mismo encabezado de dos líneas
+  //    que Terrario (mi-terrario.js, "Filotaxia." + la segunda en gris) y,
+  //    abajo, la misma animación de conectar que en Conectar y Mi terrario
+  //    (components/connect-loop). Toda la pantalla en negro
+  //    (manifiesto.css, .manifiesto__slide--connect), así que el cuadro va
+  //    sin --inverse (claro, para resaltar sobre el negro); abajo, el mismo
+  //    botón que la pantalla 7 para escuchar la pieza.
   ({ terrario }) => `
-    ${pieceGraphic(terrario)}
-    <div class="manifiesto__quote">
-      <p class="manifiesto__big">Esta pieza nació de esta planta, en este momento exacto.</p>
-      <p class="manifiesto__byline">
-        <span class="manifiesto__cite">(${escapeHTML(codeOf(terrario))})</span>
-        <span>Grabada el ${formatDate(terrario.recorded)}</span>
-      </p>
-    </div>
+    <p class="manifiesto__title">Filotaxia.<br><span class="manifiesto__title-muted">Armonía en plantas.</span></p>
+    ${connectLoop()}
     <a class="btn btn--primary manifiesto__listen" href="#/escuchar/${terrario.id}" data-listen data-done>
       ${icon("play")} Escuchar la pieza
     </a>
@@ -161,6 +174,7 @@ const SLIDE_LAYOUT = {
   4: "manifiesto__slide--mechanism", // título arriba, los pasos abajo
   5: "manifiesto__slide--production", // título arriba, la animación abajo
   6: "manifiesto__slide--piece",    // la huella y el texto al centro, el botón abajo
+  7: "manifiesto__slide--connect",  // título arriba, la animación de conectar abajo
 };
 
 export async function render(root, { params }) {
@@ -170,6 +184,9 @@ export async function render(root, { params }) {
   const quoteIndex = nextQuoteIndex(await get("manifiesto_quote"));
   await set("manifiesto_quote", quoteIndex);
   const quote = QUOTES[quoteIndex];
+
+  // Pantalla 7: las dos secuencias reales (o simuladas), una por Biodata
+  const lanes = await loadLanes(terrario);
 
   const last = SLIDES.length - 1;
 
@@ -190,7 +207,7 @@ export async function render(root, { params }) {
         ${SLIDES.map((slide, i) => `
           <section class="manifiesto__slide ${SLIDE_LAYOUT[i] ?? ""}" data-slide="${i}" aria-roledescription="pantalla"
             aria-label="${i + 1} de ${SLIDES.length}" ${i ? 'aria-hidden="true"' : ""}>
-            ${typeof slide === "function" ? slide({ terrario, quote }) : slide}
+            ${typeof slide === "function" ? slide({ terrario, quote, lanes }) : slide}
           </section>`).join("")}
       </div>
     </section>
@@ -259,6 +276,8 @@ export async function render(root, { params }) {
     // Pantalla 3: las capas pasan solas solo mientras se ve
     if (slides[index].querySelector("[data-layers]")) layerCycle.play();
     else layerCycle.stop();
+    // Pantalla 8: fondo negro, así que la tira de arriba se invierte para verse
+    screen.classList.toggle("manifiesto--dark-top", slides[index].classList.contains("manifiesto__slide--connect"));
     if (index === last) finish();
   }
 
@@ -656,31 +675,82 @@ async function pickTerrario(id) {
   return candidates.map((candidate) => candidate && getTerrario(candidate)).find(Boolean) ?? TERRARIOS[0];
 }
 
-// Las notas reales de la pieza (las mismas que toca el reproductor) como
-// piano roll de 320 × 120: el tiempo va de izquierda a derecha y la altura,
-// de grave (abajo) a agudo (arriba). Ningún otro terrario da este dibujo.
+// Las notas reales de la pieza (las mismas que toca el reproductor), en dos
+// piano rolls de 320 × 84 — uno por Biodata (audio/lanes.js: Plantas y
+// Sustrato, como la Partitura de Escuchar). El tiempo va de izquierda a
+// derecha y la altura, de grave (abajo) a agudo (arriba), cada una con su
+// propio rango. Ningún otro terrario da este dibujo.
 // --t es la posición de cada nota (0 a 1): la nota aparece cuando pasa el cabezal.
-function pieceGraphic(terrario) {
-  const { notes } = buildScore({ seed: seedFrom(terrario.id), duration: terrario.duration });
-  const width = 320;
-  const height = 120;
-  const pitches = notes.map((note) => 12 * Math.log2(note.freq / 440) + 69);
-  const low = Math.min(...pitches);
-  const range = Math.max(...pitches) - low || 1;
+// Acá en singular ("Planta", no "Plantas" como en Escuchar): es la huella
+// de una sola planta, la de este terrario.
+const PIECE_LABELS = { plantas: "Planta", sustrato: "Sustrato" };
 
-  const rects = notes.map((note, i) => {
-    const x = (note.time / terrario.duration) * width;
-    // las últimas notas siguen sonando después del final: se cortan en el borde
-    const w = Math.min(width - x, Math.max(2, (note.length / terrario.duration) * width));
-    const y = (1 - (pitches[i] - low) / range) * (height - 4);
-    return `<rect class="print__note" style="--t: ${round(x / width)}" x="${round(x)}" y="${round(y)}" width="${round(w)}" height="3" rx="1.5" />`;
+function pieceGraphic(terrario, lanes) {
+  return `
+    <div class="print-lanes">
+      ${LANES.map((lane) => laneGraphic(lane, lanes[lane.key], terrario.duration)).join("")}
+      ${audioWave(terrario, lanes)}
+    </div>
+  `;
+}
+
+// Las dos secuencias MIDI, mezcladas en una sola onda (no son las notas
+// exactas: es un dibujo que simboliza el audio final, no otra partitura).
+// La altura de cada barra sigue cuántas notas suenan en ese instante.
+function audioWave(terrario, lanes) {
+  const { duration } = terrario;
+  const width = 320;
+  const height = 48;
+  const bars = 60;
+  const allNotes = [...lanes.plantas, ...lanes.sustrato];
+
+  const amps = Array.from({ length: bars }, (_, i) => {
+    const from = (i / bars) * duration;
+    const to = ((i + 1) / bars) * duration;
+    return allNotes.filter((note) => note.time >= from && note.time < to).length;
+  });
+  const max = Math.max(...amps, 1);
+  const barWidth = width / bars;
+
+  const rects = amps.map((amp, i) => {
+    const h = Math.max(2, (amp / max) * (height - 4));
+    const x = i * barWidth + barWidth * 0.15;
+    const w = barWidth * 0.7;
+    const y = (height - h) / 2;
+    return `<rect class="wave__bar" x="${round(x)}" y="${round(y)}" width="${round(w)}" height="${round(h)}" rx="${round(w / 2)}" />`;
   });
 
   return `
-    <svg class="print" viewBox="0 0 ${width} ${height}" aria-hidden="true">
-      ${[0.25, 0.5, 0.75].map((f) => `<line class="print__guide" x1="0" y1="${height * f}" x2="${width}" y2="${height * f}" />`).join("")}
-      ${rects.join("")}
-      <line class="print__playhead" x1="0" y1="0" x2="0" y2="${height}" />
-    </svg>
+    <figure class="print-lane">
+      <figcaption class="print-lane__label">(${escapeHTML(codeOf(terrario))}) Grabada el ${formatDate(terrario.recorded)}</figcaption>
+      <svg class="wave" viewBox="0 0 ${width} ${height}" aria-hidden="true">${rects.join("")}</svg>
+    </figure>
+  `;
+}
+
+function laneGraphic(lane, notes, duration) {
+  const width = 320;
+  const height = 140;
+  const pitches = notes.map((note) => note.midi);
+  const low = Math.min(...pitches);
+  const range = Math.max(...pitches) - low || 1;
+
+  const rects = notes.map((note) => {
+    const x = (note.time / duration) * width;
+    // las últimas notas siguen sonando después del final: se cortan en el borde
+    const w = Math.min(width - x, Math.max(2, (note.length / duration) * width));
+    const y = (1 - (note.midi - low) / range) * (height - 4);
+    return `<rect class="print__note" style="--t: ${round(x / width)}" x="${round(x)}" y="${round(y)}" width="${round(w)}" height="4" rx="2" />`;
+  });
+
+  return `
+    <figure class="print-lane">
+      <figcaption class="print-lane__label">${escapeHTML(PIECE_LABELS[lane.key])}</figcaption>
+      <svg class="print" viewBox="0 0 ${width} ${height}" aria-hidden="true">
+        ${[0.25, 0.5, 0.75].map((f) => `<line class="print__guide" x1="0" y1="${height * f}" x2="${width}" y2="${height * f}" />`).join("")}
+        ${rects.join("")}
+        <line class="print__playhead" x1="0" y1="0" x2="0" y2="${height}" />
+      </svg>
+    </figure>
   `;
 }

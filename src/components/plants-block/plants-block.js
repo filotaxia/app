@@ -3,13 +3,14 @@
    ============================================ */
 
 // Plantas del terrario, una por fila: foto, nombre y la forma de su hoja.
-// El botón "Ondas" cambia la vista: el título pasa a "Ondas.", el botón a
-// "Plantas" (para volver) y, en lugar de la foto y la hoja, cada fila muestra
-// el dibujo de la onda con la que suena (según la forma de su hoja,
-// content/plantas.js). Las dos versiones ya están en el HTML; el CSS muestra
-// una u otra según data-view (ver bindPlants). El título es un link a
-// Filotaxia (#/formas-ondas, el catálogo de formas y ondas): todo el bloque
-// se puede tocar para ir, salvo el botón "Ondas" (como Pieza en Mi terrario).
+// El ícono de switch, en la esquina (como el QR de Pieza en Mi terrario),
+// cambia la vista: el título pasa a "Ondas." y, en lugar de la foto y la
+// hoja, cada fila muestra el dibujo de la onda con la que suena (según la
+// forma de su hoja, content/plantas.js); tocándolo de nuevo vuelve a
+// Plantas. Las dos versiones ya están en el HTML; el CSS muestra una u otra
+// según data-view (ver bindPlants). El título es un link a Filotaxia
+// (#/formas-ondas, el catálogo de formas y ondas): todo el bloque se puede
+// tocar para ir, salvo el ícono de switch.
 //
 //   plantsBlock(terrario)   → "" si el terrario no tiene plantas cargadas
 //   bindPlants(root)        → conecta el botón (después de insertar el HTML)
@@ -28,7 +29,7 @@ export function plantsBlock(terrario) {
         <a class="plants__link" href="#/formas-ondas" data-plants-title aria-label="Plantas: de la forma a la vibración">Plantas.</a>
       </h2>
       ${hasWaves
-        ? `<button class="block__badge block__toggle" type="button" aria-label="Ver ondas" data-plants-toggle>Ondas</button>`
+        ? `<button class="block__toggle" type="button" aria-label="Ver ondas" data-plants-toggle>${icon("switch")}</button>`
         : ""}
       <ol class="block__list">
         ${plantas.map(plantRow).join("")}
@@ -54,7 +55,7 @@ function plantRow(planta, i) {
   `;
 }
 
-// El botón dice a qué vista lleva ("Ondas" o "Plantas")
+// El ícono dice a qué vista lleva, en el aria-label ("Ver ondas" o "Ver plantas")
 export function bindPlants(root) {
   const block = root.querySelector("[data-plants]");
   const toggle = root.querySelector("[data-plants-toggle]");
@@ -65,7 +66,6 @@ export function bindPlants(root) {
     const waves = block.dataset.view !== "ondas";
     block.dataset.view = waves ? "ondas" : "plantas";
     title.textContent = waves ? "Ondas." : "Plantas.";
-    toggle.textContent = waves ? "Plantas" : "Ondas";
     toggle.setAttribute("aria-label", waves ? "Ver plantas" : "Ver ondas");
   });
 }
