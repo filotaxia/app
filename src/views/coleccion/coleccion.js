@@ -14,7 +14,7 @@
 // El encabezado es propio (header: false): "Colección" y cuántos hay;
 // a la derecha, el interruptor galería / lista (dos íconos) y el punto de
 // Ajustes. Debajo, la colección: en galería (grilla de fotos) o en lista
-// (una fila por terrario, la más nueva arriba: fecha de grabación, foto,
+// (una fila por terrario, en orden (TR01, TR02…): fecha de grabación, foto,
 // nombre, la duración de su pieza y, a la derecha, ›). En las dos vistas
 // cada terrario muestra la duración de su pieza; el propio no se marca.
 // La vista elegida se guarda en prefs.collection_view.
@@ -66,7 +66,7 @@ export async function render(root) {
   const paint = () => {
     list.className = view === "list" ? "collection-list reveal-stagger" : "collection reveal-stagger";
     list.innerHTML = view === "list"
-      ? [...visible].sort((a, b) => b.recorded.localeCompare(a.recorded)).map((t) => row(t, labelOf(t))).join("")
+      ? [...visible].sort((a, b) => a.id.localeCompare(b.id)).map((t) => row(t, labelOf(t))).join("")
       : visible.map((t) => tile(t)).join("");
   };
   paint();

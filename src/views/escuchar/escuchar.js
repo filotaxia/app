@@ -173,9 +173,9 @@ async function renderPlayer(root, terrario, { back }) {
 // Colección); si llegó de otro lado (la ficha, el Manifiesto), a la sección
 // que le corresponde a este terrario.
 function backTo(from = "", isMine) {
-  if (from.startsWith("mi-terrario")) return { href: "#/mi-terrario", label: "Mi terrario" };
+  if (from.startsWith("mi-terrario")) return { href: "#/mi-terrario", label: "Terrario" };
   if (from === "coleccion") return { href: "#/coleccion", label: "Colección" };
-  return isMine ? { href: "#/mi-terrario", label: "Mi terrario" } : { href: "#/coleccion", label: "Colección" };
+  return isMine ? { href: "#/mi-terrario", label: "Terrario" } : { href: "#/coleccion", label: "Colección" };
 }
 
 function mountPlayer(root, terrario, lanes) {

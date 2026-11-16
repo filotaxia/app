@@ -6,7 +6,7 @@
 .block--list {
     grid-template-rows: auto 1fr;
     grid-template-areas:
-        "title badge"
+        "title title"
         "list  list";
     min-height: 0;
     transition: transform var(--transition-fast);
@@ -60,30 +60,27 @@
     font-variant-numeric: tabular-nums;
 }
 
-/* Botón "Ondas" / "Plantas": la etiqueta de arriba a la derecha, pero
-   tocable, negra y del tamaño del botón "Escuchar". */
-.block__toggle {
-    position: relative;
+/* Ícono de switch (hoja ↔ onda), en la esquina de arriba a la derecha,
+   como el QR de Pieza en Mi terrario: no ocupa lugar en la grilla. */
+.block > .block__toggle {
+    position: absolute;
+    top: var(--spacing-2xs);
+    right: var(--spacing-2xs);
     z-index: 2;
-    display: inline-flex;
-    align-items: center;
-    min-height: 28px;
-    padding: 0 var(--spacing-md);
-    border-radius: 0;
-    background: var(--color-inverse-bg);
-    color: var(--color-inverse-text);
-    font-size: var(--font-xs-size);
-    line-height: var(--font-xs-line);
-    font-weight: var(--font-weight-medium);
+    width: var(--size-tap);
+    height: var(--size-tap);
+    display: grid;
+    place-items: center;
+    color: var(--color-text);
 }
 
-/* Área tocable de 44px sin agrandar la etiqueta */
-.block__toggle::before {
-    content: "";
-    position: absolute;
-    inset: 50% -8px auto;
-    height: var(--size-tap);
-    transform: translateY(-50%);
+.block__toggle svg {
+    width: var(--icon-md);
+    height: var(--icon-md);
+}
+
+.block__toggle:active {
+    transform: scale(0.9);
 }
 
 /* Una planta: número, foto (vista de arriba, sin fondo: el webp ya es

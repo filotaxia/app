@@ -68,7 +68,8 @@ export function render(root) {
       </div>
     </section>
 
-    <section class="leafwave reveal" aria-label="Cada forma de hoja y su onda">
+    <section class="leafwave reveal" aria-labelledby="leafwave-title">
+      <h2 class="leafwave__title" id="leafwave-title">Planta, forma, sonidos.</h2>
       ${compare(SHAPES[0])}
       <div class="cmp-shapes" role="group" aria-label="Forma de hoja">
         ${SHAPES.map((key, i) => `

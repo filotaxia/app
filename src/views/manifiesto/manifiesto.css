@@ -91,6 +91,16 @@ html:has(.manifiesto) body {
     transform: scaleX(1);
 }
 
+/* Pantalla 8: fondo negro (.manifiesto__slide--connect), así que la tira
+   de arriba se invierte (clara) para seguir viéndose */
+.manifiesto--dark-top .manifiesto__line {
+    background: color-mix(in srgb, var(--color-feature-text) 30%, transparent);
+}
+
+.manifiesto--dark-top .manifiesto__fill {
+    background: var(--color-feature-text);
+}
+
 @keyframes manifiesto-fill {
     to {
         transform: scaleX(1);
@@ -151,9 +161,9 @@ html:has(.manifiesto) body {
 }
 
 .manifiesto__intro-title {
-    font-size: var(--font-xl-size);
-    line-height: var(--font-xl-line);
-    letter-spacing: var(--font-xl-tracking);
+    font-size: var(--font-2xl-size);
+    line-height: var(--font-2xl-line);
+    letter-spacing: var(--font-2xl-tracking);
 }
 
 .manifiesto__slide > * {
@@ -374,6 +384,12 @@ html:has(.manifiesto) body {
     font-size: var(--font-2xl-size);
     line-height: var(--font-2xl-line);
     letter-spacing: var(--font-2xl-tracking);
+}
+
+/* La segunda línea de la pantalla 8 ("Armonía en plantas."), en gris,
+   como la bajada de Terrario (.mine__status, mi-terrario.css) */
+.manifiesto__title-muted {
+    color: var(--color-text-faint);
 }
 
 /* Cada tarjeta llena su celda de la grilla */
@@ -746,8 +762,79 @@ html:has(.manifiesto) body {
 }
 
 /* ---------------------------------------- */
+/* Pantalla 8: Filotaxia / Armonía en plantas
+   Mismo layout que la Producción: título arriba y, debajo, el cuadro de
+   components/connect-loop (el QR de su base → la cámara → su pieza). */
+.manifiesto__slide--connect {
+    justify-content: flex-start;
+    gap: var(--gap-lg);
+    padding-top: calc(var(--manifiesto-top) + var(--spacing-xl));
+    background: var(--color-feature-bg);
+    color: var(--color-feature-text);
+}
+
+/* La segunda línea, en gris claro (no el gris oscuro de .manifiesto__title-muted,
+   pensado para fondo blanco) */
+.manifiesto__slide--connect .manifiesto__title-muted {
+    color: color-mix(in srgb, currentColor 60%, transparent);
+}
+
+/* El cuadro de connect-loop, del mismo negro que el fondo de la pantalla
+   (toda la pantalla 8 es un solo color oscuro), con el dibujo y los
+   textos en claro */
+.manifiesto__slide--connect .connect-loop {
+    --loop-bg: #000;
+    --loop-muted: color-mix(in srgb, currentColor 60%, transparent);
+    color: var(--color-feature-text);
+}
+
+/* El botón "Escuchar la pieza", blanco acá (al revés que en el resto de
+   la app): sobre fondo oscuro, el negro de siempre (.btn--primary) desaparece */
+.manifiesto__slide--connect .manifiesto__listen {
+    background: #fff;
+    color: #000;
+}
+
+@media (hover: hover) {
+    .manifiesto__slide--connect .manifiesto__listen:hover {
+        background: var(--color-gray-200);
+    }
+}
+
+
+/* Misma pausa que la Producción: el loop es CSS puro (--loop, 12s) y sigue
+   pesando lejos de esta pantalla si no se frena */
+.manifiesto__slide:not([data-seen]) .connect-loop *,
+.manifiesto__slide[aria-hidden] .connect-loop * {
+    animation-play-state: paused;
+}
+
+/* ---------------------------------------- */
 /* Pantalla 7: la huella de tu pieza */
 /* ---------------------------------------- */
+
+/* Los dos piano rolls (Plantas y Sustrato), uno debajo del otro */
+.print-lanes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xl);
+    width: 100%;
+}
+
+.print-lane {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+}
+
+/* "Planta" / "Sustrato", debajo de su piano roll, del tamaño de "(TR04)"
+   (.manifiesto__cite, --font-base) */
+.print-lane__label {
+    order: 1;
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    color: #000;
+}
 
 /* Piano roll de las notas reales: un cabezal lo recorre en --sweep y cada
    nota se estira cuando el cabezal pasa por ella (--t la pone el JS) */
@@ -778,6 +865,19 @@ html:has(.manifiesto) body {
     animation: flow-sweep var(--sweep) linear 0.4s both paused;
 }
 
+/* La onda de audio (no es una partitura): las dos secuencias MIDI
+   mezcladas en una sola, como el dibujo de un editor de audio */
+.wave {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.wave__bar {
+    fill: currentColor;
+}
+
 /* Menos movimiento: todo aparece de una, sin pulso */
 @media (prefers-reduced-motion: reduce) {
     .layers__bar,
@@ -799,15 +899,18 @@ html:has(.manifiesto) body {
 }
 
 /* ---------------------------------------- */
-/* Pantalla 7: la huella y el texto al centro y, al pie, el botón negro
-   "Escuchar la pieza" a todo el ancho (como .screen__actions): los dos
-   margin-top: auto reparten el aire que sobra arriba y abajo del texto */
-.manifiesto__slide--piece > :first-child,
-.manifiesto__listen {
-    margin-top: auto;
+/* Pantalla 7: el título arriba (como el resto de las pantallas) y, debajo,
+   la huella de la pieza */
+.manifiesto__slide--piece {
+    justify-content: flex-start;
+    gap: var(--gap-lg);
+    padding-top: calc(var(--manifiesto-top) + var(--spacing-xl));
 }
 
+/* El botón "Escuchar la pieza" de la pantalla 8, a todo el ancho (como
+   .screen__actions) y pegado abajo */
 .manifiesto__listen {
+    margin-top: auto;
     width: 100%;
 }
 
