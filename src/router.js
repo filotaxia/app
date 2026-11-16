@@ -20,6 +20,9 @@
 //   #/formas-ondas           Filotaxia: el catálogo de suculentas (hoja, su onda, su
 //                            foto), la génesis del proyecto; también se llega desde
 //                            la card "Plantas." (components/plants-block)
+//   #/formas-ondas/catalogo/haworthia-attenuata  la misma, pero arranca ya
+//                            mostrando esa planta (adonde lleva la card
+//                            "Plantas.", con la planta del terrario)
 //   #/manifiesto/04          introducción, una sola vez tras el primer escaneo
 //   #/manifiesto             la misma, desde la barra (termina en Mi terrario)
 //
@@ -70,7 +73,7 @@ const ROUTES = [
   ["coleccion", coleccion],
   ["ajustes", ajustes],
   ["filotaxia", filotaxia],
-  ["formas-ondas", formasOndas],
+  ["formas-ondas/:section?/:plant?", formasOndas],
   ["manifiesto/:id?", manifiesto],
 ];
 const DEFAULT_ROUTE = "inicio";
@@ -180,7 +183,13 @@ async function render({ moveFocus, refresh = false }) {
   markActive(section);
 
   if (moveFocus && !isFirstRender) {
-    window.scrollTo(0, 0);
+    // Si la ruta trae una sección (p. ej. "formas-ondas/catalogo"), arranca
+    // ahí en lugar de arriba de todo. Dos frames de margen: recién insertado,
+    // el layout todavía no asentó (fotos sin cargar), y scrollIntoView ahora
+    // se quedaría corto.
+    const anchor = params.section && viewRoot.querySelector(`[data-anchor="${params.section}"]`);
+    if (anchor) requestAnimationFrame(() => requestAnimationFrame(() => anchor.scrollIntoView({ block: "start" })));
+    else window.scrollTo(0, 0);
     // El foco va al título: el lector de pantalla anuncia en qué pantalla estás
     if (view.header) focusHeaderTitle();
     else viewRoot.querySelector("h1, h2")?.focus({ preventScroll: true });

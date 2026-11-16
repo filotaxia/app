@@ -90,45 +90,6 @@
     padding: 0;
 }
 
-/* Un "+" simple (sin caja ni borde) arriba a la derecha de la foto: avisa
-   que la foto entera lleva a la ficha, sin ser un botón aparte. El mismo
-   dibujo que el + de Preguntas frecuentes (.faq__toggle, cuidados.css): dos
-   barras, no texto; acá en negro fijo (no var(--color-text): esto va sobre
-   una foto, no seguir el tema).
-   Selector con más peso que ".block > :not(.block__fill)" de block.css
-   (que le pondría position:relative y lo tiraría al flujo normal) */
-a.block--photo > .block__info-chip {
-    position: absolute;
-    top: var(--spacing-md);
-    right: var(--spacing-md);
-    z-index: 1;
-    width: 12px;
-    height: 12px;
-}
-
-a.block--photo > .block__info-chip::before,
-a.block--photo > .block__info-chip::after {
-    content: "";
-    position: absolute;
-    background: var(--color-black);
-}
-
-a.block--photo > .block__info-chip::before {
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    transform: translateY(-50%);
-}
-
-a.block--photo > .block__info-chip::after {
-    top: 0;
-    left: 50%;
-    width: 2px;
-    height: 100%;
-    transform: translateX(-50%);
-}
-
 /* --- Pieza: todo el bloque es un link, salvo el QR de la esquina --- */
 .block--pieza {
     transition: transform var(--transition-fast);

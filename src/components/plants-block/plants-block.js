@@ -8,14 +8,15 @@
 // hoja, cada fila muestra el dibujo de la onda con la que suena (según la
 // forma de su hoja, content/plantas.js); tocándolo de nuevo vuelve a
 // Plantas. Las dos versiones ya están en el HTML; el CSS muestra una u otra
-// según data-view (ver bindPlants). El título es un link a Filotaxia
-// (#/formas-ondas, el catálogo de formas y ondas): todo el bloque se puede
+// según data-view (ver bindPlants). El título es un link a Filotaxia, a la
+// primera planta del terrario en su lugar del catálogo
+// (#/formas-ondas/catalogo/haworthia-attenuata): todo el bloque se puede
 // tocar para ir, salvo el ícono de switch.
 //
 //   plantsBlock(terrario)   → "" si el terrario no tiene plantas cargadas
 //   bindPlants(root)        → conecta el botón (después de insertar el HTML)
 
-import { getPlanta, WAVE_NAMES } from "../../content/plantas.js";
+import { getPlanta, plantSlug, WAVE_NAMES } from "../../content/plantas.js";
 import { escapeHTML } from "../../utils/html.js";
 import { icon } from "../../utils/icons.js";
 
@@ -23,10 +24,11 @@ export function plantsBlock(terrario) {
   if (!terrario.plants?.length) return "";
   const plantas = terrario.plants.map(getPlanta);
   const hasWaves = plantas.some((planta) => planta.wave);
+  const href = `#/formas-ondas/catalogo/${plantSlug(plantas[0].name)}`;
   return `
     <article class="block block--full block--list" data-plants data-view="plantas">
       <h2 class="block__title">
-        <a class="plants__link" href="#/formas-ondas" data-plants-title aria-label="Plantas: de la forma a la vibración">Plantas.</a>
+        <a class="plants__link" href="${href}" data-plants-title aria-label="Plantas: de la forma a la vibración">Plantas.</a>
       </h2>
       ${hasWaves
         ? `<button class="block__toggle" type="button" aria-label="Ver ondas" data-plants-toggle>${icon("switch")}</button>`
@@ -38,10 +40,9 @@ export function plantsBlock(terrario) {
   `;
 }
 
-function plantRow(planta, i) {
+function plantRow(planta) {
   return `
     <li class="plant">
-      <span class="block__list-index">${String(i + 1).padStart(2, "0")}/</span>
       ${planta.photo ? `<img class="plant__photo" src="${planta.photo}" alt="" loading="lazy" decoding="async" />` : ""}
       ${planta.wave ? `<span class="plant__photo plant__wave-art" aria-hidden="true">${icon(`wave-${planta.wave}`)}</span>` : ""}
       <span class="plant__text">

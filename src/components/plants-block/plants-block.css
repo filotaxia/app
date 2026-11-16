@@ -16,9 +16,16 @@
     transform: scale(0.98);
 }
 
-/* El título es un link a Filotaxia (#/formas-ondas) que cubre todo el
-   bloque (como Pieza en Mi terrario): el botón "Ondas" queda por encima,
-   con su propio z-index, para que no dispare la navegación */
+/* El título es un link a Filotaxia que cubre todo el bloque (como Pieza en
+   Mi terrario): hay que sacarle el position:relative que le pone
+   ".block > :not(.block__fill)" (block.css) al h2 que lo contiene, si no
+   el ::after de abajo queda atado a ese h2 en vez de a todo el bloque.
+   El botón "Ondas" queda por encima, con su propio z-index, para que no
+   dispare la navegación. */
+.block--list > .block__title {
+    position: static;
+}
+
 .plants__link::after {
     content: "";
     position: absolute;
@@ -51,13 +58,6 @@
     display: flex;
     align-items: baseline;
     gap: var(--gap-md);
-}
-
-.block__list-index {
-    font-size: var(--font-2xs-size);
-    letter-spacing: var(--font-xs-tracking);
-    color: var(--color-text-muted);
-    font-variant-numeric: tabular-nums;
 }
 
 /* Ícono de switch (hoja ↔ onda), en la esquina de arriba a la derecha,

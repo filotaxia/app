@@ -82,9 +82,8 @@ export async function render(root, { params, from }) {
       <div class="terrario__art reveal">${terrariumArt({ photo: terrario.photo })}</div>
 
       <div class="terrario__info reveal-stagger">
-        <h1 class="title" tabindex="-1">${escapeHTML(codeOf(terrario))}</h1>
         <p class="terrario__story lead">
-          Un ecosistema vivo que empezó a sonar el ${formatDate(terrario.recorded)}.
+          ${escapeHTML(codeOf(terrario))} es un ecosistema vivo que empezó a sonar el ${formatDate(terrario.recorded)}.
           ${escapeHTML(terrario.story)}
         </p>
       </div>

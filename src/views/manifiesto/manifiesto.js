@@ -51,11 +51,13 @@
 // del todo, porque la persona está explorando. Con "reducir movimiento" en el
 // teléfono no pasa sola.
 // A mano: tocando una franja angosta a los costados, de todo el alto
-// (derecha pasa a la próxima, izquierda vuelve a la anterior; NAV_ZONE, más
-// abajo): el centro queda libre para los puntos, las capas, las hojas o las
-// partes de la Producción. También tocando una de las líneas de arriba (va
-// directo a esa pantalla) o con las flechas del teclado. Deslizar o hacer
-// scroll no la pasa (overflow hidden en el CSS; el JS la corre con scrollTo).
+// (derecha pasa a la próxima, izquierda vuelve a la anterior; son dos
+// botones de verdad, .manifiesto__nav, más abajo — no una zona calculada
+// por coordenadas, que algo cerca del borde podía tapar): el centro queda
+// libre para los puntos, las capas, las hojas o las partes de la
+// Producción. También tocando una de las líneas de arriba (va directo a
+// esa pantalla) o con las flechas del teclado. Deslizar o hacer scroll no
+// la pasa (overflow hidden en el CSS; el JS la corre con scrollTo).
 
 import { get, set } from "../../store/store.js";
 import { linkedIds } from "../../store/collection.js";
@@ -111,24 +113,24 @@ const SLIDES = [
   // 2. Por dentro: la foto del terrario con sus puntos
   //    (ver anatomy() más abajo)
   `
-    <p class="manifiesto__title">Ecosistemas<br />que hablan.</p>
+    <p class="manifiesto__title">Ecosistemas<br /><span class="manifiesto__title-muted">que hablan.</span></p>
     ${anatomy()}
   `,
   // 3. Capas: el terrario por dentro (ver layers() más abajo)
   `
-    <p class="manifiesto__title">Un terrario.<br />Cuatro capas.</p>
+    <p class="manifiesto__title">Un terrario.<br /><span class="manifiesto__title-muted">Cuatro capas.</span></p>
     ${layers()}
   `,
-  // 4. Idioma: título a la izquierda y, a su derecha, alineados abajo, los
-  //    dos puntos que cambian la vista (leafWaveDots()); debajo, las cuatro
-  //    tarjetas grandes, en igualdad (todavía no es tu terrario): primero
-  //    las hojas y, a los 3 s, giran a sus ondas.
+  // 4. Idioma: el título arriba; las cuatro tarjetas grandes, en igualdad
+  //    (todavía no es tu terrario): primero las hojas y, a los 3 s, giran a
+  //    sus ondas. Los dos puntos que cambian la vista (leafWaveDots()) van
+  //    abajo del todo, centrados — pegados al título (como antes) quedaban
+  //    en el borde derecho, donde los tapaba la franja de "pasar de
+  //    pantalla" (manifiesto__nav).
   `
-    <div class="manifiesto__title-row">
-      <p class="manifiesto__title">Cada planta.<br />Su propia forma.</p>
-      ${leafWaveDots()}
-    </div>
+    <p class="manifiesto__title">Cada planta.<br /><span class="manifiesto__title-muted">Su propia forma.</span></p>
     ${leafWaves({ flip: true })}
+    <div class="manifiesto__dots-center">${leafWaveDots()}</div>
   `,
   // 5. Mecanismo: paso a paso, cada uno con su gráfico (ver mechanism() más abajo)
   `
@@ -139,26 +141,27 @@ const SLIDES = [
   //    (plantas → Microfreak, sustrato → compu); tocar una parte la explica
   //    (components/production-loop)
   `
-    <p class="manifiesto__title">Señales bioeléctricas.<br />Notas MIDI.</p>
+    <p class="manifiesto__title">Señales bioeléctricas.<br /><span class="manifiesto__title-muted">Notas MIDI.</span></p>
     ${productionLoop()}
   `,
   // 7. Prueba: depende del terrario, por eso es una función (ver render).
   //    El título arriba, como el resto de las pantallas; el botón para
   //    escuchar la pieza se movió a la pantalla 8 (la última).
   ({ terrario, lanes }) => `
-    <p class="manifiesto__big">Dos secuencias.<br>Una pieza final.</p>
+    <p class="manifiesto__title">Dos secuencias.<br><span class="manifiesto__title-muted">Una pieza final.</span></p>
     ${pieceGraphic(terrario, lanes)}
   `,
   // 8. Filotaxia / Armonía en plantas: el mismo encabezado de dos líneas
   //    que Terrario (mi-terrario.js, "Filotaxia." + la segunda en gris) y,
-  //    abajo, la misma animación de conectar que en Conectar y Mi terrario
-  //    (components/connect-loop). Toda la pantalla en negro
-  //    (manifiesto.css, .manifiesto__slide--connect), así que el cuadro va
-  //    sin --inverse (claro, para resaltar sobre el negro); abajo, el mismo
-  //    botón que la pantalla 7 para escuchar la pieza.
+  //    abajo, la misma animación de conectar que en Mi terrario (antes de
+  //    conectar) y la Guía (components/connect-loop con --inverse: el
+  //    cuadro queda negro en claro, blanco en oscuro). La pantalla, fuera
+  //    del cuadro, va con el fondo normal (blanco en claro), como el resto;
+  //    abajo, el mismo botón que la pantalla 7 para escuchar la pieza (el
+  //    pill negro de siempre, .btn--primary).
   ({ terrario }) => `
     <p class="manifiesto__title">Filotaxia.<br><span class="manifiesto__title-muted">Armonía en plantas.</span></p>
-    ${connectLoop()}
+    ${connectLoop({ inverse: true })}
     <a class="btn btn--primary manifiesto__listen" href="#/escuchar/${terrario.id}" data-listen data-done>
       ${icon("play")} Escuchar la pieza
     </a>
@@ -210,6 +213,9 @@ export async function render(root, { params }) {
             ${typeof slide === "function" ? slide({ terrario, quote, lanes }) : slide}
           </section>`).join("")}
       </div>
+
+      <button class="manifiesto__nav manifiesto__nav--prev" type="button" data-nav="prev" aria-label="Pantalla anterior"></button>
+      <button class="manifiesto__nav manifiesto__nav--next" type="button" data-nav="next" aria-label="Pantalla siguiente"></button>
     </section>
   `;
 
@@ -276,8 +282,6 @@ export async function render(root, { params }) {
     // Pantalla 3: las capas pasan solas solo mientras se ve
     if (slides[index].querySelector("[data-layers]")) layerCycle.play();
     else layerCycle.stop();
-    // Pantalla 8: fondo negro, así que la tira de arriba se invierte para verse
-    screen.classList.toggle("manifiesto--dark-top", slides[index].classList.contains("manifiesto__slide--connect"));
     if (index === last) finish();
   }
 
@@ -295,10 +299,12 @@ export async function render(root, { params }) {
     });
   });
 
-  // Mantener apretado pausa (la línea se frena); al soltar, sigue
-  track.addEventListener("pointerdown", () => screen.classList.add("is-paused"));
+  // Mantener apretado pausa (la línea se frena); al soltar, sigue. En
+  // `screen` (no en `track`): así también pausa al apretar las franjas de
+  // navegación de abajo, que son hermanas del track, no están adentro.
+  screen.addEventListener("pointerdown", () => screen.classList.add("is-paused"));
   ["pointerup", "pointercancel", "pointerleave"].forEach((type) =>
-    track.addEventListener(type, () => screen.classList.remove("is-paused")));
+    screen.addEventListener(type, () => screen.classList.remove("is-paused")));
 
   // Con la app en segundo plano tampoco avanza
   function onVisibility() {
@@ -306,36 +312,27 @@ export async function render(root, { params }) {
   }
   document.addEventListener("visibilitychange", onVisibility);
 
-  // Como las historias de Instagram, pero solo en los bordes: tocar una
-  // franja angosta a la derecha (todo el alto) pasa a la próxima, la de la
-  // izquierda vuelve a la anterior. El centro queda libre para lo que haya
-  // adentro (los puntos de la 2, las capas de la 3, las hojas de la 4, las
-  // partes de la Producción en la 6): tocar un control de esos nunca cambia
-  // de pantalla, pase lo que pase, solo frena el autoplay (la persona está
-  // explorando). La única excepción es un link de verdad (acá, "Escuchar la
-  // pieza"): ese hace lo suyo. Va en la fase de captura porque esos
-  // controles frenan su propio click.
-  //
-  // El borde manda sobre cualquier control: algunas partes de la Producción
-  // (pantalla 6, "ableton") quedan cerca del borde derecho del dibujo, así
-  // que su área tocable entra en esta franja — sin este orden, tocar ahí
-  // para pasar de pantalla la elegía a ella en cambio y frenaba el autoplay,
-  // y daba la sensación de que costaba avanzar de la 6 a la 7.
-  const NAV_ZONE = 64; // px, ancho de cada franja (prev a la izquierda, next a la derecha)
+  // Como las historias de Instagram, pero solo en los bordes: una franja
+  // angosta a la derecha (todo el alto) pasa a la próxima, la de la
+  // izquierda vuelve a la anterior (.manifiesto__nav, dos botones de
+  // verdad, por encima de todo con z-index — no una franja calculada al
+  // toque por coordenadas, que un control cerca del borde podía tapar: así
+  // pasaba con "ableton", en la Producción (pantalla 6), pegado al borde
+  // derecho del dibujo, y costaba pasar de la 6 a la 7 — ni ahora ni
+  // después, por más que algo de adentro crezca hasta el borde, el botón
+  // de navegación gana siempre, porque está encima). El centro queda libre
+  // para lo que haya adentro (los puntos de la 2, las capas de la 3, las
+  // hojas de la 4, las partes de la Producción en la 6): tocar un control
+  // de esos nunca cambia de pantalla, pase lo que pase, solo frena el
+  // autoplay (la persona está explorando). La única excepción es un link
+  // de verdad (acá, "Escuchar la pieza"): ese hace lo suyo. Va en la fase
+  // de captura porque esos controles frenan su propio click.
+  root.querySelector('[data-nav="prev"]').addEventListener("click", () => goTo(current - 1));
+  root.querySelector('[data-nav="next"]').addEventListener("click", () => goTo(current + 1));
 
   track.addEventListener("click", (event) => {
     if (event.target.closest("a")) {
       stopAutoplay();
-      return;
-    }
-    const { left, width } = track.getBoundingClientRect();
-    const x = event.clientX - left;
-    if (x < NAV_ZONE) {
-      goTo(current - 1);
-      return;
-    }
-    if (x > width - NAV_ZONE) {
-      goTo(current + 1);
       return;
     }
     if (event.target.closest("button, [role='button']")) {
