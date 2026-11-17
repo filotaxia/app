@@ -1,0 +1,90 @@
+/* ============================================
+   Components — File Upload
+   ============================================ */
+
+/* Dropzone de referencia (tarjeta blanca → cuadro punteado → ícono con
+   sombra → título → bajada → píldora "Elegir archivo"), sin redondear:
+   radio 0, como el resto de la app. */
+
+.file-drop {
+    border: 1px solid var(--color-line);
+    border-radius: 0;
+    padding: var(--spacing-md);
+    background: var(--color-bg);
+}
+
+.file-drop__zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-lg);
+    padding: var(--spacing-3xl) var(--spacing-xl);
+    border: 1px dashed var(--color-line);
+    border-radius: 0;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.file-drop--active .file-drop__zone {
+    border-color: var(--color-text);
+    background: var(--color-block-bg);
+}
+
+.file-drop__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 0;
+    background: var(--color-bg);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.file-drop__icon svg {
+    width: var(--icon-md);
+    height: var(--icon-md);
+    color: var(--color-text-muted);
+}
+
+.file-drop__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+}
+
+.file-drop__title {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+    font-weight: var(--font-weight-medium);
+}
+
+.file-drop__description {
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: var(--color-text-muted);
+}
+
+.file-drop__browse {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border: 1px solid var(--color-line);
+    border-radius: 0;
+    font-size: var(--font-sm-size);
+    line-height: var(--font-sm-line);
+    color: var(--color-text-muted);
+    background: var(--color-bg);
+}
+
+.file-drop__browse svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+.file-drop__zone:focus-within .file-drop__browse {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}

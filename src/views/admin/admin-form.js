@@ -31,6 +31,7 @@ import { qrFor, downloadSvg, downloadPng } from "./admin-qr.js";
 import { toast } from "../../components/toast/toast.js";
 import { loader, bindLoader } from "../../components/loader/loader.js";
 import { openSheet } from "../../components/sheet/sheet.js";
+import { fileDrop, bindFileDrop } from "../../components/file-upload/file-upload.js";
 
 const STATUS_LABEL = { borrador: "Borrador", publicado: "Publicado", retirado: "Retirado" };
 
@@ -84,16 +85,24 @@ export function renderForm(root, { row, rows, onSaved, onDeleted }) {
         <details class="admin-block admin-block--full" open>
           <summary class="admin-block__title">Archivos.${toggle()}</summary>
           <div class="admin-files">
-            ${FILES.map((file) => fileField(file, data[file.key])).join("")}
+            <div class="admin-file-tabs" role="tablist">
+              ${FILES.map((file, i) => `
+                <button class="admin-file-tabs__tab" type="button" role="tab" id="file-tab-${file.key}"
+                  aria-selected="${i === 0}" aria-controls="file-panel-${file.key}" data-file-tab="${file.key}">
+                  ${escapeHTML(file.label)}
+                </button>`).join("")}
+            </div>
+            ${FILES.map((file, i) => `
+              <div class="admin-file-panel" id="file-panel-${file.key}" role="tabpanel" aria-labelledby="file-tab-${file.key}"
+                data-file-panel="${file.key}" ${i === 0 ? "" : "hidden"}>
+                ${fileField(file, data[file.key])}
+              </div>`).join("")}
           </div>
           <div class="admin-gallery">
             <p class="eyebrow">Galería (Características)</p>
             <p class="admin-hint">Fotos propias de este terrario; si hay alguna, reemplazan a las tres tarjetas genéricas en “Características” de su ficha.</p>
             <ul class="admin-gallery__grid" data-gallery-list></ul>
-            <label class="btn btn--ghost admin-file__pick">
-              Agregar fotos
-              <input class="visually-hidden" type="file" accept="image/*" multiple data-gallery-input />
-            </label>
+            ${fileDrop({ accept: "image/*", multiple: true, browseLabel: "Agregar fotos", inputAttr: "data-gallery-input" })}
           </div>
         </details>
 
@@ -184,6 +193,20 @@ export function renderForm(root, { row, rows, onSaved, onDeleted }) {
   `;
 
   const form = root.querySelector("[data-form]");
+  bindFileDrop(root);
+
+  /* ---------------------------------------- */
+  /* Archivos: un tab por archivo, uno visible a la vez */
+  /* ---------------------------------------- */
+
+  root.querySelectorAll("[data-file-tab]").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      root.querySelectorAll("[data-file-tab]").forEach((t) => t.setAttribute("aria-selected", String(t === tab)));
+      root.querySelectorAll("[data-file-panel]").forEach((panel) => {
+        panel.hidden = panel.dataset.filePanel !== tab.dataset.fileTab;
+      });
+    });
+  });
 
   /* ---------------------------------------- */
   /* Desplegar / plegar todos los bloques */
@@ -520,6 +543,7 @@ function confirmSheet(message, confirmLabel) {
   return new Promise((resolve) => {
     let decided = false;
     const sheet = openSheet({
+      className: "sheet--admin",
       title: "¿Estás seguro?",
       body: `
         <p class="lead">${escapeHTML(message)}</p>
@@ -551,6 +575,7 @@ function confirmDeleteSheet(model) {
   return new Promise((resolve) => {
     let decided = false;
     const sheet = openSheet({
+      className: "sheet--admin",
       title: "Eliminar para siempre",
       body: `
         <p class="lead">Esta acción no se puede deshacer: ${escapeHTML(model)} desaparece de la base y su QR impreso deja de abrir nada. Escribí <strong>${escapeHTML(model)}</strong> para confirmar.</p>
@@ -601,14 +626,9 @@ function fileField(file, path) {
       : `<a href="${escapeHTML(url)}" target="_blank" rel="noopener">${escapeHTML(name)}</a>`;
   return `
     <div class="admin-file">
-      <p class="eyebrow">${escapeHTML(file.label)}</p>
       <div class="admin-file__current ${file.key === "photo" ? "admin-file__current--photo" : ""}" data-current="${file.key}">${current}</div>
-      <label class="btn btn--ghost admin-file__pick">
-        ${escapeHTML(path ? "Cambiar" : file.pick)}
-        <input class="visually-hidden" type="file" name="${file.key}" accept="${file.accept}" data-file-input />
-      </label>
+      ${fileDrop({ name: file.key, accept: file.accept, description: file.hint, browseLabel: path ? "Cambiar" : file.pick })}
       <p class="admin-file__chosen" data-chosen="${file.key}"></p>
-      <p class="admin-hint">${escapeHTML(file.hint)}</p>
     </div>
   `;
 }

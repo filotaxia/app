@@ -427,11 +427,10 @@ function renderPrint() {
   setNav("imprimir");
   root.innerHTML = `
     <div class="admin-print__controls">
-      <a class="back-link" href="#/">${arrow("left")} Terrarios</a>
       <h1 class="title" tabindex="-1" data-focus>Imprimir QR</h1>
       <p class="lead">Elegí cuáles. Cada QR es el link https://app.filotaxia.com/t/&lt;código&gt; de su terrario y no cambia nunca.
         Antes de imprimir en el material final, escaneá uno impreso en papel común.</p>
-      <fieldset class="admin-checks admin-checks--row" data-pick>
+      <fieldset class="admin-checks" data-pick>
         <legend class="visually-hidden">Terrarios a imprimir</legend>
         ${rows.map((row) => `
           <label class="admin-check">

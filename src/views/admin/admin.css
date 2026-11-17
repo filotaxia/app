@@ -16,6 +16,25 @@
     padding-block: var(--spacing-3xl) var(--spacing-5xl);
 }
 
+/* En el panel todos los botones van llenos (fondo oscuro, texto claro),
+   incluidos los "ghost" de la app pública (línea fina) — a diferencia del
+   front, que sigue DESIGN.md. .sheet--admin cubre los mismos botones
+   dentro de las hojas de confirmar/eliminar (components/sheet). */
+.admin .btn--ghost,
+.sheet--admin .btn--ghost {
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+    border-color: var(--color-inverse-bg);
+}
+
+@media (hover: hover) {
+    .admin .btn--ghost:hover,
+    .sheet--admin .btn--ghost:hover {
+        background: var(--color-inverse-hover);
+        border-color: var(--color-inverse-hover);
+    }
+}
+
 /* Con la barra visible: lugar abajo para que no tape el contenido (como
    .app-shell[data-nav] del front) */
 .admin[data-nav] {
@@ -548,16 +567,48 @@
     height: 100%;
 }
 
-.admin-checks--row {
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: var(--gap-lg);
+/* Archivos: un tab por archivo (Foto, Video, los dos MIDI), un panel visible
+   a la vez (admin-form.js lo controla con "hidden") */
+.admin-files {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
 }
 
-/* Archivos */
-.admin-files {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--gap-xl) var(--gap-lg);
+.admin-file-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--color-line);
+}
+
+.admin-file-tabs__tab {
+    flex: 1;
+    min-height: var(--size-tap);
+    padding: var(--spacing-sm) var(--spacing-xs);
+    margin-bottom: -1px;
+    border-bottom: 2px solid transparent;
+    font-size: var(--font-2xs-size);
+    line-height: var(--font-2xs-line);
+    letter-spacing: var(--font-2xs-tracking);
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--color-text-muted);
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.admin-file-tabs__tab[aria-selected="true"] {
+    color: var(--color-text);
+    border-bottom-color: var(--color-text);
+}
+
+.admin-file-tabs__tab:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: -2px;
+}
+
+@media (hover: hover) {
+    .admin-file-tabs__tab:not([aria-selected="true"]):hover {
+        color: var(--color-text);
+    }
 }
 
 .admin-file {
@@ -634,15 +685,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-.admin-file__pick {
-    cursor: pointer;
-}
-
-.admin-file__pick:focus-within {
-    outline: 2px solid var(--color-focus);
-    outline-offset: 2px;
 }
 
 .admin-file__chosen {
@@ -783,13 +825,9 @@ RESPONSIVE
         gap: var(--gap-sm);
     }
 
-    .admin-checks:not(.admin-checks--row) {
+    .admin-checks {
         grid-template-columns: repeat(2, 1fr);
         column-gap: var(--gap-lg);
-    }
-
-    .admin-checks--row {
-        grid-template-columns: repeat(4, 1fr);
     }
 
     .admin-files {
