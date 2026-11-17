@@ -15,16 +15,49 @@
 // Sin sesión, cualquiera de ellas muestra "Entrar".
 
 import { escapeHTML } from "../../utils/html.js";
-import { arrow, icon } from "../../utils/icons.js";
-import { formatTime, formatDate } from "../../utils/format.js";
+import { arrow, icon, googleMark } from "../../utils/icons.js";
+import { formatDate } from "../../utils/format.js";
+import { applyTheme } from "../../utils/theme.js";
+import { get, set, subscribe } from "../../store/store.js";
 import { terrariumArt } from "../../components/terrarium-art/terrarium-art.js";
-import { signIn, signOut, currentUser, isAdmin, listTerrarios, publicFileURL, AdminError } from "../../store/admin.js";
+import { settingsLink } from "../../components/settings-link/settings-link.js";
+import { segmented } from "../../components/segmented/segmented.js";
+import { openSheet } from "../../components/sheet/sheet.js";
+import { toast } from "../../components/toast/toast.js";
+import {
+  signIn, signInWithGoogle, completeOAuthRedirect, signOut, changePassword, currentUser, isAdmin,
+  listTerrarios, publicFileURL, AdminError,
+} from "../../store/admin.js";
 import { renderForm } from "./admin-form.js";
 import { qrFor } from "./admin-qr.js";
 import { renderBackups } from "./admin-backups.js";
+import { mountBottomNavTips } from "../../layout/bottom-nav/bottom-nav.js";
 
 const root = document.querySelector("[data-admin]");
+const navEl = document.querySelector("[data-nav]");
 const STATUS_LABEL = { borrador: "Borrador", publicado: "Publicado", retirado: "Retirado" };
+const THEME_OPTIONS = [
+  { value: "system", label: "Auto" },
+  { value: "light", label: "Claro" },
+  { value: "dark", label: "Oscuro" },
+];
+
+// La apariencia es del store (store/store.js: el mismo localStorage de la
+// app, claves en común), así que Ajustes del panel y Ajustes de la app
+// comparten el valor: cambiarlo en uno se ve en el otro.
+applyTheme((await get("prefs")).theme);
+subscribe("prefs", (prefs) => applyTheme(prefs.theme));
+
+// Muestra/oculta la barra (la misma del front, con las páginas del panel) y
+// marca la activa. `section` null: sin sesión (Entrar, Sin permiso, error).
+function setNav(section) {
+  root.toggleAttribute("data-nav", section !== null);
+  navEl.toggleAttribute("hidden", section === null);
+  navEl.querySelectorAll("[data-route]").forEach((link) => {
+    if (link.dataset.route === section) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  });
+}
 
 let rows = [];   // las filas de la última lista
 let visit = 0;   // cuenta los cambios de pantalla (ver abajo)
@@ -56,15 +89,17 @@ async function route() {
   if (screen === "nuevo") return showForm(null);
   if (screen === "editar") {
     const row = rows.find((r) => r.id === id);
-    return row ? showForm(row) : renderList(user);
+    return row ? showForm(row) : renderList();
   }
   if (screen === "imprimir") return renderPrint();
+  if (screen === "ajustes") return renderAjustes(user);
   if (screen === "backups") {
+    setNav("backups");
     await renderBackups(root);
     if (!stale()) done();
     return;
   }
-  return renderList(user);
+  return renderList();
 }
 
 // Después de pintar: arriba de todo y el foco en el título (lectores de pantalla)
@@ -77,43 +112,73 @@ function done() {
 /* Entrar */
 /* ---------------------------------------- */
 
+// Un campo con el label flotante: arranca adentro, de placeholder, y sube
+// afuera del borde (con un hueco, como un <fieldset> con <legend>) apenas
+// se escribe algo o se entra en foco. El password suma el ojo que muestra
+// u oculta lo escrito.
+function authField({ id, label, type, autocomplete }) {
+  const secret = type === "password";
+  return `
+    <div class="auth-field${secret ? " auth-field--secret" : ""}">
+      <input
+        class="auth-field__input" id="${id}" name="${id}"
+        type="${type}" autocomplete="${autocomplete}" placeholder=" " required
+      />
+      <label class="auth-field__label" for="${id}">${label}</label>
+      ${secret ? `
+        <button class="auth-field__eye" type="button" data-eye aria-label="Mostrar contraseña">
+          ${icon("eye")}${icon("eye-off")}
+        </button>
+      ` : ""}
+    </div>
+  `;
+}
+
 function renderLogin() {
+  setNav(null);
   root.innerHTML = `
     <section class="admin-login">
-      <p class="eyebrow">Filotaxia · Panel interno</p>
       <h1 class="title" tabindex="-1" data-focus>Entrar</h1>
-      <p class="lead">Para cargar y editar terrarios. La app no tiene cuentas: esto es solo para el panel.</p>
       <form class="admin-login__form" novalidate data-login>
-        <div class="field">
-          <label class="field__label eyebrow" for="email">Email</label>
-          <input class="field__input" id="email" name="email" type="email" autocomplete="username" required />
-        </div>
-        <div class="field">
-          <label class="field__label eyebrow" for="password">Contraseña</label>
-          <input class="field__input" id="password" name="password" type="password" autocomplete="current-password" required />
-        </div>
+        ${authField({ id: "email", label: "Email", type: "email", autocomplete: "username" })}
+        ${authField({ id: "password", label: "Contraseña", type: "password", autocomplete: "current-password" })}
         <p class="field__error" role="alert" data-error hidden></p>
         <button class="btn btn--primary btn--block" type="submit">Entrar</button>
       </form>
+      <p class="auth-divider"><span>o</span></p>
+      <button class="btn btn--ghost btn--block auth-google" type="button" data-google>
+        ${googleMark()} Continuar con Google
+      </button>
     </section>
   `;
   done();
 
   const form = root.querySelector("[data-login]");
+
+  // El ojo del password: solo cambia el tipo del campo, no toca el foco
+  const password = form.elements.password;
+  const eye = form.querySelector("[data-eye]");
+  eye.addEventListener("click", () => {
+    const shown = password.type === "text";
+    password.type = shown ? "password" : "text";
+    eye.closest(".auth-field").dataset.show = String(!shown);
+    eye.setAttribute("aria-label", shown ? "Mostrar contraseña" : "Ocultar contraseña");
+  });
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const error = root.querySelector("[data-error]");
-    const button = form.querySelector("button");
+    const button = form.querySelector("button[type=submit]");
     const email = form.elements.email.value.trim();
-    const password = form.elements.password.value;
-    if (!email || !password) {
+    const pass = password.value;
+    if (!email || !pass) {
       error.textContent = "Escribí tu email y tu contraseña.";
       error.hidden = false;
       return;
     }
     button.disabled = true;
     try {
-      await signIn(email, password);
+      await signIn(email, pass);
       route();
     } catch (failure) {
       error.textContent = failure instanceof AdminError ? failure.message : "No se pudo entrar.";
@@ -121,9 +186,12 @@ function renderLogin() {
       button.disabled = false;
     }
   });
+
+  root.querySelector("[data-google]").addEventListener("click", signInWithGoogle);
 }
 
 function renderNoAccess(user) {
+  setNav(null);
   root.innerHTML = `
     <section class="admin-login">
       <p class="eyebrow">${escapeHTML(user.email)}</p>
@@ -138,6 +206,7 @@ function renderNoAccess(user) {
 }
 
 function renderProblem(error) {
+  setNav(null);
   root.innerHTML = `
     <section class="admin-login">
       <h1 class="title" tabindex="-1" data-focus>No se pudo cargar</h1>
@@ -159,23 +228,17 @@ async function logOut() {
 /* Lista */
 /* ---------------------------------------- */
 
-function renderList(user) {
+function renderList() {
+  setNav("lista");
   const published = rows.filter((row) => row.status === "publicado").length;
   root.innerHTML = `
     <header class="admin-head">
       <div>
-        <p class="eyebrow">Panel · ${escapeHTML(user.email)}</p>
         <h1 class="title" tabindex="-1" data-focus>Terrarios</h1>
         <p class="lead">${rows.length} en total · ${published} publicados</p>
       </div>
-      <button class="admin-head__out" type="button" data-out>Salir</button>
+      ${settingsLink()}
     </header>
-
-    <div class="admin-actions">
-      <a class="btn btn--primary" href="#/nuevo">${icon("plus", "admin-actions__icon")} Nuevo terrario</a>
-      <a class="btn btn--ghost" href="#/imprimir">Imprimir QR</a>
-      <a class="btn btn--ghost" href="#/backups">Backups</a>
-    </div>
 
     <ul class="admin-list">
       ${rows.map((row) => `
@@ -185,8 +248,7 @@ function renderList(user) {
             <span class="admin-row__text">
               <span class="admin-row__name">${escapeHTML(row.model)}</span>
               <span class="admin-row__meta">
-                <span class="chip ${row.status === "publicado" ? "" : "admin-chip--quiet"}">${STATUS_LABEL[row.status]}</span>
-                ${row.duration ? `<span>${formatTime(row.duration)}</span>` : ""}
+                <span>${STATUS_LABEL[row.status]}</span>
                 ${row.recorded ? `<span>${formatDate(row.recorded)}</span>` : ""}
               </span>
             </span>
@@ -196,7 +258,6 @@ function renderList(user) {
         </li>`).join("")}
     </ul>
   `;
-  root.querySelector("[data-out]").addEventListener("click", logOut);
   done();
 
   // Los QR chiquitos de cada fila, cuando carga la librería
@@ -211,10 +272,93 @@ function renderList(user) {
 }
 
 /* ---------------------------------------- */
+/* Ajustes */
+/* ---------------------------------------- */
+
+// Como la de la app (apariencia, la misma lista): acá suma la cuenta que
+// entró, cambiar su contraseña y cerrar sesión. Se llega desde el punto
+// de arriba a la derecha, igual que en el front.
+async function renderAjustes(user) {
+  setNav("ajustes");
+  const prefs = await get("prefs");
+  root.innerHTML = `
+    <a class="back-link" href="#/">${arrow("left")} Terrarios</a>
+    <h1 class="title" tabindex="-1" data-focus>Ajustes</h1>
+
+    <nav class="list" aria-label="Ajustes">
+      <div class="list-row">
+        <span aria-hidden="true">Apariencia</span>
+        ${segmented({ name: "theme", legend: "Apariencia", value: prefs.theme ?? "light", options: THEME_OPTIONS })}
+      </div>
+      <div class="list-row">
+        <span>Cuenta</span>
+        <span class="lead">${escapeHTML(user.email)}</span>
+      </div>
+      ${user.provider === "google"
+        ? `<div class="list-row"><span class="lead">Entraste con Google: no tiene contraseña para cambiar.</span></div>`
+        : `<button class="list-row" type="button" data-password>Cambiar contraseña ${arrow()}</button>`}
+    </nav>
+
+    <button class="btn btn--ghost btn--block" type="button" data-out>Cerrar sesión</button>
+  `;
+  done();
+
+  // La apariencia se guarda al toque, como en la app (y se ve ahí también:
+  // mismo store, misma clave)
+  root.querySelector('[data-segmented="theme"]').addEventListener("change", async (event) => {
+    await set("prefs", { ...(await get("prefs")), theme: event.target.value });
+  });
+
+  root.querySelector("[data-password]")?.addEventListener("click", openChangePassword);
+  root.querySelector("[data-out]").addEventListener("click", logOut);
+}
+
+function openChangePassword() {
+  const sheet = openSheet({
+    title: "Cambiar contraseña",
+    body: `
+      <form novalidate data-password-form>
+        <div class="field">
+          <label class="field__label eyebrow" for="new-password">Contraseña nueva</label>
+          <input class="field__input" id="new-password" name="password" type="password"
+            autocomplete="new-password" minlength="6" required />
+        </div>
+        <p class="field__error" role="alert" data-error hidden></p>
+        <button class="btn btn--primary btn--block" type="submit">Guardar</button>
+      </form>
+    `,
+  });
+
+  const form = sheet.element.querySelector("[data-password-form]");
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const error = form.querySelector("[data-error]");
+    const button = form.querySelector("button");
+    const password = form.elements.password.value;
+    if (password.length < 6) {
+      error.textContent = "Al menos 6 caracteres.";
+      error.hidden = false;
+      return;
+    }
+    button.disabled = true;
+    try {
+      await changePassword(password);
+      sheet.close();
+      toast("Contraseña actualizada");
+    } catch (failure) {
+      error.textContent = failure instanceof AdminError ? failure.message : "No se pudo cambiar la contraseña.";
+      error.hidden = false;
+      button.disabled = false;
+    }
+  });
+}
+
+/* ---------------------------------------- */
 /* Formulario */
 /* ---------------------------------------- */
 
 function showForm(row) {
+  setNav(row ? null : "nuevo");   // editar no es una página propia de la barra; nuevo sí
   renderForm(root, {
     row,
     rows,
@@ -234,6 +378,7 @@ function showForm(row) {
 // Reemplaza a imprimir-qr.html: se eligen los terrarios (de entrada, los
 // publicados) y se imprime una hoja con su QR, su código y su link.
 function renderPrint() {
+  setNav("imprimir");
   root.innerHTML = `
     <div class="admin-print__controls">
       <a class="back-link" href="#/">${arrow("left")} Terrarios</a>
@@ -279,5 +424,8 @@ function renderPrint() {
   paint().catch(() => { grid.textContent = "No se pudieron dibujar los QR (¿sin conexión?)."; });
 }
 
+mountBottomNavTips();
 window.addEventListener("hashchange", route);
-route();
+// Si se viene de elegir la cuenta en Google, guardar esa sesión antes de
+// que el router lea el hash (ahí vienen sus tokens, no una pantalla)
+completeOAuthRedirect().catch(() => {}).then(route);

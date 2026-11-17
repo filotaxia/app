@@ -20,6 +20,8 @@ const PATHS = {
   "check": `<path d="M20 6 9 17l-5-5"/>`,
   "chevron-left": `<path d="m15 18-6-6 6-6"/>`,
   "chevron-right": `<path d="m9 18 6-6-6-6"/>`,
+  "eye": `<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>`,
+  "eye-off": `<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>`,
   "image-plus": `<path d="M16 5h6"/><path d="M19 2v6"/><path d="M21 11.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7.5"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/><circle cx="9" cy="9" r="2"/>`,
   "layout-grid": `<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>`,
   "list": `<path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/>`,
@@ -61,4 +63,16 @@ export function icon(name, className = "") {
 // Decorativa: el texto del link ya dice adónde va.
 export function arrow(direction = "right") {
   return `<span class="arrow" aria-hidden="true">${direction === "left" ? "←" : "→"}</span>`;
+}
+
+// La "G" de Google, con sus cuatro colores: la única excepción al negro y
+// gris de la app, porque es la marca de otro (como el botón "Entrar con
+// Google" de cualquier sitio). Solo se usa en el login del panel.
+export function googleMark() {
+  return `<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" focusable="false">
+    <path fill="#4285F4" d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4814h4.8445c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9087c1.7018-1.5668 2.6836-3.874 2.6836-6.615z"/>
+    <path fill="#34A853" d="M9 18c2.43 0 4.4673-.8059 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.8591-3.0477.8591-2.3436 0-4.3282-1.5831-5.0359-3.7104H.9573v2.3318C2.4382 15.9832 5.4818 18 9 18z"/>
+    <path fill="#FBBC05" d="M3.9641 10.7101c-.18-.54-.2822-1.1168-.2822-1.7101s.1023-1.1701.2822-1.7101V4.9582H.9573C.3477 6.1731 0 7.5477 0 9s.3477 2.8269.9573 4.0418z"/>
+    <path fill="#EA4335" d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4632.8918 11.4259 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.9641 7.29C4.6718 5.1627 6.6564 3.5795 9 3.5795z"/>
+  </svg>`;
 }

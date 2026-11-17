@@ -8,8 +8,11 @@
 // librería, igual que catalog.js.
 //
 //   await signIn(email, password)     → entra (o lanza AdminError con el motivo en palabras)
+//   signInWithGoogle()                → manda a elegir la cuenta de Google
+//   await completeOAuthRedirect()     → al volver de Google, guarda la sesión (true si había una)
 //   await signOut()
-//   await currentUser()               → { email } o null si no hay sesión
+//   await changePassword(password)    → la cambia para la cuenta que entró (o lanza AdminError)
+//   await currentUser()               → { email, provider: "email" | "google" } o null si no hay sesión
 //   await isAdmin()                   → ¿el email está en la tabla admins?
 //   await listTerrarios()             → todas las filas, también los borradores
 //   await createTerrario(row)         → la fila creada (con su qr_code nuevo)
@@ -54,7 +57,42 @@ export async function signIn(email, password) {
   });
   if (response.status === 400) throw new AdminError("El email o la contraseña no son correctos.");
   if (!response.ok) throw new AdminError(`Supabase no dejó entrar (error ${response.status}).`);
-  await saveSession(await response.json());
+  await saveSession(await response.json(), "email");
+}
+
+// Manda a elegir la cuenta de Google; Supabase vuelve acá mismo con el
+// token en el hash de la URL (#access_token=…), que completeOAuthRedirect lee.
+export function signInWithGoogle() {
+  const redirectTo = location.href.split("#")[0];
+  location.href = `${AUTH}/authorize?provider=google&redirect_to=${encodeURIComponent(redirectTo)}`;
+}
+
+// Al volver de Google, Supabase deja la sesión en el hash en vez de en la
+// URL de siempre: esto la guarda y limpia el hash antes de que el router
+// del panel (que también mira location.hash) lo confunda con una pantalla.
+// Devuelve true si había algo de Google para procesar.
+export async function completeOAuthRedirect() {
+  if (!location.hash.includes("access_token=")) return false;
+  const params = new URLSearchParams(location.hash.slice(1));
+  history.replaceState(null, "", location.pathname + location.search + "#/");
+
+  const access_token = params.get("access_token");
+  const refresh_token = params.get("refresh_token");
+  if (!access_token) return true;
+
+  const response = await fetch(`${AUTH}/user`, {
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${access_token}` },
+  }).catch(() => null);
+  const user = response?.ok ? await response.json() : null;
+
+  await set("admin_session", {
+    access_token,
+    refresh_token,
+    expires_at: Date.now() / 1000 + Number(params.get("expires_in") ?? 3600),
+    email: user?.email ?? null,
+    provider: "google",
+  });
+  return true;
 }
 
 export async function signOut() {
@@ -70,19 +108,43 @@ export async function signOut() {
 
 export async function currentUser() {
   const session = await validSession();
-  return session ? { email: session.email } : null;
+  return session ? { email: session.email, provider: session.provider } : null;
+}
+
+// Cambia la contraseña de la cuenta que entró (sirve para la que entró con
+// Google, que todavía no tiene una). Supabase pide al menos 6 caracteres.
+export async function changePassword(password) {
+  const session = await requireSession();
+  const response = await fetch(`${AUTH}/user`, {
+    method: "PUT",
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${session.access_token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  }).catch(() => {
+    throw new AdminError("No hay conexión con Supabase. Probá de nuevo en un rato.");
+  });
+  if (!response.ok) {
+    const { msg } = await response.json().catch(() => ({}));
+    throw new AdminError(msg ?? `No se pudo cambiar la contraseña (error ${response.status}).`);
+  }
 }
 
 export async function isAdmin() {
   return request("POST", `${REST}/rpc/is_admin`, {});
 }
 
-async function saveSession(data) {
+// `provider` dice cómo entró esta vez ("email" o "google"); sin uno nuevo
+// (al renovar el token) se mantiene el que ya tenía guardado, porque
+// app_metadata.provider de Supabase es el de la cuenta, no el del login:
+// una cuenta creada con contraseña sigue diciendo "email" aunque esta vez
+// haya entrado por Google.
+async function saveSession(data, provider) {
+  const previous = await get("admin_session");
   await set("admin_session", {
     access_token: data.access_token,
     refresh_token: data.refresh_token,
     expires_at: data.expires_at,   // en segundos desde 1970
     email: data.user?.email ?? null,
+    provider: provider ?? previous?.provider ?? null,
   });
 }
 
