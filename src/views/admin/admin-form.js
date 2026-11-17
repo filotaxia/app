@@ -5,29 +5,32 @@
 // El formulario de un terrario en el panel: crear uno nuevo o editar uno
 // que ya existe. Todos los campos de la tabla `terrarios`, los cuatro
 // archivos (foto, video y los dos MIDI de los Biodata), su QR y los botones
-// para guardar, publicar o retirar. Nunca borra.
+// para guardar, publicar, retirar o eliminar (esta última, de verdad: ver
+// deleteTerrario más abajo).
 //
-//   renderForm(root, { row, rows, onSaved })
-//     row      la fila a editar, o null para uno nuevo
-//     rows     todas las filas (para sugerir el número y no repetirlo)
-//     onSaved  se llama con la fila guardada
+//   renderForm(root, { row, rows, onSaved, onDeleted })
+//     row       la fila a editar, o null para uno nuevo
+//     rows      todas las filas (para sugerir el número y no repetirlo)
+//     onSaved   se llama con la fila guardada
+//     onDeleted se llama (sin argumentos) después de eliminar
 //
 // Al guardar: primero se revisa todo (y se leen los MIDI, para no subir un
 // archivo roto), después se suben los archivos elegidos a Storage (una
 // carpeta por terrario) y al final se guarda la fila.
 
 import { escapeHTML } from "../../utils/html.js";
-import { arrow } from "../../utils/icons.js";
+import { arrow, icon } from "../../utils/icons.js";
 import { todayKey } from "../../utils/dates.js";
 import { formatTime, parseDuration } from "../../utils/format.js";
 import { nextTerrarioId, storagePath } from "../../utils/catalog.js";
 import { shrinkPhoto } from "../../utils/image.js";
 import { parseMidi } from "../../utils/midi.js";
 import { PLANTAS, WAVE_NAMES, getPlanta } from "../../content/plantas.js";
-import { createTerrario, updateTerrario, uploadFile, publicFileURL } from "../../store/admin.js";
+import { createTerrario, updateTerrario, deleteTerrario, uploadFile, publicFileURL } from "../../store/admin.js";
 import { qrFor, downloadSvg, downloadPng } from "./admin-qr.js";
 import { toast } from "../../components/toast/toast.js";
 import { loader, bindLoader } from "../../components/loader/loader.js";
+import { openSheet } from "../../components/sheet/sheet.js";
 
 const STATUS_LABEL = { borrador: "Borrador", publicado: "Publicado", retirado: "Retirado" };
 
@@ -44,115 +47,125 @@ const FILES = [
 ];
 
 // Cuidados de un terrario nuevo (los del TR01, para no arrancar de cero)
-const NEW_CARE = { riego_days: 30, ventilacion_days: null, humidity: [35, 60], temp: [15, 26], light: "Indirecta", light_hours: [5, 8] };
+const NEW_CARE = { riego_days: 30, ventilacion_days: null, light: "Indirecta" };
 
-export function renderForm(root, { row, rows, onSaved }) {
+export function renderForm(root, { row, rows, onSaved, onDeleted }) {
   const isNew = !row;
   const nextId = nextTerrarioId(rows.map((r) => r.id));
   const data = row ?? {
     id: nextId, model: `TR${nextId}`, status: "borrador", recorded: todayKey(), duration: null, story: "",
-    specs: null, plants: [], waves: [], care: NEW_CARE,
+    specs: null, plants: [], waves: [], gallery: [], care: NEW_CARE,
   };
   const specs = data.specs ?? {};
   const care = { ...NEW_CARE, ...data.care };
   const chosen = {};   // archivos elegidos en este formulario: { photo: File, … }
+  const galleryKeep = [...(data.gallery ?? [])];   // rutas de la galería que se mantienen
+  const galleryNew = [];                           // fotos nuevas de la galería, para subir al guardar
 
   root.innerHTML = `
-    <a class="back-link" href="#/">${arrow("left")} Terrarios</a>
+    <div class="admin-form__top">
+      <a class="back-link" href="#/">${arrow("left")} Terrarios</a>
+      <button class="back-link" type="button" data-toggle-all>Desplegar todo</button>
+    </div>
 
-    <header class="admin-form__head">
-      <p class="eyebrow">${isNew ? "Terrario nuevo" : `Nº ${escapeHTML(data.id)} · ${STATUS_LABEL[data.status]}`}</p>
-      <h1 class="title" tabindex="-1" data-focus>${escapeHTML(data.model)}</h1>
-    </header>
-
-    ${isNew ? "" : `
-      <section class="admin-block admin-block--full admin-qr" aria-labelledby="qr-title">
-        <h2 class="admin-block__title" id="qr-title">QR.</h2>
-        <div class="admin-qr__body">
-          <div class="admin-qr__code" data-qr></div>
-          <div class="admin-qr__info">
-            <p class="admin-qr__link" data-qr-link></p>
-            <p class="lead">El código no cambia nunca. ${data.status === "borrador"
-              ? "Mientras sea borrador, el link dice “No encontramos este terrario”: publicalo antes de pegarlo."
-              : "Antes de imprimir en el material final, probá uno en papel común."}</p>
-            <div class="admin-qr__actions">
-              <button class="btn btn--ghost" type="button" data-download="svg">Descargar SVG</button>
-              <button class="btn btn--ghost" type="button" data-download="png">Descargar PNG</button>
-              <button class="btn btn--ghost" type="button" data-copy>Copiar link</button>
-            </div>
-          </div>
-        </div>
-      </section>`}
+    <h1 class="visually-hidden" tabindex="-1" data-focus>${escapeHTML(data.model)}</h1>
 
     <form class="admin-form" novalidate data-form>
       <div class="admin-blocks">
-        <section class="admin-block">
-          <h2 class="admin-block__title">Identidad.</h2>
+        <details class="admin-block" open>
+          <summary class="admin-block__title">Identidad.${toggle()}</summary>
           <div class="admin-pair">
             ${field({ label: "Número", name: "id", value: data.id, readonly: !isNew, inputmode: "numeric",
               hint: isNew ? "Va en las rutas de la app. No se puede cambiar después." : "" })}
             ${field({ label: "Código visible", name: "model", value: data.model, hint: isNew ? "Su nombre: “TR07”." : "" })}
           </div>
-        </section>
+        </details>
 
-        <section class="admin-block">
-          <h2 class="admin-block__title">La pieza.</h2>
-          <div class="admin-pair">
-            ${field({ label: "Empezó a sonar", name: "recorded", value: data.recorded ?? "", type: "date" })}
-            ${field({ label: "Duración (m:ss)", name: "duration", value: data.duration ? formatTime(data.duration) : "",
-              placeholder: "4:11", hint: "Vacía: se toma del MIDI más largo." })}
-          </div>
-          <div class="field">
-            <label class="field__label eyebrow" for="story">Historia</label>
-            <textarea class="field__input field__input--area" id="story" name="story" rows="5">${escapeHTML(data.story ?? "")}</textarea>
-          </div>
-        </section>
-
-        <section class="admin-block admin-block--full">
-          <h2 class="admin-block__title">Archivos.</h2>
+        <details class="admin-block admin-block--full" open>
+          <summary class="admin-block__title">Archivos.${toggle()}</summary>
           <div class="admin-files">
             ${FILES.map((file) => fileField(file, data[file.key])).join("")}
           </div>
-        </section>
+          <div class="admin-gallery">
+            <p class="eyebrow">Galería (Características)</p>
+            <p class="admin-hint">Fotos propias de este terrario; si hay alguna, reemplazan a las tres tarjetas genéricas en “Características” de su ficha.</p>
+            <ul class="admin-gallery__grid" data-gallery-list></ul>
+            <label class="btn btn--ghost admin-file__pick">
+              Agregar fotos
+              <input class="visually-hidden" type="file" accept="image/*" multiple data-gallery-input />
+            </label>
+          </div>
+        </details>
 
-        <section class="admin-block admin-block--full">
-          <h2 class="admin-block__title">Especificaciones.</h2>
+        ${isNew ? "" : `
+        <details class="admin-block admin-block--full admin-qr" aria-labelledby="qr-title" open>
+          <summary class="admin-block__title" id="qr-title">QR.${toggle()}</summary>
+          <div class="admin-qr__body">
+            <div class="admin-qr__code" data-qr></div>
+            <div class="admin-qr__info">
+              <p class="admin-qr__link" data-qr-link></p>
+              <p class="lead">El código no cambia nunca. ${data.status === "borrador"
+                ? "Mientras sea borrador, el link dice “No encontramos este terrario”: publicalo antes de pegarlo."
+                : "Antes de imprimir en el material final, probá uno en papel común."}</p>
+              <p class="eyebrow">Descargar</p>
+              <div class="admin-qr__actions">
+                <button class="btn btn--ghost" type="button" data-download="svg">Descargar SVG</button>
+                <button class="btn btn--ghost" type="button" data-download="png">Descargar PNG</button>
+                <button class="btn btn--ghost" type="button" data-copy>Copiar link</button>
+              </div>
+            </div>
+          </div>
+        </details>`}
+
+        <details class="admin-block" open>
+          <summary class="admin-block__title">La pieza.${toggle()}</summary>
+          <div class="admin-pair admin-pair--stack">
+            ${field({ label: "Grabación", name: "recorded", value: data.recorded ?? "", type: "date" })}
+            ${field({ label: "Duración (m:ss)", name: "duration", value: data.duration ? formatTime(data.duration) : "",
+              placeholder: "4:11", hint: "Vacía: se toma del MIDI más largo." })}
+          </div>
+          <div class="admin-box">
+            <label class="admin-box__label eyebrow" for="story">Historia</label>
+            <textarea class="admin-box__input admin-box__input--area" id="story" name="story" rows="5">${escapeHTML(data.story ?? "")}</textarea>
+          </div>
+        </details>
+
+        <details class="admin-block admin-block--full" open>
+          <summary class="admin-block__title">Especificaciones.${toggle()}</summary>
           ${field({ label: "Ecosistema", name: "ecosistema", value: specs.ecosistema ?? "", placeholder: "Abierto" })}
           ${field({ label: "Recipiente", name: "recipiente", value: specs.recipiente ?? "", placeholder: "Vidrio" })}
           ${field({ label: "Medidas", name: "medidas", value: specs.medidas ?? "", placeholder: "25 × 20 × 17 cm" })}
-        </section>
+        </details>
 
-        <fieldset class="admin-block admin-block--full">
-          <legend class="admin-block__title">Plantas.</legend>
+        <details class="admin-block admin-block--full" open>
+          <summary class="admin-block__title">Plantas.${toggle()}</summary>
           <div class="admin-checks">
             ${PLANTAS.map((planta) => check({ name: "plants", value: planta.name, label: planta.name,
               note: getPlanta(planta.name).leafLabel, checked: data.plants?.includes(planta.name) })).join("")}
           </div>
-        </fieldset>
+        </details>
 
-        <fieldset class="admin-block admin-block--full">
-          <legend class="admin-block__title">Ondas de su pieza.</legend>
-          <p class="lead">Se marcan solas con las hojas de las plantas; se pueden cambiar.</p>
-          <div class="admin-checks admin-checks--row">
-            ${Object.entries(WAVE_NAMES).map(([wave, label]) => check({ name: "waves", value: wave, label,
-              checked: data.waves?.includes(wave) })).join("")}
+        <details class="admin-block admin-block--full" open>
+          <summary class="admin-block__title">Ondas de su pieza.${toggle()}</summary>
+          <p class="lead">Una por capa: la pone la hoja de cada planta elegida arriba.</p>
+          <ul class="admin-checks" data-waves-list>
+            ${wavesRows(data.plants)}
+          </ul>
+          <div class="visually-hidden" data-waves-inputs>
+            ${Object.keys(WAVE_NAMES).map((wave) =>
+              `<input type="checkbox" name="waves" value="${wave}" ${wavesFromPlants(data.plants).has(wave) ? "checked" : ""}>`).join("")}
           </div>
-        </fieldset>
+        </details>
 
-        <section class="admin-block admin-block--full">
-          <h2 class="admin-block__title">Cuidados.</h2>
-          <div class="admin-pair">
+        <details class="admin-block admin-block--full" open>
+          <summary class="admin-block__title">Cuidados.${toggle()}</summary>
+          <div class="admin-pair admin-pair--stack">
             ${field({ label: "Regar cada (días)", name: "riego_days", value: care.riego_days, type: "number" })}
             ${field({ label: "Ventilar cada (días)", name: "ventilacion_days", value: care.ventilacion_days ?? "", type: "number",
               hint: "Vacío: ecosistema abierto, no se ventila." })}
           </div>
-          ${range({ label: "Humedad ideal (%)", name: "humidity", value: care.humidity })}
-          ${range({ label: "Temperatura ideal (°C)", name: "temp", value: care.temp })}
-          <div class="admin-pair">
-            ${field({ label: "Luz", name: "light", value: care.light, placeholder: "Indirecta" })}
-          </div>
-          ${range({ label: "Horas de luz", name: "light_hours", value: care.light_hours })}
-        </section>
+          ${field({ label: "Luz", name: "light", value: care.light, placeholder: "Indirecta" })}
+        </details>
       </div>
 
       <div class="admin-form__footer">
@@ -165,11 +178,30 @@ export function renderForm(root, { row, rows, onSaved }) {
           <button class="btn btn--primary" type="submit" data-save>${isNew ? "Guardar borrador" : "Guardar"}</button>
           ${statusButton(data.status)}
         </div>
+        ${isNew ? "" : `<button class="btn btn--ghost btn--block" type="button" data-delete>Eliminar</button>`}
       </div>
     </form>
   `;
 
   const form = root.querySelector("[data-form]");
+
+  /* ---------------------------------------- */
+  /* Desplegar / plegar todos los bloques */
+  /* ---------------------------------------- */
+
+  const blocks = root.querySelectorAll("details.admin-block");
+  const toggleAllBtn = root.querySelector("[data-toggle-all]");
+  const syncToggleAllLabel = () => {
+    const allOpen = [...blocks].every((block) => block.open);
+    toggleAllBtn.textContent = allOpen ? "Plegar todo" : "Desplegar todo";
+  };
+  toggleAllBtn.addEventListener("click", () => {
+    const allOpen = [...blocks].every((block) => block.open);
+    blocks.forEach((block) => { block.open = !allOpen; });
+    syncToggleAllLabel();
+  });
+  blocks.forEach((block) => block.addEventListener("toggle", syncToggleAllLabel));
+  syncToggleAllLabel();
 
   /* ---------------------------------------- */
   /* QR */
@@ -205,13 +237,12 @@ export function renderForm(root, { row, rows, onSaved }) {
     });
   }
 
-  // Las ondas se marcan solas con las hojas de las plantas, hasta que se tocan a mano
-  let wavesTouched = (data.waves?.length ?? 0) > 0;
-  form.querySelectorAll('[name="waves"]').forEach((box) => box.addEventListener("change", () => { wavesTouched = true; }));
+  // Las ondas las marca la hoja de cada planta elegida: una fila por capa (ver wavesFromPlants)
   form.querySelectorAll('[name="plants"]').forEach((box) => box.addEventListener("change", () => {
-    if (wavesTouched) return;
-    const waves = new Set(checked(form, "plants").map((name) => getPlanta(name).wave));
+    const plants = checked(form, "plants");
+    const waves = wavesFromPlants(plants);
     form.querySelectorAll('[name="waves"]').forEach((wave) => { wave.checked = waves.has(wave.value); });
+    root.querySelector("[data-waves-list]").innerHTML = wavesRows(plants);
   }));
 
   // Archivo elegido: se muestra su nombre (y la foto) hasta guardar
@@ -227,21 +258,68 @@ export function renderForm(root, { row, rows, onSaved }) {
     }
   }));
 
+  // Galería de Características: fotos ya subidas (galleryKeep) + nuevas elegidas acá (galleryNew)
+  const renderGallery = () => {
+    const items = [
+      ...galleryKeep.map((path, i) => ({ src: publicFileURL(path), remove: () => galleryKeep.splice(i, 1) })),
+      ...galleryNew.map((file, i) => ({ src: URL.createObjectURL(file), remove: () => galleryNew.splice(i, 1) })),
+    ];
+    const list = root.querySelector("[data-gallery-list]");
+    list.innerHTML = items.length
+      ? items.map((item, i) => `
+          <li class="admin-gallery__item">
+            <img src="${escapeHTML(item.src)}" alt="" />
+            <button class="btn btn--icon admin-gallery__remove" type="button" data-gallery-remove="${i}" aria-label="Quitar">${icon("x")}</button>
+          </li>`).join("")
+      : `<li class="admin-hint">Sin fotos propias todavía: se muestran las tres tarjetas genéricas.</li>`;
+    list.querySelectorAll("[data-gallery-remove]").forEach((button) => button.addEventListener("click", () => {
+      items[Number(button.dataset.galleryRemove)].remove();
+      renderGallery();
+    }));
+  };
+  root.querySelector("[data-gallery-input]").addEventListener("change", (event) => {
+    galleryNew.push(...event.target.files);
+    event.target.value = "";
+    renderGallery();
+  });
+  renderGallery();
+
   /* ---------------------------------------- */
   /* Guardar */
   /* ---------------------------------------- */
 
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    save(data.status);
+    const question = isNew
+      ? `¿Guardar ${form.elements.model.value} como borrador?`
+      : `¿Guardar los cambios de ${form.elements.model.value}?`;
+    if (await confirmSheet(question, "Guardar")) save(data.status);
   });
 
-  root.querySelector("[data-status]")?.addEventListener("click", (event) => {
+  root.querySelector("[data-status]")?.addEventListener("click", async (event) => {
     const status = event.currentTarget.dataset.status;
     const question = status === "retirado"
       ? `¿Retirar ${form.elements.model.value}? Su QR sigue abriendo su ficha y su pieza, pero deja de aparecer en Colección para quien no lo tiene conectado.`
       : `¿Publicar ${form.elements.model.value}? Va a aparecer en la app para todos.`;
-    if (confirm(question)) save(status);
+    const label = status === "retirado" ? "Retirar" : "Publicar";
+    if (await confirmSheet(question, label)) save(status);
+  });
+
+  root.querySelector("[data-delete]")?.addEventListener("click", async (event) => {
+    const button = event.currentTarget;   // después de un await, event.currentTarget ya es null
+    if (!(await confirmDeleteSheet(data.model))) return;
+    const errorBox = root.querySelector("[data-error]");
+    errorBox.hidden = true;
+    button.disabled = true;
+    try {
+      await deleteTerrario(data.id);
+      toast(`${data.model} eliminado`);
+      onDeleted();
+    } catch (error) {
+      button.disabled = false;
+      errorBox.textContent = error.message;
+      errorBox.hidden = false;
+    }
   });
 
   async function save(status) {
@@ -278,10 +356,6 @@ export function renderForm(root, { row, rows, onSaved }) {
     if (!values.model) return fail("Falta el código visible: “TR07”.", form.elements.model);
     if (values.duration === undefined) return fail("La duración se escribe así: 4:11.", form.elements.duration);
     if (!values.care.riego_days) return fail("Falta cada cuántos días se riega.", form.elements.riego_days);
-    // Mi terrario simula las lecturas con estos rangos (utils/care.js): no pueden faltar
-    for (const [name, label] of [["humidity", "la humedad"], ["temp", "la temperatura"], ["light_hours", "las horas de luz"]]) {
-      if (!values.care[name]) return fail(`Completá mínimo y máximo de ${label}.`, form.elements[`${name}_min`]);
-    }
 
     // Los MIDI se leen antes de subir nada: si uno está roto, no se sube ninguno
     const midiLengths = [];
@@ -304,6 +378,20 @@ export function renderForm(root, { row, rows, onSaved }) {
         paths[file.key] = await upload(values.id, file, chosen[file.key]);
       }
 
+      // Fotos nuevas de la galería (Características); las que ya estaban
+      // se mantienen salvo que se hayan quitado (galleryKeep)
+      const newGalleryPaths = [];
+      for (let i = 0; i < galleryNew.length; i++) {
+        setProgress(`Subiendo foto ${i + 1} de la galería…`);
+        let blob;
+        try {
+          blob = await shrinkPhoto(galleryNew[i]);
+        } catch {
+          throw new Error("No se pudo leer una de las fotos de la galería. Probá con un JPG o un PNG.");
+        }
+        newGalleryPaths.push(await uploadFile(storagePath(values.id, `galeria-${i}`, "jpg"), blob, "image/jpeg"));
+      }
+
       // 3. Guardar la fila
       setProgress("Guardando…");
       const fields = {
@@ -316,6 +404,7 @@ export function renderForm(root, { row, rows, onSaved }) {
         waves: values.waves,
         care: values.care,
         status,
+        gallery: [...galleryKeep, ...newGalleryPaths],
         ...paths,
       };
       const saved = isNew
@@ -340,10 +429,6 @@ export function renderForm(root, { row, rows, onSaved }) {
 function readValues(form) {
   const text = (name) => form.elements[name].value.trim();
   const number = (name) => (text(name) === "" ? null : Number(text(name)));
-  const pair = (name) => {
-    const [min, max] = [number(`${name}_min`), number(`${name}_max`)];
-    return min === null || max === null ? null : [min, max];
-  };
   const duration = text("duration");
   const specs = { ecosistema: text("ecosistema"), recipiente: text("recipiente"), medidas: text("medidas") };
 
@@ -360,16 +445,32 @@ function readValues(form) {
     care: {
       riego_days: number("riego_days"),
       ventilacion_days: number("ventilacion_days"),
-      humidity: pair("humidity"),
-      temp: pair("temp"),
       light: text("light") || null,
-      light_hours: pair("light_hours"),
     },
   };
 }
 
 function checked(form, name) {
   return [...form.querySelectorAll(`[name="${name}"]:checked`)].map((box) => box.value);
+}
+
+// La onda de cada planta elegida viene fija de su hoja (ver content/plantas.js)
+function wavesFromPlants(plantNames) {
+  return new Set((plantNames ?? []).map((name) => getPlanta(name).wave));
+}
+
+// Una fila por capa (planta elegida) con su onda; nada elegido, un aviso
+function wavesRows(plantNames) {
+  if (!plantNames?.length) return `<li class="admin-hint">Elegí plantas arriba para ver sus ondas.</li>`;
+  return plantNames.map((name) => {
+    const wave = getPlanta(name).wave;
+    return `
+      <li class="admin-check admin-check--static">
+        <span class="admin-check__icon" aria-hidden="true">${icon(`wave-${wave}`)}</span>
+        <span>${escapeHTML(name)}</span>
+        <span class="admin-check__note">${WAVE_NAMES[wave]}</span>
+      </li>`;
+  }).join("");
 }
 
 // Sube un archivo a la carpeta de su terrario y devuelve su ruta en Storage
@@ -394,12 +495,14 @@ async function upload(id, file, chosenFile) {
 /* Piezas del formulario */
 /* ---------------------------------------- */
 
+// Label arriba (eyebrow, como siempre) + caja con borde entero (antes solo
+// línea abajo); el placeholder queda adentro de la caja, sin animación
 function field({ label, name, value, type = "text", hint = "", placeholder = "", readonly = false, inputmode = "" }) {
   const hintId = hint ? `${name}-hint` : "";
   return `
-    <div class="field">
-      <label class="field__label eyebrow" for="${name}">${escapeHTML(label)}</label>
-      <input class="field__input" id="${name}" name="${name}" type="${type}" value="${escapeHTML(value ?? "")}"
+    <div class="admin-box">
+      <label class="admin-box__label eyebrow" for="${name}">${escapeHTML(label)}</label>
+      <input class="admin-box__input" id="${name}" name="${name}" type="${type}" value="${escapeHTML(value ?? "")}"
         ${placeholder ? `placeholder="${escapeHTML(placeholder)}"` : ""} ${readonly ? "readonly" : ""}
         ${inputmode ? `inputmode="${inputmode}"` : ""} ${hintId ? `aria-describedby="${hintId}"` : ""} />
       ${hint ? `<p class="admin-hint" id="${hintId}">${escapeHTML(hint)}</p>` : ""}
@@ -407,18 +510,74 @@ function field({ label, name, value, type = "text", hint = "", placeholder = "",
   `;
 }
 
-// Un rango "mín – máx" ([35, 60])
-function range({ label, name, value }) {
-  const [min, max] = value ?? [];
-  return `
-    <fieldset class="admin-range">
-      <legend class="eyebrow">${escapeHTML(label)}</legend>
-      <div class="admin-pair">
-        ${field({ label: "Mínimo", name: `${name}_min`, value: min, type: "number" })}
-        ${field({ label: "Máximo", name: `${name}_max`, value: max, type: "number" })}
-      </div>
-    </fieldset>
-  `;
+// El +/− de cada bloque plegable (admin-block es <details>; ver admin.css)
+function toggle() {
+  return `<span class="admin-block__toggle" aria-hidden="true"></span>`;
+}
+
+// Modal de confirmar/cancelar antes de guardar, publicar o retirar
+function confirmSheet(message, confirmLabel) {
+  return new Promise((resolve) => {
+    let decided = false;
+    const sheet = openSheet({
+      title: "¿Estás seguro?",
+      body: `
+        <p class="lead">${escapeHTML(message)}</p>
+        <div class="admin-form__actions">
+          <button class="btn btn--primary" type="button" data-confirm>${escapeHTML(confirmLabel)}</button>
+          <button class="btn btn--ghost" type="button" data-cancel>Cancelar</button>
+        </div>
+      `,
+      onClose: () => { if (!decided) resolve(false); },
+    });
+    sheet.element.querySelector("[data-confirm]").addEventListener("click", () => {
+      decided = true;
+      sheet.close();
+      resolve(true);
+    });
+    sheet.element.querySelector("[data-cancel]").addEventListener("click", () => {
+      decided = true;
+      sheet.close();
+      resolve(false);
+    });
+  });
+}
+
+// Eliminar de verdad (no "retirar"): irreversible, y su QR impreso deja de
+// abrir nada para siempre. El paso de seguridad es escribir el código del
+// terrario tal cual se ve (p. ej. "TR07"); "Eliminar" queda desactivado
+// hasta que coincide.
+function confirmDeleteSheet(model) {
+  return new Promise((resolve) => {
+    let decided = false;
+    const sheet = openSheet({
+      title: "Eliminar para siempre",
+      body: `
+        <p class="lead">Esta acción no se puede deshacer: ${escapeHTML(model)} desaparece de la base y su QR impreso deja de abrir nada. Escribí <strong>${escapeHTML(model)}</strong> para confirmar.</p>
+        <div class="admin-box">
+          <input class="admin-box__input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" data-delete-word />
+        </div>
+        <div class="admin-form__actions">
+          <button class="btn btn--primary" type="button" data-confirm disabled>Eliminar</button>
+          <button class="btn btn--ghost" type="button" data-cancel>Cancelar</button>
+        </div>
+      `,
+      onClose: () => { if (!decided) resolve(false); },
+    });
+    const word = sheet.element.querySelector("[data-delete-word]");
+    const confirmButton = sheet.element.querySelector("[data-confirm]");
+    word.addEventListener("input", () => { confirmButton.disabled = word.value.trim() !== model; });
+    confirmButton.addEventListener("click", () => {
+      decided = true;
+      sheet.close();
+      resolve(true);
+    });
+    sheet.element.querySelector("[data-cancel]").addEventListener("click", () => {
+      decided = true;
+      sheet.close();
+      resolve(false);
+    });
+  });
 }
 
 function check({ name, value, label, note = "", checked: isChecked }) {

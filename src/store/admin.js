@@ -17,6 +17,7 @@
 //   await listTerrarios()             → todas las filas, también los borradores
 //   await createTerrario(row)         → la fila creada (con su qr_code nuevo)
 //   await updateTerrario(id, cambios) → la fila actualizada
+//   await deleteTerrario(id)          → la borra para siempre (su QR deja de abrir algo)
 //   await uploadFile(path, blob, type) → sube a Storage ("07/foto-….jpg") y devuelve la ruta
 //   publicFileURL(path)               → el link para mostrar un archivo guardado en la fila
 //   await listBackups()               → los backups, el más nuevo primero (sin los datos, que pesan)
@@ -196,6 +197,15 @@ export async function updateTerrario(id, changes) {
   const [updated] = await request("PATCH", url, changes, { Prefer: "return=representation" });
   if (!updated) throw new AdminError("No se pudo guardar: esta cuenta no tiene permiso para editar.");
   return updated;
+}
+
+// La borra de verdad (no "retirar"): su QR impreso deja de abrir nada. Los
+// archivos que tenía en Storage no se tocan (igual que el resto, nunca se borran).
+export async function deleteTerrario(id) {
+  const url = `${REST}/terrarios?id=eq.${encodeURIComponent(id)}`;
+  const [deleted] = await request("DELETE", url, undefined, { Prefer: "return=representation" });
+  if (!deleted) throw new AdminError("No se pudo eliminar: esta cuenta no tiene permiso.");
+  return deleted;
 }
 
 /* ---------------------------------------- */

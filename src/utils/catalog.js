@@ -18,6 +18,7 @@ export function rowToTerrario(row, storageBase) {
     return path.startsWith("src/") || path.startsWith("http") ? path : storageBase + path;
   };
   const value = (field) => row[field] ?? undefined;
+  const gallery = (row.gallery ?? []).map(file).filter(Boolean);
 
   const terrario = {
     id: row.id,
@@ -29,6 +30,7 @@ export function rowToTerrario(row, storageBase) {
     story: value("story"),
     photo: file(row.photo),
     video: file(row.video),
+    gallery: gallery.length ? gallery : undefined,
     specs: value("specs"),
     plants: value("plants"),
     waves: value("waves"),

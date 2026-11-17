@@ -119,14 +119,14 @@ function done() {
 function authField({ id, label, type, autocomplete }) {
   const secret = type === "password";
   return `
-    <div class="auth-field${secret ? " auth-field--secret" : ""}">
+    <div class="admin-field${secret ? " admin-field--secret" : ""}">
       <input
-        class="auth-field__input" id="${id}" name="${id}"
+        class="admin-field__input" id="${id}" name="${id}"
         type="${type}" autocomplete="${autocomplete}" placeholder=" " required
       />
-      <label class="auth-field__label" for="${id}">${label}</label>
+      <label class="admin-field__label" for="${id}">${label}</label>
       ${secret ? `
-        <button class="auth-field__eye" type="button" data-eye aria-label="Mostrar contraseña">
+        <button class="admin-field__eye" type="button" data-eye aria-label="Mostrar contraseña">
           ${icon("eye")}${icon("eye-off")}
         </button>
       ` : ""}
@@ -161,7 +161,7 @@ function renderLogin() {
   eye.addEventListener("click", () => {
     const shown = password.type === "text";
     password.type = shown ? "password" : "text";
-    eye.closest(".auth-field").dataset.show = String(!shown);
+    eye.closest(".admin-field").dataset.show = String(!shown);
     eye.setAttribute("aria-label", shown ? "Mostrar contraseña" : "Ocultar contraseña");
   });
 
@@ -228,47 +228,89 @@ async function logOut() {
 /* Lista */
 /* ---------------------------------------- */
 
-function renderList() {
+async function renderList() {
   setNav("lista");
   const published = rows.filter((row) => row.status === "publicado").length;
+  let view = (await get("prefs")).admin_terrarios_view ?? "list";
+
   root.innerHTML = `
     <header class="admin-head">
       <div>
         <h1 class="title" tabindex="-1" data-focus>Terrarios</h1>
         <p class="lead">${rows.length} en total · ${published} publicados</p>
       </div>
-      ${settingsLink()}
+      <div class="collection-head__tools">
+        <label class="view-toggle">
+          <input type="checkbox" role="switch" data-view-toggle aria-label="Ver en lista" ${view === "list" ? "checked" : ""} />
+          <span class="view-toggle__track" aria-hidden="true">
+            <span class="view-toggle__thumb"></span>
+            ${icon("layout-grid", "view-toggle__icon view-toggle__icon--grid")}
+            ${icon("list", "view-toggle__icon view-toggle__icon--list")}
+          </span>
+        </label>
+        ${settingsLink()}
+      </div>
     </header>
 
-    <ul class="admin-list">
-      ${rows.map((row) => `
-        <li>
-          <a class="admin-row" href="#/editar/${escapeHTML(row.id)}">
-            <span class="admin-row__photo">${terrariumArt({ photo: escapeHTML(publicFileURL(row.photo)), size: "sm" })}</span>
-            <span class="admin-row__text">
-              <span class="admin-row__name">${escapeHTML(row.model)}</span>
-              <span class="admin-row__meta">
-                <span>${STATUS_LABEL[row.status]}</span>
-                ${row.recorded ? `<span>${formatDate(row.recorded)}</span>` : ""}
-              </span>
-            </span>
-            <span class="admin-row__qr" data-qr-row="${escapeHTML(row.id)}"></span>
-            ${arrow()}
-          </a>
-        </li>`).join("")}
-    </ul>
+    <ul data-admin-list></ul>
   `;
   done();
 
-  // Los QR chiquitos de cada fila, cuando carga la librería
-  rows.forEach(async (row) => {
-    const box = root.querySelector(`[data-qr-row="${row.id}"]`);
-    try {
-      box.innerHTML = (await qrFor(row)).svg;
-    } catch {
-      // sin la librería (sin red): la fila se ve igual, sin el QR
-    }
+  const list = root.querySelector("[data-admin-list]");
+  const paint = () => {
+    list.className = view === "list" ? "admin-list" : "collection";
+    list.innerHTML = view === "list" ? rows.map(listRow).join("") : rows.map(tile).join("");
+
+    // Los QR chiquitos de cada fila (solo en lista), cuando carga la librería
+    if (view !== "list") return;
+    rows.forEach(async (row) => {
+      const box = root.querySelector(`[data-qr-row="${row.id}"]`);
+      try {
+        box.innerHTML = (await qrFor(row)).svg;
+      } catch {
+        // sin la librería (sin red): la fila se ve igual, sin el QR
+      }
+    });
+  };
+  paint();
+
+  root.querySelector("[data-view-toggle]").addEventListener("change", async (event) => {
+    view = event.target.checked ? "list" : "gallery";
+    paint();
+    await set("prefs", { ...(await get("prefs")), admin_terrarios_view: view });
   });
+}
+
+function listRow(row) {
+  return `
+    <li>
+      <a class="admin-row" href="#/editar/${escapeHTML(row.id)}">
+        <span class="admin-row__photo">${terrariumArt({ photo: escapeHTML(publicFileURL(row.photo)), size: "sm" })}</span>
+        <span class="admin-row__text">
+          <span class="admin-row__name">${escapeHTML(row.model)}</span>
+          <span class="admin-row__meta">
+            <span>${STATUS_LABEL[row.status]}</span>
+            ${row.recorded ? `<span>${formatDate(row.recorded)}</span>` : ""}
+          </span>
+        </span>
+        <span class="admin-row__qr" data-qr-row="${escapeHTML(row.id)}"></span>
+        ${arrow()}
+      </a>
+    </li>`;
+}
+
+// Como collection__tile del front, pero cada tarjeta lleva a editarlo
+function tile(row) {
+  return `
+    <li>
+      <a class="collection__tile" href="#/editar/${escapeHTML(row.id)}">
+        ${terrariumArt({ photo: escapeHTML(publicFileURL(row.photo)), size: "sm" })}
+        <span class="admin-tile__row">
+          <span class="collection__name">${escapeHTML(row.model)}</span>
+          <span class="admin-row__meta"><span>${STATUS_LABEL[row.status]}</span></span>
+        </span>
+      </a>
+    </li>`;
 }
 
 /* ---------------------------------------- */
@@ -366,6 +408,10 @@ function showForm(row) {
       const target = `#/editar/${saved.id}`;
       if (location.hash === target) route();
       else location.hash = target;   // dispara hashchange → route()
+    },
+    onDeleted: () => {
+      if (location.hash === "#/") route();
+      else location.hash = "#/";
     },
   });
   done();

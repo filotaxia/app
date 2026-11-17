@@ -94,7 +94,7 @@ export async function render(root, { params, from }) {
         ["Pieza", formatTime(terrario.duration), `#/escuchar/${terrario.id}`, `Escuchar la pieza (${formatTime(terrario.duration)})`],
       ])}
 
-      ${sections(codeOf(terrario))}
+      ${sections(terrario)}
     </article>
   `;
 }

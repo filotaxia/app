@@ -70,12 +70,12 @@
     margin-top: var(--spacing-xl);
 }
 
-/* Campos con label flotante (solo este login: por eso tienen su propio
-   nombre y no tocan .field, que usan también el panel y la Bitácora).
+/* Campos con label flotante: solo este login (por eso tienen su propio
+   nombre y no tocan .field ni .admin-box, los de línea / caja del resto).
    El borde lo dibuja el contenedor, no el <input> (que no tiene ninguno):
    así el label, que está al lado y no adentro, puede taparle un pedazo
    para abrir el hueco, igual que el <legend> de un <fieldset>. */
-.auth-field {
+.admin-field {
     position: relative;
     height: var(--size-btn);
     border: 1px solid var(--color-line);
@@ -84,11 +84,11 @@
     transition: border-color var(--transition-fast);
 }
 
-.auth-field:focus-within {
+.admin-field:focus-within {
     border-color: var(--color-line-strong);
 }
 
-.auth-field__input {
+.admin-field__input {
     width: 100%;
     height: 100%;
     padding: 0 var(--spacing-lg);
@@ -100,21 +100,21 @@
     letter-spacing: var(--font-base-tracking);
 }
 
-.auth-field--secret .auth-field__input {
+.admin-field--secret .admin-field__input {
     padding-right: 48px;
 }
 
-.auth-field__input::placeholder {
+.admin-field__input::placeholder {
     color: transparent;
 }
 
-.auth-field__input:focus {
+.admin-field__input:focus {
     outline: none;
 }
 
 /* El label: adentro del campo hasta que se lo toca, y ahí sube afuera del
    borde con un fondo que tapa el hueco, como el <legend> de un <fieldset> */
-.auth-field__label {
+.admin-field__label {
     position: absolute;
     left: var(--spacing-lg);
     top: 50%;
@@ -129,17 +129,17 @@
     pointer-events: none;
 }
 
-.auth-field__input:focus + .auth-field__label,
-.auth-field__input:not(:placeholder-shown) + .auth-field__label {
+.admin-field__input:focus + .admin-field__label,
+.admin-field__input:not(:placeholder-shown) + .admin-field__label {
     transform: translateY(-50%) translateY(-26px) scale(0.82);
     color: var(--color-text-muted);
 }
 
-.auth-field__input:focus + .auth-field__label {
+.admin-field__input:focus + .admin-field__label {
     color: var(--color-text);
 }
 
-.auth-field__eye {
+.admin-field__eye {
     position: absolute;
     right: 4px;
     top: 50%;
@@ -152,28 +152,74 @@
     transition: color var(--transition-fast);
 }
 
-.auth-field__eye svg {
+.admin-field__eye svg {
     grid-area: 1 / 1;
     width: var(--icon-md);
     height: var(--icon-md);
 }
 
-.auth-field__eye svg:last-child {
+.admin-field__eye svg:last-child {
     display: none;
 }
 
-.auth-field[data-show="true"] .auth-field__eye svg:first-child {
+.admin-field[data-show="true"] .admin-field__eye svg:first-child {
     display: none;
 }
 
-.auth-field[data-show="true"] .auth-field__eye svg:last-child {
+.admin-field[data-show="true"] .admin-field__eye svg:last-child {
     display: block;
 }
 
 @media (hover: hover) {
-    .auth-field__eye:hover {
+    .admin-field__eye:hover {
         color: var(--color-text);
     }
+}
+
+/* Campos del formulario de terrarios: label arriba (eyebrow, como el resto
+   del panel) y la caja entera con borde abajo (antes solo una línea) */
+.admin-box {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+}
+
+.admin-box__input {
+    width: 100%;
+    height: var(--size-btn);
+    padding: 0 var(--spacing-lg);
+    border: 1px solid var(--color-line);
+    border-radius: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-size: 16px; /* con menos, iOS hace zoom al enfocar */
+    letter-spacing: var(--font-base-tracking);
+    transition: border-color var(--transition-fast);
+}
+
+.admin-box__input--area {
+    height: auto;
+    min-height: 120px;
+    padding-block: var(--spacing-md);
+    line-height: var(--font-base-line);
+    resize: vertical;
+}
+
+.admin-box__input::placeholder {
+    color: var(--color-text-faint);
+}
+
+.admin-box__input:focus {
+    outline: none;
+    border-color: var(--color-line-strong);
+}
+
+.admin-box__input[readonly] {
+    color: var(--color-text-muted);
+}
+
+.admin-box__input[aria-invalid] {
+    border-color: var(--color-line-strong);
 }
 
 /* "o" entre el login con contraseña y el de Google */
@@ -274,6 +320,14 @@
     color: var(--color-text-muted);
 }
 
+/* La galería: código y estado en la misma línea, el estado pegado a la derecha */
+.admin-tile__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-sm);
+}
+
 /* Borrador y retirado: texto gris (publicado queda en --color-text) */
 .admin-chip--quiet {
     color: var(--color-text-muted);
@@ -331,8 +385,12 @@
 /* Formulario */
 /* ---------------------------------------- */
 
-.admin-form__head .title {
-    margin-top: var(--spacing-xs);
+/* La fila de arriba: volver a la izquierda, desplegar/plegar todo a la derecha */
+.admin-form__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-md);
 }
 
 .admin-form {
@@ -360,25 +418,72 @@
     border-radius: 0;
 }
 
+/* Chrome/Safari nuevos meten todo lo que no es <summary> en un
+   ::details-content propio: el gap de acá arriba separa ese bloque entero
+   del título, pero adentro sigue siendo flujo normal (sin aire). Este es
+   el que separa cada campo del siguiente. */
+.admin-block::details-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+}
+
+/* El título es el <summary> del <details>: hace de botón para plegar el bloque */
 .admin-block__title {
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gap-md);
+    font-size: var(--font-lg-size);
+    line-height: var(--font-lg-line);
+    letter-spacing: var(--font-lg-tracking);
+    list-style: none;
+    cursor: pointer;
+}
+
+.admin-block__title::-webkit-details-marker {
+    display: none;
+}
+
+/* El +/−, calcado del de la FAQ (ver views/cuidados/cuidados.css) */
+.admin-block__toggle {
+    position: relative;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+}
+
+.admin-block__toggle::before,
+.admin-block__toggle::after {
+    content: "";
+    position: absolute;
+    background: var(--color-text);
+}
+
+.admin-block__toggle::before {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    transform: translateY(-50%);
+}
+
+.admin-block__toggle::after {
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 100%;
+    transform: translateX(-50%);
+    transition: transform var(--transition-normal);
+}
+
+.admin-block[open] .admin-block__toggle::after {
+    transform: translateX(-50%) scaleY(0);
 }
 
 /* Desde 640px (ver RESPONSIVE): los que no llevan esto se emparejan */
 .admin-block--full {
     grid-column: 1 / -1;
-}
-
-/* <legend> no respeta el flex del fieldset: lo saca del borde y lo pone arriba */
-.admin-block > legend {
-    float: left;
-    width: 100%;
-    margin-bottom: var(--spacing-lg);
-}
-
-.admin-block > legend + * {
-    clear: both;
 }
 
 .admin-pair {
@@ -388,26 +493,17 @@
     align-items: start;
 }
 
-.admin-range > legend {
-    margin-bottom: var(--spacing-sm);
-}
-
-.field__input--area {
-    height: auto;
-    min-height: 120px;
-    padding-block: var(--spacing-sm);
-    resize: vertical;
-    line-height: var(--font-base-line);
-}
-
-.field__input[readonly] {
-    color: var(--color-text-muted);
+.admin-pair--stack {
+    grid-template-columns: 1fr;
 }
 
 /* Casillas: nativas, en negro */
 .admin-checks {
     display: grid;
     gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
     border-top: 1px solid var(--color-line);
 }
 
@@ -435,6 +531,23 @@
     color: var(--color-text-muted);
 }
 
+/* Filas de solo lectura (ondas por capa): mismo renglón, sin casilla */
+.admin-check--static {
+    cursor: default;
+}
+
+.admin-check__icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+}
+
+.admin-check__icon svg {
+    width: 100%;
+    height: 100%;
+}
+
 .admin-checks--row {
     grid-template-columns: repeat(2, 1fr);
     column-gap: var(--gap-lg);
@@ -443,7 +556,7 @@
 /* Archivos */
 .admin-files {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: var(--gap-xl) var(--gap-lg);
 }
 
@@ -463,6 +576,49 @@
 .admin-file__current a {
     text-decoration: underline;
     text-underline-offset: 3px;
+}
+
+/* Galería de Características: fotos propias del terrario, de a varias */
+.admin-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-line);
+}
+
+.admin-gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap-sm);
+}
+
+.admin-gallery__item {
+    position: relative;
+    aspect-ratio: 1;
+    background: var(--color-bg);
+}
+
+.admin-gallery__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-gallery__remove {
+    position: absolute;
+    top: var(--spacing-2xs);
+    right: var(--spacing-2xs);
+    width: 28px;
+    min-height: 28px;
+    padding: 0;
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+}
+
+.admin-gallery__remove svg {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
 }
 
 /* --color-block-bg ya la usa el bloque "Archivos." que lo rodea: acá va el
@@ -507,8 +663,8 @@
 }
 
 .admin-qr__code {
-    width: 180px;
-    height: 180px;
+    width: 100%;
+    aspect-ratio: 1;
     font-size: var(--font-sm-size);
     color: var(--color-text-muted);
 }
@@ -531,7 +687,7 @@
 
 .admin-qr__actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: var(--gap-sm);
     margin-top: var(--spacing-sm);
 }
@@ -637,12 +793,17 @@ RESPONSIVE
     }
 
     .admin-files {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: 1fr;
     }
 
     .admin-qr__body {
         flex-direction: row;
         align-items: flex-start;
+    }
+
+    .admin-qr__code {
+        width: 180px;
+        flex-shrink: 0;
     }
 
     .admin-form__actions {

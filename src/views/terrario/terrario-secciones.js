@@ -22,6 +22,7 @@
 // .how, terrario.css.
 
 import { FEATURES, MANIFESTO_FAQ } from "../../content/ayuda.js";
+import { codeOf } from "../../content/terrarios.js";
 import { escapeHTML } from "../../utils/html.js";
 
 // Título de sección, con el mismo tamaño que el título de las pantallas
@@ -30,25 +31,30 @@ export function heading(id, title) {
   return `<h2 class="terrario__title" id="${id}">${title}</h2>`;
 }
 
-export function sections(code) {
+export function sections(terrario) {
   return `
-    ${features()}
-    ${faq(code)}
+    ${features(terrario)}
+    ${faq(codeOf(terrario))}
   `;
 }
 
 // --- Características: el slider ---
+// Si el terrario tiene su propia galería (admin, bloque Archivos), se
+// muestran esas fotos en vez de las tres tarjetas genéricas de siempre.
 
-function features() {
+function features(terrario) {
+  const cards = terrario.gallery?.length
+    ? terrario.gallery.map((image) => ({ image, title: "", text: "", alt: `Foto de ${codeOf(terrario)}` }))
+    : FEATURES;
   return `
     <section class="features reveal" aria-labelledby="features-title">
       ${heading("features-title", "Características")}
       <ul class="features__track">
-        ${FEATURES.map(({ title, text, image, alt }) => `
+        ${cards.map(({ title, text, image, alt }) => `
           <li class="features__card">
             <img class="features__image" src="${image}" alt="${escapeHTML(alt)}" loading="lazy" decoding="async">
-            <h3 class="features__title">${escapeHTML(title)}</h3>
-            <p class="lead">${escapeHTML(text)}</p>
+            ${title ? `<h3 class="features__title">${escapeHTML(title)}</h3>` : ""}
+            ${text ? `<p class="lead">${escapeHTML(text)}</p>` : ""}
           </li>`).join("")}
       </ul>
     </section>
