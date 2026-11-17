@@ -66,8 +66,8 @@ export function renderForm(root, { row, rows, onSaved }) {
     </header>
 
     ${isNew ? "" : `
-      <section class="admin-section admin-qr" aria-labelledby="qr-title">
-        <h2 class="eyebrow" id="qr-title">QR</h2>
+      <section class="admin-block admin-block--full admin-qr" aria-labelledby="qr-title">
+        <h2 class="admin-block__title" id="qr-title">QR.</h2>
         <div class="admin-qr__body">
           <div class="admin-qr__code" data-qr></div>
           <div class="admin-qr__info">
@@ -85,73 +85,75 @@ export function renderForm(root, { row, rows, onSaved }) {
       </section>`}
 
     <form class="admin-form" novalidate data-form>
-      <section class="admin-section">
-        <h2 class="eyebrow">Identidad</h2>
-        <div class="admin-pair">
-          ${field({ label: "Número", name: "id", value: data.id, readonly: !isNew, inputmode: "numeric",
-            hint: isNew ? "Va en las rutas de la app. No se puede cambiar después." : "" })}
-          ${field({ label: "Código visible", name: "model", value: data.model, hint: isNew ? "Su nombre: “TR07”." : "" })}
-        </div>
-      </section>
+      <div class="admin-blocks">
+        <section class="admin-block">
+          <h2 class="admin-block__title">Identidad.</h2>
+          <div class="admin-pair">
+            ${field({ label: "Número", name: "id", value: data.id, readonly: !isNew, inputmode: "numeric",
+              hint: isNew ? "Va en las rutas de la app. No se puede cambiar después." : "" })}
+            ${field({ label: "Código visible", name: "model", value: data.model, hint: isNew ? "Su nombre: “TR07”." : "" })}
+          </div>
+        </section>
 
-      <section class="admin-section">
-        <h2 class="eyebrow">La pieza</h2>
-        <div class="admin-pair">
-          ${field({ label: "Empezó a sonar", name: "recorded", value: data.recorded ?? "", type: "date" })}
-          ${field({ label: "Duración (m:ss)", name: "duration", value: data.duration ? formatTime(data.duration) : "",
-            placeholder: "4:11", hint: "Vacía: se toma del MIDI más largo." })}
-        </div>
-        <div class="field">
-          <label class="field__label eyebrow" for="story">Historia</label>
-          <textarea class="field__input field__input--area" id="story" name="story" rows="5">${escapeHTML(data.story ?? "")}</textarea>
-        </div>
-      </section>
+        <section class="admin-block">
+          <h2 class="admin-block__title">La pieza.</h2>
+          <div class="admin-pair">
+            ${field({ label: "Empezó a sonar", name: "recorded", value: data.recorded ?? "", type: "date" })}
+            ${field({ label: "Duración (m:ss)", name: "duration", value: data.duration ? formatTime(data.duration) : "",
+              placeholder: "4:11", hint: "Vacía: se toma del MIDI más largo." })}
+          </div>
+          <div class="field">
+            <label class="field__label eyebrow" for="story">Historia</label>
+            <textarea class="field__input field__input--area" id="story" name="story" rows="5">${escapeHTML(data.story ?? "")}</textarea>
+          </div>
+        </section>
 
-      <section class="admin-section">
-        <h2 class="eyebrow">Archivos</h2>
-        <div class="admin-files">
-          ${FILES.map((file) => fileField(file, data[file.key])).join("")}
-        </div>
-      </section>
+        <section class="admin-block admin-block--full">
+          <h2 class="admin-block__title">Archivos.</h2>
+          <div class="admin-files">
+            ${FILES.map((file) => fileField(file, data[file.key])).join("")}
+          </div>
+        </section>
 
-      <section class="admin-section">
-        <h2 class="eyebrow">Especificaciones</h2>
-        ${field({ label: "Ecosistema", name: "ecosistema", value: specs.ecosistema ?? "", placeholder: "Abierto" })}
-        ${field({ label: "Recipiente", name: "recipiente", value: specs.recipiente ?? "", placeholder: "Vidrio" })}
-        ${field({ label: "Medidas", name: "medidas", value: specs.medidas ?? "", placeholder: "25 × 20 × 17 cm" })}
-      </section>
+        <section class="admin-block admin-block--full">
+          <h2 class="admin-block__title">Especificaciones.</h2>
+          ${field({ label: "Ecosistema", name: "ecosistema", value: specs.ecosistema ?? "", placeholder: "Abierto" })}
+          ${field({ label: "Recipiente", name: "recipiente", value: specs.recipiente ?? "", placeholder: "Vidrio" })}
+          ${field({ label: "Medidas", name: "medidas", value: specs.medidas ?? "", placeholder: "25 × 20 × 17 cm" })}
+        </section>
 
-      <fieldset class="admin-section">
-        <legend class="eyebrow">Plantas</legend>
-        <div class="admin-checks">
-          ${PLANTAS.map((planta) => check({ name: "plants", value: planta.name, label: planta.name,
-            note: getPlanta(planta.name).leafLabel, checked: data.plants?.includes(planta.name) })).join("")}
-        </div>
-      </fieldset>
+        <fieldset class="admin-block admin-block--full">
+          <legend class="admin-block__title">Plantas.</legend>
+          <div class="admin-checks">
+            ${PLANTAS.map((planta) => check({ name: "plants", value: planta.name, label: planta.name,
+              note: getPlanta(planta.name).leafLabel, checked: data.plants?.includes(planta.name) })).join("")}
+          </div>
+        </fieldset>
 
-      <fieldset class="admin-section">
-        <legend class="eyebrow">Ondas de su pieza</legend>
-        <p class="lead">Se marcan solas con las hojas de las plantas; se pueden cambiar.</p>
-        <div class="admin-checks admin-checks--row">
-          ${Object.entries(WAVE_NAMES).map(([wave, label]) => check({ name: "waves", value: wave, label,
-            checked: data.waves?.includes(wave) })).join("")}
-        </div>
-      </fieldset>
+        <fieldset class="admin-block admin-block--full">
+          <legend class="admin-block__title">Ondas de su pieza.</legend>
+          <p class="lead">Se marcan solas con las hojas de las plantas; se pueden cambiar.</p>
+          <div class="admin-checks admin-checks--row">
+            ${Object.entries(WAVE_NAMES).map(([wave, label]) => check({ name: "waves", value: wave, label,
+              checked: data.waves?.includes(wave) })).join("")}
+          </div>
+        </fieldset>
 
-      <section class="admin-section">
-        <h2 class="eyebrow">Cuidados</h2>
-        <div class="admin-pair">
-          ${field({ label: "Regar cada (días)", name: "riego_days", value: care.riego_days, type: "number" })}
-          ${field({ label: "Ventilar cada (días)", name: "ventilacion_days", value: care.ventilacion_days ?? "", type: "number",
-            hint: "Vacío: ecosistema abierto, no se ventila." })}
-        </div>
-        ${range({ label: "Humedad ideal (%)", name: "humidity", value: care.humidity })}
-        ${range({ label: "Temperatura ideal (°C)", name: "temp", value: care.temp })}
-        <div class="admin-pair">
-          ${field({ label: "Luz", name: "light", value: care.light, placeholder: "Indirecta" })}
-        </div>
-        ${range({ label: "Horas de luz", name: "light_hours", value: care.light_hours })}
-      </section>
+        <section class="admin-block admin-block--full">
+          <h2 class="admin-block__title">Cuidados.</h2>
+          <div class="admin-pair">
+            ${field({ label: "Regar cada (días)", name: "riego_days", value: care.riego_days, type: "number" })}
+            ${field({ label: "Ventilar cada (días)", name: "ventilacion_days", value: care.ventilacion_days ?? "", type: "number",
+              hint: "Vacío: ecosistema abierto, no se ventila." })}
+          </div>
+          ${range({ label: "Humedad ideal (%)", name: "humidity", value: care.humidity })}
+          ${range({ label: "Temperatura ideal (°C)", name: "temp", value: care.temp })}
+          <div class="admin-pair">
+            ${field({ label: "Luz", name: "light", value: care.light, placeholder: "Indirecta" })}
+          </div>
+          ${range({ label: "Horas de luz", name: "light_hours", value: care.light_hours })}
+        </section>
+      </div>
 
       <div class="admin-form__footer">
         <p class="field__error" role="alert" data-error hidden></p>

@@ -50,6 +50,13 @@ button {
     outline-offset: 2px;
 }
 
+/* tabindex="-1" es el router moviendo el foco al título en cada pantalla,
+   para lectores de pantalla (nunca se llega ahí con Tab): no necesita el
+   anillo de foco, que Chrome le pone igual aunque nadie tocó el teclado */
+[tabindex="-1"]:focus-visible {
+    outline: none;
+}
+
 ::selection {
     background: var(--color-text);
     color: var(--color-bg);

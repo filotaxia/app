@@ -4,7 +4,9 @@
 
 /* El panel de carga (/admin/): una columna con mucho aire, como el resto
    de la app. Campos de línea (components/field), listas con líneas finas,
-   botones rectangulares. Sin barra de navegación ni header de la app. */
+   botones rectangulares. Barra de navegación propia (admin.js la muestra
+   con las páginas del panel: Terrarios, Nuevo, Imprimir, Backups; misma
+   barra que el front, layout/bottom-nav), nada de header de la app. */
 
 .admin {
     display: flex;
@@ -14,8 +16,21 @@
     padding-block: var(--spacing-3xl) var(--spacing-5xl);
 }
 
+/* Con la barra visible: lugar abajo para que no tape el contenido (como
+   .app-shell[data-nav] del front) */
+.admin[data-nav] {
+    padding-bottom: calc(var(--size-nav) + env(safe-area-inset-bottom) + var(--spacing-4xl));
+}
+
+/* bottom-nav.css arma sus columnas para los 5 ítems + separador + reproductor
+   del front: acá son solo 4, así que si no se pisa esa plantilla la píldora
+   queda con columnas vacías (el hueco que se ve de más) */
+.bottom-nav__list--panel {
+    grid-template-columns: repeat(4, var(--size-tap));
+}
+
 /* Sin el recuadro que el navegador le pone a los <fieldset>
-   (:where no suma peso: .admin-section igual le pone su línea arriba) */
+   (:where no suma peso: .admin-block le pone su propio estilo) */
 .admin :where(fieldset) {
     min-width: 0;
     margin: 0;
@@ -55,13 +70,147 @@
     margin-top: var(--spacing-xl);
 }
 
+/* Campos con label flotante (solo este login: por eso tienen su propio
+   nombre y no tocan .field, que usan también el panel y la Bitácora).
+   El borde lo dibuja el contenedor, no el <input> (que no tiene ninguno):
+   así el label, que está al lado y no adentro, puede taparle un pedazo
+   para abrir el hueco, igual que el <legend> de un <fieldset>. */
+.auth-field {
+    position: relative;
+    height: var(--size-btn);
+    border: 1px solid var(--color-line);
+    border-radius: 0;
+    background: var(--color-bg);
+    transition: border-color var(--transition-fast);
+}
+
+.auth-field:focus-within {
+    border-color: var(--color-line-strong);
+}
+
+.auth-field__input {
+    width: 100%;
+    height: 100%;
+    padding: 0 var(--spacing-lg);
+    border: none;
+    border-radius: inherit;
+    background: transparent;
+    color: var(--color-text);
+    font-size: 16px; /* con menos, iOS hace zoom al enfocar */
+    letter-spacing: var(--font-base-tracking);
+}
+
+.auth-field--secret .auth-field__input {
+    padding-right: 48px;
+}
+
+.auth-field__input::placeholder {
+    color: transparent;
+}
+
+.auth-field__input:focus {
+    outline: none;
+}
+
+/* El label: adentro del campo hasta que se lo toca, y ahí sube afuera del
+   borde con un fondo que tapa el hueco, como el <legend> de un <fieldset> */
+.auth-field__label {
+    position: absolute;
+    left: var(--spacing-lg);
+    top: 50%;
+    padding-inline: var(--spacing-2xs);
+    background: var(--color-bg);
+    color: var(--color-text-faint);
+    font-size: 16px;
+    letter-spacing: var(--font-base-tracking);
+    transform-origin: left center;
+    transform: translateY(-50%);
+    transition: transform var(--transition-fast), color var(--transition-fast);
+    pointer-events: none;
+}
+
+.auth-field__input:focus + .auth-field__label,
+.auth-field__input:not(:placeholder-shown) + .auth-field__label {
+    transform: translateY(-50%) translateY(-26px) scale(0.82);
+    color: var(--color-text-muted);
+}
+
+.auth-field__input:focus + .auth-field__label {
+    color: var(--color-text);
+}
+
+.auth-field__eye {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    margin-top: -20px;
+    display: grid;
+    place-items: center;
+    color: var(--color-text-muted);
+    transition: color var(--transition-fast);
+}
+
+.auth-field__eye svg {
+    grid-area: 1 / 1;
+    width: var(--icon-md);
+    height: var(--icon-md);
+}
+
+.auth-field__eye svg:last-child {
+    display: none;
+}
+
+.auth-field[data-show="true"] .auth-field__eye svg:first-child {
+    display: none;
+}
+
+.auth-field[data-show="true"] .auth-field__eye svg:last-child {
+    display: block;
+}
+
+@media (hover: hover) {
+    .auth-field__eye:hover {
+        color: var(--color-text);
+    }
+}
+
+/* "o" entre el login con contraseña y el de Google */
+.auth-divider {
+    position: relative;
+    text-align: center;
+    font-size: var(--font-sm-size);
+    color: var(--color-text-muted);
+}
+
+.auth-divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--color-line);
+}
+
+.auth-divider span {
+    position: relative;
+    display: inline-block;
+    padding-inline: var(--spacing-md);
+    background: var(--color-bg);
+}
+
+.auth-google svg {
+    flex-shrink: 0;
+}
+
 /* ---------------------------------------- */
 /* Lista */
 /* ---------------------------------------- */
 
 .admin-head {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: var(--gap-lg);
 }
@@ -70,17 +219,7 @@
     margin-block: var(--spacing-xs);
 }
 
-.admin-head__out {
-    min-height: var(--size-tap);
-    font-size: var(--font-sm-size);
-    color: var(--color-text-muted);
-    transition: color var(--transition-fast);
-}
-
-.admin-head__out:hover {
-    color: var(--color-text);
-}
-
+/* La fila de botones de Backups ("Hacer backup ahora") */
 .admin-actions {
     display: flex;
     flex-wrap: wrap;
@@ -90,11 +229,6 @@
 .admin-actions .btn {
     flex: 1;
     white-space: nowrap;
-}
-
-.admin-actions__icon {
-    width: var(--icon-md);
-    height: var(--icon-md);
 }
 
 .admin-list {
@@ -207,23 +341,43 @@
     gap: var(--gap-xl);
 }
 
-/* Cada grupo: eyebrow arriba y una línea fina que lo separa del anterior */
-.admin-section {
+/* Cada grupo de campos es un bloque gris (como components/block), para
+   separarlos de un vistazo en vez de solo una línea arriba. Apilados en
+   celular; desde 640px, Identidad y La pieza (los únicos sin --full) se
+   acomodan en pareja, como "Number"/"Measurement" de la referencia. */
+.admin-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+}
+
+.admin-block {
     display: flex;
     flex-direction: column;
     gap: var(--gap-lg);
-    padding-top: var(--spacing-xl);
-    border-top: 1px solid var(--color-line);
+    padding: var(--spacing-lg);
+    background: var(--color-block-bg);
+    border-radius: 0;
+}
+
+.admin-block__title {
+    font-size: var(--font-base-size);
+    line-height: var(--font-base-line);
+}
+
+/* Desde 640px (ver RESPONSIVE): los que no llevan esto se emparejan */
+.admin-block--full {
+    grid-column: 1 / -1;
 }
 
 /* <legend> no respeta el flex del fieldset: lo saca del borde y lo pone arriba */
-.admin-section > legend {
+.admin-block > legend {
     float: left;
     width: 100%;
     margin-bottom: var(--spacing-lg);
 }
 
-.admin-section > legend + * {
+.admin-block > legend + * {
     clear: both;
 }
 
@@ -311,9 +465,11 @@
     text-underline-offset: 3px;
 }
 
+/* --color-block-bg ya la usa el bloque "Archivos." que lo rodea: acá va el
+   fondo de la página, para que el placeholder se note en vez de desaparecer */
 .admin-file__current--photo {
     aspect-ratio: 1;
-    background: var(--color-block-bg);
+    background: var(--color-bg);
     display: grid;
     place-items: center;
 }
@@ -456,7 +612,21 @@
 RESPONSIVE
 ============================================ */
 
+@media (min-width: 1024px) {
+    /* El riel ocupa la izquierda; el contenido se corre (como .app-shell[data-nav]) */
+    .admin[data-nav] {
+        padding-bottom: var(--spacing-5xl);
+        padding-left: var(--size-rail);
+    }
+}
+
 @media (min-width: 640px) {
+    .admin-blocks {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--gap-sm);
+    }
+
     .admin-checks:not(.admin-checks--row) {
         grid-template-columns: repeat(2, 1fr);
         column-gap: var(--gap-lg);
