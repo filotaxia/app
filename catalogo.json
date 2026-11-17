@@ -42,7 +42,8 @@
         "ventilacion_days": null
       },
       "created_at": "2026-10-21T00:52:40.300242+00:00",
-      "updated_at": "2026-11-15T23:02:23.122804+00:00"
+      "updated_at": "2026-11-17T02:31:37.443976+00:00",
+      "gallery": []
     },
     {
       "id": "02",
@@ -81,7 +82,8 @@
         "ventilacion_days": 2
       },
       "created_at": "2026-10-21T00:52:40.300242+00:00",
-      "updated_at": "2026-11-15T23:02:23.122804+00:00"
+      "updated_at": "2026-11-15T23:02:23.122804+00:00",
+      "gallery": []
     },
     {
       "id": "03",
@@ -120,7 +122,8 @@
         "ventilacion_days": 3
       },
       "created_at": "2026-10-21T00:52:40.300242+00:00",
-      "updated_at": "2026-11-15T23:02:23.122804+00:00"
+      "updated_at": "2026-11-15T23:02:23.122804+00:00",
+      "gallery": []
     },
     {
       "id": "04",
@@ -159,42 +162,8 @@
         "ventilacion_days": 3
       },
       "created_at": "2026-10-21T00:52:40.300242+00:00",
-      "updated_at": "2026-11-15T23:02:23.122804+00:00"
-    },
-    {
-      "id": "05",
-      "qr_code": "nwkbr2",
-      "model": "TR05",
-      "status": "retirado",
-      "recorded": "2026-09-12",
-      "duration": 264,
-      "story": "Una suculenta que casi no se mueve. Su pieza avanza como sus raíces: de a poco y hacia abajo.",
-      "photo": "src/assets/images/terrarios/tr05.jpg",
-      "video": null,
-      "midi_plantas": null,
-      "midi_sustrato": null,
-      "specs": null,
-      "plants": null,
-      "waves": null,
-      "care": {
-        "temp": [
-          18,
-          28
-        ],
-        "light": "Sol suave",
-        "humidity": [
-          40,
-          60
-        ],
-        "riego_days": 30,
-        "light_hours": [
-          6,
-          10
-        ],
-        "ventilacion_days": 7
-      },
-      "created_at": "2026-10-21T00:52:40.300242+00:00",
-      "updated_at": "2026-11-15T23:02:27.840448+00:00"
+      "updated_at": "2026-11-15T23:02:23.122804+00:00",
+      "gallery": []
     }
   ]
 }
