@@ -55,6 +55,7 @@
 @import url('./components/particles/particles.css');
 @import url('./components/loader/loader.css');
 @import url('./components/now-playing/now-playing.css');
+@import url('./components/file-upload/file-upload.css');
 
 /* ============================================
    VIEWS

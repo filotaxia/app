@@ -19,11 +19,11 @@ import { icon } from "../../utils/icons.js";
 
 let sheetCount = 0;
 
-export function openSheet({ title, body, onClose }) {
+export function openSheet({ title, body, onClose, className = "" }) {
   const opener = document.activeElement;
   const titleId = `sheet-title-${++sheetCount}`;
   const dialog = document.createElement("dialog");
-  dialog.className = "sheet";
+  dialog.className = className ? `sheet ${className}` : "sheet";
   dialog.setAttribute("aria-labelledby", titleId);
   dialog.innerHTML = `
     <div class="sheet__inner">
