@@ -433,39 +433,43 @@ html:has(.manifiesto) body {
     padding-top: calc(var(--manifiesto-top) + var(--spacing-xl));
 }
 
+/* Contenedor (inline-size) para que .anatomy__stage pueda medir su alto
+   contra el ancho (100cqi) */
 .anatomy {
     flex: 1;
     min-height: 0;
+    container-type: inline-size;
     display: flex;
     flex-direction: column;
     gap: var(--gap-lg);   /* foto ↔ texto: el mismo aire que en las capas (.layers) */
 }
 
-/* El lugar para la foto: todo el alto que deja el texto de abajo. Es un
-   contenedor (container-type) para que la foto pueda medirse contra él
-   (cqw / cqh: como vw / vh, pero de este lugar). La foto va abajo de todo
-   (end): así queda pegada al texto, con el gap de .anatomy, y si sobra
-   alto queda arriba, entre el título y la foto */
+/* El lugar para la foto: tan alto como ancho (cuadrado) y, si no entra, se
+   achica hasta lo que deja el texto. Así foto y texto quedan juntos debajo
+   del título, sin aire de más entre ellos. Es un contenedor (container-type)
+   para que la foto pueda medirse contra él (cqw / cqh: como vw / vh, pero
+   de este lugar) */
 .anatomy__stage {
-    flex: 1;
+    flex: 0 1 100cqi;
     min-height: 0;
     container-type: size;
     display: grid;
-    align-items: end;
+    align-items: start;
 }
 
-/* La foto ocupa siempre todo el ancho y es más alta que ancha (hasta 4:5,
-   o sea 125% del ancho) si hay lugar; si no, toma el alto que haya. La foto
-   original es cuadrada, así que se recorta: a los costados (fondo blanco)
-   cuando la caja es alta, arriba y abajo cuando es baja.
-     --h      el alto de la caja: el lugar que hay, hasta 125% del ancho
+/* La foto ocupa siempre todo el ancho y, como mucho, es cuadrada (alto =
+   ancho); si no hay lugar, toma el alto que haya. Nunca más alta que ancha:
+   la foto es cuadrada, así que con la caja así nunca se recorta a los
+   costados (la pecera llega casi al borde de la foto y se cortaba).
+   Solo puede recortarse arriba y abajo, cuando la caja queda baja.
+     --h      el alto de la caja: el lugar que hay, hasta el ancho (100cqw)
      --side   el lado al que se agranda la foto cuadrada para cubrir la caja
      --focus-x / --focus-y  qué parte queda a la vista al recortar (0 = un
               borde, 0.5 = el centro, 1 = el otro); 0.6 en alto deja el
-              terrario entero (sus puntos van del 37% al 78% de la foto)
-   Para hacerla más o menos alta, cambiá el 125cqw. */
+              terrario entero (sus puntos van del 38% al 81% de la foto)
+   No subas el 100cqw: más alto que ancho vuelve a cortar los costados. */
 .anatomy__figure {
-    --h: min(100cqh, 125cqw);
+    --h: min(100cqh, 100cqw);
     --side: max(100cqw, var(--h));
     --focus-x: 0.5;
     --focus-y: 0.6;

@@ -208,26 +208,26 @@ export const LAYERS = [
     "src/assets/videos/capas/capa04-piedras.mp4"],
 ];
 
-// El terrario de la pantalla 2 del Manifiesto: la foto del TR01 (la de
-// producto de filotaxia.com), con un punto por capa (`layer`: su lugar en
-// LAYERS) y uno por planta (`name`: el de content/plantas.js). x / y son el
-// lugar del punto, en % del ancho y del alto de la foto (cambialos para
-// moverlos). Tiene su propio archivo, tr01-por-dentro.jpg (el recorte viejo):
-// los puntos están medidos sobre ese recorte, así que tr01.jpg (la de la
-// colección, centrada en el terrario) puede cambiar sin moverlos.
+// El terrario de la pantalla 2 del Manifiesto: la foto del TR01 (la misma
+// portada de su ficha y de la colección, src/assets/images/terrarios/tr01.jpg),
+// con un punto por capa (`layer`: su lugar en LAYERS) y uno por planta
+// (`name`: el de content/plantas.js). x / y son el lugar del punto, en %
+// del ancho y del alto de la foto (cambialos para moverlos si la foto cambia).
 // Sin el punto de la capa "Plantas" (layer 0): ya están los de cada planta
-// con su propio nombre, y repetirlo como capa era redundante. El primero
-// (Piedras) es el que se ve por defecto al abrir la pantalla.
+// con su propio nombre, y repetirlo como capa era redundante. Lo que no es
+// una de las 4 capas (las gravas de arriba) va como `kind: "elemento"`, con
+// su nombre y su texto acá mismo. El primero (Piedras) es el que se ve por
+// defecto al abrir la pantalla.
 export const INSIDE_TERRARIUM = {
-  image: "src/assets/images/terrarios/tr01-por-dentro.jpg",
-  alt: "El terrario TR01: una pecera redonda de vidrio con suculentas, piedras y sustrato",
+  image: "src/assets/images/terrarios/tr01.jpg",
+  alt: "El terrario TR01: una pecera redonda de vidrio con piedras, sustrato y una Haworthia Attenuata",
   spots: [
-    { kind: "capa", layer: 3, x: 52, y: 78 },
-    { kind: "capa", layer: 1, x: 28, y: 72 },
-    { kind: "capa", layer: 2, x: 74, y: 73 },
-    { kind: "planta", name: "Haworthia Attenuata", x: 38, y: 60 },
-    { kind: "planta", name: "Haworthia Fasciata", x: 68, y: 48 },
-    { kind: "planta", name: "Haworthia Venosa", x: 57, y: 55 },
+    { kind: "capa", layer: 3, x: 28, y: 52 },
+    { kind: "elemento", name: "Gravas", x: 48, y: 65,
+      text: "La capa de arriba: cubre el sustrato, guarda la humedad justa en la superficie y protege la base de la planta." },
+    { kind: "capa", layer: 1, x: 38, y: 81 },
+    { kind: "capa", layer: 2, x: 68, y: 74 },
+    { kind: "planta", name: "Haworthia Attenuata", x: 72, y: 38 },
   ],
 };
 

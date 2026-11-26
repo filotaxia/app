@@ -22,6 +22,8 @@
 //   status   "publicado" o "retirado" (los borradores no llegan a la app)
 //   model    código del modelo ("TR01")
 //   photo    foto del terrario (src/assets/… o Supabase Storage; si no hay, se dibuja el brote)
+//   model_photo  foto alternativa (render/wireframe del modelo 3D) para la portada de la ficha;
+//                si está, reemplaza a `photo` ahí solamente (views/terrario/terrario.js)
 //   specs    { ecosistema, recipiente, medidas }
 //   plants   nombres de las plantas (los de content/plantas.js, que suma foto, hoja y onda)
 //   waves    formas de onda de su pieza ("triangle", "sine"...); por defecto, seno

@@ -39,6 +39,8 @@ const STATUS_LABEL = { borrador: "Borrador", publicado: "Publicado", retirado: "
 const FILES = [
   { key: "photo", kind: "foto", label: "Foto", accept: "image/*", pick: "Elegir foto",
     hint: "Se achica a 1200px antes de subir. Cuadrada se ve mejor." },
+  { key: "model_photo", kind: "modelo", label: "Modelo", accept: "image/*", pick: "Elegir imagen",
+    hint: "Render o wireframe del modelo 3D: reemplaza a la foto en la portada de la ficha. Se achica igual que la foto." },
   { key: "video", kind: "video", label: "Video", accept: "video/mp4,video/webm", pick: "Elegir video",
     hint: "MP4 (o WebM), hasta 50 MB. Es el fondo de “Cambiar a video”." },
   { key: "midi_plantas", kind: "midi-plantas", label: "MIDI Plantas", accept: ".mid,.midi,audio/midi", pick: "Elegir .mid",
@@ -275,8 +277,8 @@ export function renderForm(root, { row, rows, onSaved, onDeleted }) {
     chosen[key] = file ?? undefined;
     const label = root.querySelector(`[data-chosen="${key}"]`);
     label.textContent = file ? `Nuevo: ${file.name} · se sube al guardar` : "";
-    if (key === "photo" && file) {
-      const current = root.querySelector('[data-current="photo"]');
+    if ((key === "photo" || key === "model_photo") && file) {
+      const current = root.querySelector(`[data-current="${key}"]`);
       current.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="" />`;
     }
   }));
@@ -498,7 +500,7 @@ function wavesRows(plantNames) {
 
 // Sube un archivo a la carpeta de su terrario y devuelve su ruta en Storage
 async function upload(id, file, chosenFile) {
-  if (file.key === "photo") {
+  if (file.key === "photo" || file.key === "model_photo") {
     let blob;
     try {
       blob = await shrinkPhoto(chosenFile);
@@ -619,14 +621,15 @@ function check({ name, value, label, note = "", checked: isChecked }) {
 function fileField(file, path) {
   const url = publicFileURL(path);
   const name = path ? path.split("/").pop() : "";
+  const isPhoto = file.key === "photo" || file.key === "model_photo";
   const current = !path
     ? `<span class="admin-hint">Sin archivo</span>`
-    : file.key === "photo"
+    : isPhoto
       ? `<img src="${escapeHTML(url)}" alt="" />`
       : `<a href="${escapeHTML(url)}" target="_blank" rel="noopener">${escapeHTML(name)}</a>`;
   return `
     <div class="admin-file">
-      <div class="admin-file__current ${file.key === "photo" ? "admin-file__current--photo" : ""}" data-current="${file.key}">${current}</div>
+      <div class="admin-file__current ${isPhoto ? "admin-file__current--photo" : ""}" data-current="${file.key}">${current}</div>
       ${fileDrop({ name: file.key, accept: file.accept, description: file.hint, browseLabel: path ? "Cambiar" : file.pick })}
       <p class="admin-file__chosen" data-chosen="${file.key}"></p>
     </div>

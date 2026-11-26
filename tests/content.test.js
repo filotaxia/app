@@ -110,6 +110,7 @@ test("INSIDE_TERRARIUM: la foto existe y cada punto apunta a una capa o planta q
   assert.ok(exists(INSIDE_TERRARIUM.image), INSIDE_TERRARIUM.image);
   INSIDE_TERRARIUM.spots.forEach((spot) => {
     if (spot.kind === "capa") assert.ok(LAYERS[spot.layer], `capa ${spot.layer}`);
+    else if (spot.kind === "elemento") assert.ok(spot.name && spot.text, `elemento ${spot.name}`);
     else assert.ok(PLANTAS.some((planta) => planta.name === spot.name), `planta ${spot.name}`);
     assert.ok(spot.x >= 0 && spot.x <= 100 && spot.y >= 0 && spot.y <= 100, "dentro de la imagen");
   });
