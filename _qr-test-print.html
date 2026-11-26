@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Prueba de impresión — tamaños de QR</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 10mm;
+    color: #111;
+  }
+  h1 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 2mm;
+  }
+  p.lead {
+    font-size: 10px;
+    color: #555;
+    margin: 0 0 8mm;
+  }
+  .row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 4mm;
+    margin-bottom: 4mm;
+  }
+  .cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .cell img, .cell svg {
+    display: block;
+  }
+  .cell .qr {
+    border: 1px dashed #999;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .cell .meta {
+    margin-top: 1.5mm;
+    font-size: 8px;
+    text-align: center;
+    line-height: 1.3;
+    color: #333;
+  }
+  .cell .meta b { font-size: 9px; color: #000; }
+  .row-size {
+    font-size: 8px;
+    color: #999;
+    text-align: left;
+    margin: 4mm 0 2mm;
+  }
+  #capture {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 8mm;
+    box-sizing: border-box;
+    background: #fff;
+  }
+  @media print {
+    body { padding: 0; }
+    #capture { padding: 8mm; }
+    p.lead, .toolbar { display: none; }
+    @page { size: A4 portrait; margin: 0; }
+  }
+  .toolbar {
+    margin-bottom: 6mm;
+  }
+  .toolbar button {
+    font-size: 12px;
+    padding: 6px 14px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <button type="button" onclick="window.print()">Imprimir</button>
+    <button type="button" id="download-png">Descargar JPG</button>
+  </div>
+  <div id="capture">
+    <h1>Prueba de impresión — tamaños de QR</h1>
+    <p class="lead">Los 4 terrarios publicados, por fila, en 4 tamaños distintos (de arriba hacia abajo). Imprimí esta
+      hoja en papel común y escaneá cada fila para ver cuál es el tamaño mínimo que lee bien.</p>
+    <div id="sheet"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script type="module">
+    import { qrLink, qrSvg, logoLayout, clearHole } from "./src/utils/qr.js";
+
+    const LIBRARY = "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/+esm";
+    const LOGO_URL = "./src/assets/images/marca/isotipo.png";
+    const MARGIN = 4;
+
+    // Los 4 terrarios publicados (código ← catalogo.json)
+    const TERRARIOS = [
+      { code: "TR01", qr_code: "97vqye" },
+      { code: "TR02", qr_code: "e3nfze" },
+      { code: "TR03", qr_code: "t3tfqa" },
+      { code: "TR04", qr_code: "c4kn39" },
+    ];
+
+    // Tamaños a comparar, de arriba (chico) hacia abajo (grande)
+    const SIZES_MM = [20, 25, 32];
+    const ROWS_PER_SIZE = 2;
+
+    async function modulesFor(qrcode, link) {
+      const qr = qrcode(0, "H");
+      qr.addData(link);
+      qr.make();
+      const count = qr.getModuleCount();
+      return Array.from({ length: count }, (_, row) =>
+        Array.from({ length: count }, (_, col) => qr.isDark(row, col)));
+    }
+
+    async function loadMark() {
+      const blob = await (await fetch(LOGO_URL)).blob();
+      const href = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+      const image = new Image();
+      image.src = href;
+      await image.decode();
+      return { href, aspect: image.naturalWidth / image.naturalHeight };
+    }
+
+    async function build() {
+      const [{ default: qrcode }, mark] = await Promise.all([import(LIBRARY), loadMark()]);
+
+      const svgs = {};
+      for (const t of TERRARIOS) {
+        const link = qrLink(t.qr_code);
+        const modules = await modulesFor(qrcode, link);
+        const { hole, logo } = logoLayout(modules.length, mark.aspect);
+        svgs[t.code] = qrSvg(clearHole(modules, hole), { margin: MARGIN, logo: { ...logo, href: mark.href } });
+      }
+
+      const sheet = document.getElementById("sheet");
+      sheet.innerHTML = SIZES_MM.map((mm) => `
+        <div class="row-size">${mm} mm</div>
+        ${Array.from({ length: ROWS_PER_SIZE }, () => `
+          <div class="row">
+            ${TERRARIOS.map((t) => `
+              <div class="cell">
+                <div class="qr" style="width:${mm}mm;height:${mm}mm">${svgs[t.code]}</div>
+                <div class="meta"><b>${t.code}</b></div>
+              </div>`).join("")}
+          </div>`).join("")}`).join("");
+    }
+
+    build().catch((err) => {
+      document.getElementById("sheet").textContent = "No se pudieron dibujar los QR: " + err.message;
+    });
+
+    document.getElementById("download-png").addEventListener("click", async () => {
+      const capture = document.getElementById("capture");
+      const canvas = await html2canvas(capture, { backgroundColor: "#fff", scale: 3 });
+      const link = document.createElement("a");
+      link.download = "qr-prueba-impresion.jpg";
+      link.href = canvas.toDataURL("image/jpeg", 0.95);
+      link.click();
+    });
+  </script>
+</body>
+</html>

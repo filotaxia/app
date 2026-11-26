@@ -29,6 +29,7 @@ export function rowToTerrario(row, storageBase) {
     duration: value("duration"),
     story: value("story"),
     photo: file(row.photo),
+    model_photo: file(row.model_photo),
     video: file(row.video),
     gallery: gallery.length ? gallery : undefined,
     specs: value("specs"),

@@ -79,7 +79,7 @@ export async function render(root, { params, from }) {
         <a class="back-link" href="${back.href}">${arrow("left")} ${back.label}</a>
         ${settingsLink()}
       </div>
-      <div class="terrario__art reveal">${terrariumArt({ photo: terrario.photo })}</div>
+      <div class="terrario__art reveal">${terrariumArt({ photo: terrario.model_photo ?? terrario.photo })}</div>
 
       <div class="terrario__info reveal-stagger">
         <p class="terrario__story lead">
