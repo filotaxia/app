@@ -15,55 +15,6 @@
     margin-top: 0;
 }
 
-/* --- Riego: ahora va después de la Guía (antes de las Preguntas), misma
-   separación entre secciones que el resto de la página (.how, .care-faq) */
-.how + .blocks {
-    margin-top: var(--spacing-3xl);
-}
-
-/* Una bolita por día del ciclo, 5 por fila, en vez del número grande de
-   components/block (cuidados.js arma el bloque entero a mano: title y badge
-   son los mismos de block.css, pero la grilla y la etiqueta de abajo
-   reemplazan al ícono y al valor) */
-.block--riego {
-    grid-template-rows: auto auto auto;
-    grid-template-areas:
-        "title badge"
-        "grid  grid"
-        "label label";
-    min-height: auto;
-    align-items: start;
-}
-
-/* Círculos grandes, de punta a punta (la referencia: 5 por fila llenan todo
-   el ancho del bloque, casi tocándose) — no bolitas chicas sueltas */
-.riego-grid {
-    grid-area: grid;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: var(--spacing-2xs);
-    padding-block: var(--spacing-sm);
-}
-
-.riego-grid__dot {
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--color-track);
-}
-
-/* Ya pasado desde el último riego: relleno negro (como el círculo activo
-   del bottom-nav), sobre el resto en gris */
-.riego-grid__dot.is-done {
-    background: var(--color-text);
-}
-
-.riego-grid__label {
-    grid-area: label;
-    font-size: var(--font-base-size);
-    line-height: var(--font-base-line);
-    color: var(--color-text-muted);
-}
-
 .faq {
     display: flex;
     flex-direction: column;

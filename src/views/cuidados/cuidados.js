@@ -6,23 +6,16 @@
 // Mi terrario; la flecha vuelve ahí. La ruta empieza con "mi-terrario", así
 // la barra sigue marcando esa sección.
 //
-//   Riego.         cuándo toca (cuenta desde el último riego registrado en
-//                  care_log o, si no hay, desde el día del escaneo)
 //   Guía           riego, luz y sustrato: igual para todos los terrarios, con
 //                  el mismo diseño que "Cómo funciona" de la ficha (foto que
 //                  cambia al tocar el paso, mismas clases .how, terrario.css)
 //   Preguntas      las preguntas frecuentes de cuidados de filotaxia.com, con
 //                  la misma intro "(PMF)" + frase grande que Guía (filotaxia.js)
-//
-// Sin terrario propio todavía, solo se ven la guía y las preguntas.
-// (Plantas está en Mi terrario.)
 
 import { CARE_GUIDE, CARE_FAQ } from "../../content/ayuda.js";
 import { getTerrario, codeOf } from "../../content/terrarios.js";
-import { myTerrarioId, lastCare } from "../../store/my-terrario.js";
+import { myTerrarioId } from "../../store/my-terrario.js";
 import { markStep } from "../../store/journey.js";
-import { nextCare, dueLabel } from "../../utils/care.js";
-import { todayKey } from "../../utils/dates.js";
 import { escapeHTML } from "../../utils/html.js";
 import { arrow } from "../../utils/icons.js";
 
@@ -37,7 +30,6 @@ export const header = true;
 export const back = "#/mi-terrario";
 
 export async function render(root) {
-  const terrario = getTerrario(await myTerrarioId());
   markStep("cuidado");   // paso 04 del recorrido (views/filotaxia)
 
   root.innerHTML = `
@@ -58,8 +50,6 @@ export async function render(root) {
           </li>`).join("")}
       </ol>
     </section>
-
-    ${terrario ? await riegoBlock(terrario) : ""}
 
     <section class="faq care-faq reveal" aria-labelledby="faq-title">
       <div class="faq-intro">
@@ -121,28 +111,4 @@ function bindGuide(section) {
   });
 
   return () => gsap?.killTweensOf(images);
-}
-
-// Riego del terrario propio: cuándo toca
-// Una bolita por día del ciclo (5 por fila): las ya pasadas desde el último
-// riego, rellenas; el resto, solo el borde — así se ve de un vistazo qué
-// tan cerca está el día ideal de volver a regar (atrasado: quedan todas
-// rellenas, dueLabel() lo dice abajo igual, "Hace N días").
-async function riegoBlock(terrario) {
-  const { care } = terrario;
-  const riego = nextCare({ last: await lastCare(terrario.id, "riego"), every: care.riego_days, today: todayKey() });
-  const done = Math.min(care.riego_days, Math.max(0, care.riego_days - riego.daysLeft));
-  const dots = Array.from({ length: care.riego_days }, (_, i) =>
-    `<span class="riego-grid__dot${i < done ? " is-done" : ""}"></span>`
-  ).join("");
-  return `
-    <div class="blocks reveal">
-      <article class="block block--full block--riego">
-        <h2 class="block__title">Riego.</h2>
-        <span class="block__badge">(Cada ${care.riego_days} días)</span>
-        <div class="riego-grid" role="img" aria-label="${escapeHTML(dueLabel(riego.daysLeft))} para el próximo riego">${dots}</div>
-        <p class="riego-grid__label">${escapeHTML(dueLabel(riego.daysLeft))}</p>
-      </article>
-    </div>
-  `;
 }

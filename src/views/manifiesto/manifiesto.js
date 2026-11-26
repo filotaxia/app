@@ -411,12 +411,20 @@ function anatomy() {
   `;
 }
 
-// "Capa 02: Sustrato" / "Planta: Haworthia Attenuata" (para el lector de pantalla)
+// "Capa 02: Sustrato" / "Gravas" / "Planta: Haworthia Attenuata" (para el lector de pantalla)
 function spotName(spot) {
-  return spot.kind === "capa" ? `Capa ${pad(spot.layer + 1)}: ${LAYERS[spot.layer][0]}` : `Planta: ${spot.name}`;
+  if (spot.kind === "capa") return `Capa ${pad(spot.layer + 1)}: ${LAYERS[spot.layer][0]}`;
+  if (spot.kind === "elemento") return spot.name;
+  return `Planta: ${spot.name}`;
 }
 
 function spotInfo(spot) {
+  if (spot.kind === "elemento") {
+    return `
+      <p class="anatomy__name">(${escapeHTML(spot.name)})</p>
+      <p class="anatomy__text">${escapeHTML(spot.text)}</p>
+    `;
+  }
   if (spot.kind === "capa") {
     const [name, , text] = LAYERS[spot.layer];
     return `
