@@ -241,6 +241,98 @@
     transform: rotate(-45deg);
 }
 
+/* --- Portada con modelo 3D: "antes / después" (terrario-compare.js),
+   copia del de Formas, sin etiquetas. La línea y la perilla son de vidrio
+   claro (blanco translúcido + desenfoque, como la barra de abajo pero al
+   revés), iguales en los dos temas --- */
+.photo-cmp {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: var(--color-art-shade);   /* mientras cargan las fotos */
+    touch-action: pan-y;
+    cursor: ew-resize;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.photo-cmp:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 4px;
+}
+
+.photo-cmp__layer {
+    position: absolute;
+    inset: 0;
+}
+
+.photo-cmp__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+.photo-cmp__grip {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    pointer-events: none;
+}
+
+/* La línea: una franja de vidrio de 2px. Va en ::before y no en el grip,
+   porque un backdrop-filter en el padre le arruinaría el vidrio a la perilla */
+.photo-cmp__grip::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -1px;
+    width: 2px;
+    background: color-mix(in srgb, var(--color-on-media) 60%, transparent);
+    -webkit-backdrop-filter: blur(8px) saturate(180%);
+    backdrop-filter: blur(8px) saturate(180%);
+}
+
+.photo-cmp__knob {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    translate: -50% -50%;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;   /* círculo a propósito, como el play */
+    background: color-mix(in srgb, var(--color-on-media) 35%, transparent);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    backdrop-filter: blur(12px) saturate(180%);
+    color: var(--color-text-muted);
+    transition: scale 220ms var(--ease-out);
+}
+
+/* Sin desenfoque (navegadores viejos o "reducir transparencia"): blanco sólido */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .photo-cmp__knob,
+    .photo-cmp__grip::before {
+        background: var(--color-on-media);
+    }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    .photo-cmp__knob,
+    .photo-cmp__grip::before {
+        background: var(--color-on-media);
+    }
+}
+
+.photo-cmp[data-held] .photo-cmp__knob {
+    scale: 0.9;
+}
+
 /* ============================================
 RESPONSIVE
 ============================================ */

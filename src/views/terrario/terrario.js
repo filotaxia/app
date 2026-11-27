@@ -39,6 +39,7 @@ import { todayKey } from "../../utils/dates.js";
 import { escapeHTML } from "../../utils/html.js";
 import { arrow } from "../../utils/icons.js";
 import { sections, heading } from "./terrario-secciones.js";
+import { photoCompare, bindPhotoCompare } from "./terrario-compare.js";
 
 export const title = ({ params }) => {
   const terrario = getTerrario(params.id);
@@ -79,7 +80,9 @@ export async function render(root, { params, from }) {
         <a class="back-link" href="${back.href}">${arrow("left")} ${back.label}</a>
         ${settingsLink()}
       </div>
-      <div class="terrario__art reveal">${terrariumArt({ photo: terrario.model_photo ?? terrario.photo })}</div>
+      <div class="terrario__art reveal">
+        ${terrario.model_photo && terrario.photo ? photoCompare(terrario) : terrariumArt({ photo: terrario.model_photo ?? terrario.photo })}
+      </div>
 
       <div class="terrario__info reveal-stagger">
         <p class="terrario__story lead">
@@ -97,6 +100,8 @@ export async function render(root, { params, from }) {
       ${sections(terrario)}
     </article>
   `;
+
+  return bindPhotoCompare(root);
 }
 
 // "Especificaciones": filas con la etiqueta chica a la izquierda y el dato a
@@ -106,7 +111,7 @@ export async function render(root, { params, from }) {
 function specs(terrario, links) {
   const rows = [
     ["Modelo", terrario.model],
-    ["Ecosistema", terrario.specs?.ecosistema],
+    ["Sistema", terrario.specs?.ecosistema],
     ["Recipiente", terrario.specs?.recipiente],
     ["Medidas", terrario.specs?.medidas],
     ...(terrario.plants ?? []).map((plant, i) => [`Planta ${String(i + 1).padStart(2, "0")}`, plant]),

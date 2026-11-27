@@ -143,7 +143,7 @@ export function renderForm(root, { row, rows, onSaved, onDeleted }) {
 
         <details class="admin-block admin-block--full" open>
           <summary class="admin-block__title">Especificaciones.${toggle()}</summary>
-          ${field({ label: "Ecosistema", name: "ecosistema", value: specs.ecosistema ?? "", placeholder: "Abierto" })}
+          ${field({ label: "Sistema", name: "ecosistema", value: specs.ecosistema ?? "", placeholder: "Abierto" })}
           ${field({ label: "Recipiente", name: "recipiente", value: specs.recipiente ?? "", placeholder: "Vidrio" })}
           ${field({ label: "Medidas", name: "medidas", value: specs.medidas ?? "", placeholder: "25 × 20 × 17 cm" })}
         </details>
