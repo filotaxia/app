@@ -152,12 +152,10 @@ export function render(root, ctx) {
 //   compare(key)       → el HTML, con la hoja `key` ("puntiaguda"…)
 //   bindCompare(root)  → la arranca; devuelve la función que la apaga
 //
-// LA LÍNEA ES GELATINA: la perilla está justo donde está el dedo; las dos
-// puntas de la línea no: la siguen con un resorte, así un tirón fuerte las
-// deja atrás y la línea se curva, y se endereza al soltar. La capa de la
-// hoja se corta por la MISMA curva (clip-path: path(), en píxeles de la
-// caja), así el borde de la foto se dobla con la línea. Arrastrar despacio
-// la deja donde se suelta; un tirón con envión la lleva hasta el borde.
+// La línea es siempre recta: está justo donde está el dedo y la capa de la
+// hoja se corta en ese x. Arrastrar despacio la deja donde se suelta; un
+// tirón con envión la lleva hasta el borde. La línea es el propio grip (un
+// div, no un SVG), así puede ser de vidrio como la perilla.
 const SHAPES = Object.keys(LEAVES);
 
 function compare(key) {
@@ -174,7 +172,6 @@ function compare(key) {
         <img class="cmp__leaf" src="src/assets/images/hojas/${key}.webp" alt="" draggable="false" decoding="async" data-cmp-leaf>
         <span class="cmp__tag" data-cmp-tag="before"><span class="cmp__caption">hoja</span> ${escapeHTML(label)}</span>
       </div>
-      <svg class="cmp__line" data-cmp-line aria-hidden="true"><path /></svg>
       <span class="cmp__grip" data-cmp-grip>
         <span class="cmp__knob">
           <svg width="16" height="10" viewBox="0 0 16 10" aria-hidden="true">
@@ -189,58 +186,37 @@ function compare(key) {
 function bindCompare(root) {
   const box = root.querySelector("[data-cmp]");
   const before = box.querySelector("[data-cmp-before]");
-  const svg = box.querySelector("[data-cmp-line]");
-  const line = svg.querySelector("path");
   const grip = box.querySelector("[data-cmp-grip]");
   const tagBefore = box.querySelector('[data-cmp-tag="before"]');
   const tagAfter = box.querySelector('[data-cmp-tag="after"]');
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
-  let cur = 0.5;            // dónde está la perilla (0 = izquierda, 1 = derecha)
+  let cur = 0.5;            // dónde está la línea (0 = izquierda, 1 = derecha)
   let target = null;        // adónde se desliza sola (null = a ningún lado)
-  const ends = { x: 0.5, v: 0 };   // las puntas de la línea y su velocidad
-  let bend = 0;
   let raf = 0;
   let drag = null;
 
   function draw() {
     const W = box.clientWidth;
-    const H = box.clientHeight;
-    const x = cur * W;
-    const top = x - bend;
-    const mid = x + bend;   // el punto de control: así la curva pasa justo por la perilla
-    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-    line.setAttribute("d", `M ${top.toFixed(2)} 0 Q ${mid.toFixed(2)} ${H / 2} ${top.toFixed(2)} ${H}`);
-    before.style.clipPath = `path("M 0 0 L ${top.toFixed(2)} 0 Q ${mid.toFixed(2)} ${H / 2} ${top.toFixed(2)} ${H} L 0 ${H} Z")`;
+    const x = (cur * W).toFixed(2);
+    before.style.clipPath = `inset(0 ${W - x}px 0 0)`;
     grip.style.left = `${x}px`;
     box.setAttribute("aria-valuenow", String(Math.round(cur * 100)));
   }
 
-  // Un solo loop para los dos movimientos (deslizarse hasta target y las
-  // puntas alcanzando a la perilla); se frena solo cuando todo está quieto
+  // Desliza la línea hasta target (al tocar, con las flechas o con un tirón)
   function loop() {
     if (raf) return;
     let prev = performance.now();
     const step = (t) => {
       const dt = Math.min(0.033, (t - prev) / 1000);
       prev = t;
-      if (target !== null) {
-        cur += (target - cur) * (1 - Math.pow(0.0004, dt));
-        if (still || Math.abs(target - cur) < 0.0005) {
-          cur = target;
-          target = null;
-        }
-      }
-      ends.v += ((cur - ends.x) * 620 - ends.v * 44) * dt;
-      ends.x += ends.v * dt;
-      if (still) ends.x = cur;
-      bend = clamp((cur - ends.x) * box.clientWidth * 0.5, -9, 9);
-      const done = target === null && Math.abs(cur - ends.x) < 0.0006 && Math.abs(ends.v) < 0.002;
+      cur += (target - cur) * (1 - Math.pow(0.0004, dt));
+      const done = still || Math.abs(target - cur) < 0.0005;
       if (done) {
-        ends.x = cur;
-        ends.v = 0;
-        bend = 0;
+        cur = target;
+        target = null;
       }
       draw();
       raf = done ? 0 : requestAnimationFrame(step);
@@ -249,8 +225,14 @@ function bindCompare(root) {
   }
 
   const glide = (to) => { target = to; loop(); };
-  // Bajo el dedo: la perilla se dibuja ya; solo las puntas quedan para el loop
-  const place = (v) => { target = null; cur = v; draw(); loop(); };
+  // Bajo el dedo: la línea va justo donde está el dedo
+  const place = (v) => {
+    target = null;
+    cancelAnimationFrame(raf);
+    raf = 0;
+    cur = v;
+    draw();
+  };
   const at = (clientX) => {
     const r = box.getBoundingClientRect();
     return clamp((clientX - r.left) / r.width, 0, 1);

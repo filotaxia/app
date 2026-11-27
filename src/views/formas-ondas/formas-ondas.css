@@ -270,22 +270,6 @@
     opacity: 0.6;
 }
 
-/* La línea se dibuja (así se puede curvar): 2px blanca, sobre todo */
-.cmp__line {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-    pointer-events: none;
-}
-
-.cmp__line path {
-    fill: none;
-    stroke: var(--color-feature-text);
-    stroke-width: 2;
-}
-
 .cmp__grip {
     position: absolute;
     top: 0;
@@ -294,20 +278,60 @@
     pointer-events: none;
 }
 
+/* La línea y la perilla son de vidrio (como el slider de la ficha,
+   views/terrario). La línea va en ::before y no en el grip, porque un
+   backdrop-filter en el padre le arruinaría el vidrio a la perilla */
+.cmp__grip::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -1px;
+    width: 2px;
+    background: color-mix(in srgb, var(--color-feature-text) 60%, transparent);
+    -webkit-backdrop-filter: blur(8px) saturate(180%);
+    backdrop-filter: blur(8px) saturate(180%);
+}
+
 .cmp__knob {
     position: absolute;
     left: 50%;
     top: 50%;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     translate: -50% -50%;
     display: grid;
     place-items: center;
-    border: 1px solid color-mix(in srgb, var(--color-feature-bg) 20%, transparent);
     border-radius: 50%;   /* círculo a propósito, como el play */
-    background: var(--color-feature-text);
-    color: var(--color-feature-bg);
+    background: color-mix(in srgb, var(--color-feature-text) 35%, transparent);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    backdrop-filter: blur(12px) saturate(180%);
+    /* flechas blancas: sobre el fondo oscuro, el gris de la ficha no se lee */
+    color: var(--color-feature-text);
     transition: scale 220ms var(--ease-out);
+}
+
+/* Sin desenfoque (navegadores viejos o "reducir transparencia"): sólido */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .cmp__knob,
+    .cmp__grip::before {
+        background: var(--color-feature-text);
+    }
+
+    .cmp__knob {
+        color: var(--color-feature-bg);
+    }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    .cmp__knob,
+    .cmp__grip::before {
+        background: var(--color-feature-text);
+    }
+
+    .cmp__knob {
+        color: var(--color-feature-bg);
+    }
 }
 
 .cmp[data-held] .cmp__knob {
